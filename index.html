@@ -14,6 +14,31 @@
 
     <script type="text/babel">
         const { useState, useEffect } = React;
+
+        // --- SISTEMA DE CAPTURA DE ERRORES (ERROR BOUNDARY) ---
+        class ErrorBoundary extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { hasError: false, error: null };
+            }
+            static getDerivedStateFromError(error) {
+                return { hasError: true, error };
+            }
+            render() {
+                if (this.state.hasError) {
+                    return (
+                        <div className="fixed inset-0 bg-red-900 text-white p-10 font-mono text-2xl z-[999] overflow-auto flex flex-col items-center justify-center text-center">
+                            <h2 className="text-6xl font-bold mb-8 text-shadow">¡Crash del Sistema!</h2>
+                            <p className="text-3xl bg-black p-8 border-4 border-black shadow-[8px_8px_0_0_#000] text-yellow-400 mb-8 max-w-5xl">
+                                {this.state.error && this.state.error.toString()}
+                            </p>
+                            <p className="text-xl">Por favor, copia este error y compártelo para poder solucionarlo.</p>
+                        </div>
+                    );
+                }
+                return this.props.children; 
+            }
+        }
         
         // --- CONFIGURACIÓN BASE Y REGLAS CLÁSICAS ---
         const SUITS = ['Oros', 'Copas', 'Espadas', 'Bastos'];
@@ -84,7 +109,6 @@
         .animate-cau { animation: cau-shake 0.5s; animation-iteration-count: infinite; }
         `;
 
-        // --- CONFIGURACIÓN DE IMÁGENES ---
         const REVERSO_URL = 'https://raw.githubusercontent.com/ArnauLC/rebaclatro/refs/heads/main/cards/reverso.png';
         const SPANISH_DECK_URL = 'https://raw.githubusercontent.com/ArnauLC/rebaclatro/refs/heads/main/spanish_deck/';
 
@@ -101,7 +125,6 @@
             return `${SPANISH_DECK_URL}${letter}-${paddedRank}.PNG`;
         };
 
-        // --- COMPONENTES UI FIJOS ---
         const Card = ({ card, onClick, isSelected, disabled, isAi, hidden, isMuestra }) => {
             if (!card || hidden) {
                 return (
@@ -152,7 +175,6 @@
             );
         };
 
-        // --- APP PRINCIPAL ---
         function App() {
             const [scale, setScale] = useState(1);
             useEffect(() => {
@@ -550,7 +572,7 @@
                                             {activeActionId === `r-${i}` && (gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => sellItem(r, i, 'reliquia')} className="absolute top-1/2 left-full ml-4 -translate-y-1/2 bg-red-600 px-6 py-3 pixel-border text-2xl whitespace-nowrap z-50">VENDER (+{Math.max(1, Math.floor(r.cost / 2))}💰)</button>}
                                         </div>
                                     ))}
-                                    {[...Array(5-reliquias.length)].map((_, i) => <div key={i} className="w-[100px] h-[100px] border-4 border-dashed border-purple-800 bg-black bg-opacity-30" />)}
+                                    {Array.from({ length: 5 - reliquias.length }).map((_, i) => <div key={`empty-rel-${i}`} className="w-[100px] h-[100px] border-4 border-dashed border-purple-800 bg-black bg-opacity-30" />)}
                                 </div>
 
                                 <div className="flex-1 flex flex-col items-center relative px-8 justify-between overflow-hidden">
@@ -574,7 +596,7 @@
                                                                 <p className="text-lg flex-grow">{item.desc}</p>
                                                                 <button onClick={() => buyItem(item, i, 'reliquia')} disabled={monedas < item.cost || reliquias.length >= 5} className="w-full py-3 bg-green-600 pixel-border font-bold text-xl">{reliquias.length >= 5 ? 'LLENO' : `COMPRAR (💰${item.cost})`}</button>
                                                             </div>
-                                                        ) : <div key={i} className="flex-1 h-[300px] bg-[#1a1122] border-dashed border-gray-600 flex items-center justify-center text-2xl text-gray-500">VENDIDO</div>)}
+                                                        ) : <div key={`empty-shop-rel-${i}`} className="flex-1 h-[300px] bg-[#1a1122] border-dashed border-gray-600 flex items-center justify-center text-2xl text-gray-500">VENDIDO</div>)}
                                                     </div>
                                                 </div>
                                                 <div className="flex-1">
@@ -587,7 +609,7 @@
                                                                 <p className="text-lg flex-grow">{item.desc}</p>
                                                                 <button onClick={() => buyItem(item, i, 'bebida')} disabled={monedas < item.cost || bebidas.length >= 3} className="w-full py-3 bg-green-600 pixel-border font-bold text-xl">{bebidas.length >= 3 ? 'LLENO' : `COMPRAR (💰${item.cost})`}</button>
                                                             </div>
-                                                        ) : <div key={i} className="flex-1 h-[300px] bg-[#20120a] border-dashed border-gray-600 flex items-center justify-center text-2xl text-gray-500">VENDIDO</div>)}
+                                                        ) : <div key={`empty-shop-drink-${i}`} className="flex-1 h-[300px] bg-[#20120a] border-dashed border-gray-600 flex items-center justify-center text-2xl text-gray-500">VENDIDO</div>)}
                                                     </div>
                                                 </div>
                                             </div>
@@ -605,7 +627,7 @@
                                                 <div className="w-[400px] flex items-center pl-8">
                                                     <div className="relative w-[130px] h-[180px] flex items-center justify-start">
                                                         {muestra ? <div className="absolute left-12 top-1/2 -translate-y-1/2 rotate-90 w-[100px] h-[150px] z-10"><Card card={muestra} isMuestra /></div> : <div className="absolute left-12 top-1/2 -translate-y-1/2 text-8xl opacity-80 z-10">{suitEmojis[trumpSuit]}</div>}
-                                                        {deck.length > 0 && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[100px] h-[150px] cursor-pointer z-30 hover:scale-105 transition-transform" onClick={() => setShowDeckModal(true)}>{[...Array(Math.min(4, Math.ceil(deck.length/8)))].map((_, i) => <img key={i} src={REVERSO_URL} className="absolute w-full h-full object-contain drop-shadow-xl" style={{ top: `${i*-3}px`, left: `${i*-3}px` }} />)}<div className="absolute top-0 right-0 bg-red-600 text-white font-bold px-2 py-1 text-lg rounded pixel-border-sm translate-x-1/2 -translate-y-1/2">{deck.length}</div></div>}
+                                                        {deck.length > 0 && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[100px] h-[150px] cursor-pointer z-30 hover:scale-105 transition-transform" onClick={() => setShowDeckModal(true)}>{Array.from({ length: Math.min(4, Math.ceil(deck.length/8)) }).map((_, i) => <img key={i} src={REVERSO_URL} className="absolute w-full h-full object-contain drop-shadow-xl" style={{ top: `${i*-3}px`, left: `${i*-3}px` }} />)}<div className="absolute top-0 right-0 bg-red-600 text-white font-bold px-2 py-1 text-lg rounded pixel-border-sm translate-x-1/2 -translate-y-1/2">{deck.length}</div></div>}
                                                         {deck.length === 0 && muestra && <div className="absolute top-[105%] left-0 w-[100px] text-center text-red-500 font-bold bg-black bg-opacity-80 px-2 rounded pixel-border-sm animate-pulse">ÚLTIMA</div>}
                                                     </div>
                                                     <div className="ml-[80px] flex flex-col items-center bg-black bg-opacity-70 p-4 rounded pixel-border-sm z-40">
@@ -656,7 +678,7 @@
                                             {activeActionId === `b-${i}` && <div className="absolute top-1/2 right-full mr-4 -translate-y-1/2 z-50 flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeBebida(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">USAR AHORA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(b, i, 'bebida'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDER (+{Math.max(1, Math.floor(b.cost / 2))}💰)</button>}</div>}
                                         </div>
                                     ))}
-                                    {[...Array(3-bebidas.length)].map((_, i) => <div key={i} className="w-[100px] h-[100px] border-4 border-dashed border-orange-800 bg-black bg-opacity-30 flex items-center justify-center opacity-20 text-3xl">☕</div>)}
+                                    {Array.from({ length: 3 - bebidas.length }).map((_, i) => <div key={`empty-drink-${i}`} className="w-[100px] h-[100px] border-4 border-dashed border-orange-800 bg-black bg-opacity-30 flex items-center justify-center opacity-20 text-3xl">☕</div>)}
                                 </div>
                             </div>
                         )}
@@ -730,9 +752,9 @@
             );
         }
 
-        // ¡ESTO ES VITAL PARA QUE SE MUESTRE EN EL NAVEGADOR!
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        // Envolvemos toda la aplicación en el Capturador de Errores
+        root.render(<ErrorBoundary><App /></ErrorBoundary>);
     </script>
 </body>
 </html>
