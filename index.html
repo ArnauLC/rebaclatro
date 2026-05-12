@@ -13,7 +13,30 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useCallback } = React;
+
+        // Custom Hook per a gestionar el LocalStorage
+        function useLocalStorage(key, initialValue) {
+            const [value, setValue] = useState(() => {
+                try {
+                    const item = window.localStorage.getItem(key);
+                    return item ? JSON.parse(item) : initialValue;
+                } catch (error) {
+                    console.error(error);
+                    return initialValue;
+                }
+            });
+
+            useEffect(() => {
+                try {
+                    window.localStorage.setItem(key, JSON.stringify(value));
+                } catch (error) {
+                    console.error(error);
+                }
+            }, [key, value]);
+
+            return [value, setValue];
+        }
 
         const FormatText = ({ text, className = "text-white" }) => {
             if (!text || typeof text !== 'string') return <span className={className}>{text}</span>;
@@ -105,7 +128,6 @@
         ];
 
         const OBJECTES_DB = [
-            // CRISTIANS (14)
             { id: 'o1', faction: 'cristia', name: 'Contrabandistes', img: 'https://www.asjordi.org/upload/images/asociacion/01-ANDALUCES.jpg', desc: 'Guanyes +1 Tirada a l\'instant.', cost: 4, efecte: { tiradas: 1 } },
             { id: 'o2', faction: 'cristia', name: 'Asturians', img: 'https://www.asjordi.org/upload/images/filaes/02-Asturianos.jpg', desc: '+20 Fitxes temporals a la següent bassa.', cost: 3, efecte: { fichas: 20 } },
             { id: 'o3', faction: 'cristia', name: 'Cids', img: 'https://www.asjordi.org/upload/images/filaes/03-Cides.jpg', desc: '+3 Mult temporal per a aquesta jugada.', cost: 3, efecte: { mult: 3 } },
@@ -242,13 +264,16 @@
                 return () => window.removeEventListener('resize', handleResize);
             }, []);
 
+            // PERSISTÈNCIA DE CONFIGURACIÓ I COL·LECCIÓ
+            const [highContrastCards, setHighContrastCards] = useLocalStorage('rebaclatro_highContrast', false);
+            const [unlockedItems, setUnlockedItems] = useLocalStorage('rebaclatro_unlocked', []);
+
+            // ESTAT DE LA PARTIDA
             const [gameState, setGameState] = useState('MENU'); 
-            const [faction, setFaction] = useState(null); // 'cristia' o 'moro'
+            const [faction, setFaction] = useState(null);
             
-            // Opcions Menu
             const [showOptionsModal, setShowOptionsModal] = useState(false);
-            const [optionsSubView, setOptionsSubView] = useState('main'); // 'main', 'collection', 'cards'
-            const [highContrastCards, setHighContrastCards] = useState(false);
+            const [optionsSubView, setOptionsSubView] = useState('main'); 
 
             const [round, setRound] = useState(1);
             const [score, setScore] = useState(0);
@@ -300,6 +325,58 @@
             const [hasWonTrick, setHasWonTrick] = useState(false);
 
             const [bazaResult, setBazaResult] = useState(null); 
+
+            // -- SISTEMA D'AUTOGUARDAT --
+            const hasSavedGame = !!localStorage.getItem('rebaclatro_savegame');
+
+            useEffect(() => {
+                if (['SHOP', 'PLAYING', 'RESOLVING', 'ROUND_SUMMARY', 'ROUTE_MAP', 'SELECT_TRUMP', 'SELECT_FACTION'].includes(gameState) && faction !== null) {
+                    const save = {
+                        gameState, faction, round, score, targetScore, monedas,
+                        tiradasLeft, descartesLeft, deck, discardPile, playerHand,
+                        aiHand, muestra, trumpSuit, currentAiCard, playedPlayerCard,
+                        turnLeader, events, objectes, begudes, shopEvents, shopMixed,
+                        rankUpgrades, baseMult, tempMult, tempFichas, fichasAcumuladas,
+                        cantesRealizados, aiCantesRealizados, aiPenaltyMult, hasWonTrick
+                    };
+                    localStorage.setItem('rebaclatro_savegame', JSON.stringify(save));
+                } else if (['GAMEOVER', 'VICTÒRIA', 'DERROTA'].includes(gameState)) {
+                    localStorage.removeItem('rebaclatro_savegame');
+                }
+            }, [gameState, faction, round, score, targetScore, monedas, tiradasLeft, descartesLeft, deck, discardPile, playerHand, aiHand, muestra, trumpSuit, currentAiCard, playedPlayerCard, turnLeader, events, objectes, begudes, shopEvents, shopMixed, rankUpgrades, baseMult, tempMult, tempFichas, fichasAcumuladas, cantesRealizados, aiCantesRealizados, aiPenaltyMult, hasWonTrick]);
+
+            const loadSavedGame = () => {
+                try {
+                    const saved = JSON.parse(localStorage.getItem('rebaclatro_savegame'));
+                    if (saved) {
+                        setFaction(saved.faction); setRound(saved.round); setScore(saved.score);
+                        setTargetScore(saved.targetScore); setMonedas(saved.monedas);
+                        setTiradasLeft(saved.tiradasLeft); setDescartesLeft(saved.descartesLeft);
+                        setDeck(saved.deck); setDiscardPile(saved.discardPile);
+                        setPlayerHand(saved.playerHand); setAiHand(saved.aiHand);
+                        setMuestra(saved.muestra); setTrumpSuit(saved.trumpSuit);
+                        setCurrentAiCard(saved.currentAiCard); setPlayedPlayerCard(saved.playedPlayerCard);
+                        setTurnLeader(saved.turnLeader); setEvents(saved.events);
+                        setObjectes(saved.objectes); setBegudes(saved.begudes);
+                        setShopEvents(saved.shopEvents); setShopMixed(saved.shopMixed);
+                        setRankUpgrades(saved.rankUpgrades); setBaseMult(saved.baseMult);
+                        setTempMult(saved.tempMult); setTempFichas(saved.tempFichas);
+                        setFichasAcumuladas(saved.fichasAcumuladas); setCantesRealizados(saved.cantesRealizados);
+                        setAiCantesRealizados(saved.aiCantesRealizados); setAiPenaltyMult(saved.aiPenaltyMult);
+                        setHasWonTrick(saved.hasWonTrick);
+                        setGameState(saved.gameState);
+                    }
+                } catch (e) {
+                    console.error("Error carregant la partida guardada", e);
+                }
+            };
+
+            const quitToMenu = () => {
+                localStorage.removeItem('rebaclatro_savegame');
+                setGameState('MENU');
+                setFaction(null);
+                setShowOptionsModal(false);
+            };
 
             const getEnemiesList = () => {
                 if (faction === 'cristia') return ['Guerrer Moro', 'Sargent Moro', 'Alferes Moro', 'Capità Moro', 'Al-Azraq'];
@@ -775,6 +852,11 @@
                             let n = [...shopMixed]; n[index] = null; setShopMixed(n); 
                         }
                     }
+
+                    // Afegeix l'ítem a la col·lecció desbloquejada
+                    if (!unlockedItems.includes(item.id)) {
+                        setUnlockedItems([...unlockedItems, item.id]);
+                    }
                 } 
             };
             
@@ -804,6 +886,33 @@
 
             const handleReroll = () => { if (monedas >= 2) { setMonedas(m => m - 2); generateShop(faction); } };
 
+            const renderCollectionItem = (item, type) => {
+                const isUnlocked = unlockedItems.includes(item.id);
+                const isObj = type === 'objecte';
+                const isDrink = type === 'beguda';
+                const bgClass = isDrink ? 'bg-orange-900 border-orange-400' : isObj ? 'bg-blue-900 border-blue-400' : 'bg-purple-900 border-purple-400';
+                
+                return (
+                    <div key={item.id} className={`w-[80px] h-[80px] border-2 flex items-center justify-center p-1 relative group cursor-help ${bgClass}`}>
+                        {isUnlocked ? (
+                            <img src={isObj || isDrink ? item.img : `${RELICS_BASE_URL}${item.img}`} className={`w-full h-full ${isObj && item.faction ? 'object-cover' : 'object-contain'}`} />
+                        ) : (
+                            <div className="text-4xl text-gray-400 font-bold opacity-50">?</div>
+                        )}
+                        <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-64 bg-black p-2 pixel-border opacity-0 group-hover:opacity-100 z-[210] pointer-events-none text-center">
+                            {isUnlocked ? (
+                                <>
+                                    <p className="text-yellow-300 font-bold">{item.name}</p>
+                                    <p className="text-sm">{item.desc}</p>
+                                </>
+                            ) : (
+                                <p className="text-gray-400 font-bold">DESCONEGUT</p>
+                            )}
+                        </div>
+                    </div>
+                );
+            };
+
             const playerVisualMult = ((baseMult + tempMult) * aiPenaltyMult).toFixed(2).replace(/\.00$/, '');
             const aiCardsRevealed = events.some(r=>r.id==='r9');
             const enemiesList = getEnemiesList();
@@ -831,37 +940,37 @@
                                             <h2 className="text-6xl text-yellow-400 font-bold mb-12 text-shadow">MENÚ D'OPCIONS</h2>
                                             <div className="flex flex-col gap-6 w-[400px]">
                                                 <button onClick={() => setShowOptionsModal(false)} className="bg-blue-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-blue-500">TORNAR A LA PARTIDA</button>
-                                                {faction && <button onClick={() => startGame(faction)} className="bg-yellow-600 text-black px-8 py-4 pixel-border font-bold text-2xl hover:bg-yellow-500">REINICIAR PARTIDA</button>}
+                                                {faction && <button onClick={() => quitToMenu()} className="bg-yellow-600 text-black px-8 py-4 pixel-border font-bold text-2xl hover:bg-yellow-500">EIXIR DE LA PARTIDA</button>}
                                                 <button onClick={() => setHighContrastCards(!highContrastCards)} className="bg-purple-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-purple-500">ALT CONTRAST: {highContrastCards ? 'ON' : 'OFF'}</button>
                                                 <button onClick={() => setOptionsSubView('collection')} className="bg-green-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-green-500">COL·LECCIÓ</button>
                                                 <button onClick={() => setOptionsSubView('cards')} className="bg-indigo-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-indigo-500">VALOR CARTES</button>
-                                                <button onClick={() => { setGameState('MENU'); setFaction(null); setShowOptionsModal(false); }} className="bg-red-800 px-8 py-4 pixel-border font-bold text-2xl hover:bg-red-700 mt-8">EIXIR AL MENÚ</button>
+                                                <button onClick={() => { quitToMenu(); }} className="bg-red-800 px-8 py-4 pixel-border font-bold text-2xl hover:bg-red-700 mt-8">TORNAR AL MENÚ</button>
                                             </div>
                                         </>
                                     )}
 
                                     {optionsSubView === 'collection' && (
                                         <div className="w-full flex flex-col items-center overflow-y-auto hide-scrollbar">
-                                            <h2 className="text-5xl text-yellow-400 font-bold mb-8">COL·LECCIÓ COMPLETA</h2>
+                                            <h2 className="text-5xl text-yellow-400 font-bold mb-8">COL·LECCIÓ DESCOBERTA</h2>
                                             
                                             <h3 className="text-3xl text-purple-400 font-bold mb-4 w-full border-b-2 border-purple-800 pb-2">ESDEVENIMENTS</h3>
                                             <div className="flex flex-wrap gap-4 mb-8 justify-center">
-                                                {EVENTS_DB.map(e => <div key={e.id} className="w-[80px] h-[80px] bg-purple-900 border-2 border-purple-400 flex items-center justify-center p-1 relative group cursor-help"><img src={`${RELICS_BASE_URL}${e.img}`} className="w-full h-full object-contain" /><div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-64 bg-black p-2 pixel-border opacity-0 group-hover:opacity-100 z-[210] pointer-events-none text-center"><p className="text-yellow-300 font-bold">{e.name}</p><p className="text-sm">{e.desc}</p></div></div>)}
+                                                {EVENTS_DB.map(e => renderCollectionItem(e, 'esdeveniment'))}
                                             </div>
 
                                             <h3 className="text-3xl text-blue-400 font-bold mb-4 w-full border-b-2 border-blue-800 pb-2">OBJECTES CRISTIANS</h3>
                                             <div className="flex flex-wrap gap-4 mb-8 justify-center">
-                                                {OBJECTES_DB.filter(o=>o.faction==='cristia').map(o => <div key={o.id} className="w-[80px] h-[80px] bg-blue-900 border-2 border-blue-400 flex items-center justify-center relative group cursor-help"><img src={o.img} className="w-full h-full object-cover" /><div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-64 bg-black p-2 pixel-border opacity-0 group-hover:opacity-100 z-[210] pointer-events-none text-center"><p className="text-yellow-300 font-bold">{o.name}</p><p className="text-sm">{o.desc}</p></div></div>)}
+                                                {OBJECTES_DB.filter(o=>o.faction==='cristia').map(o => renderCollectionItem(o, 'objecte'))}
                                             </div>
 
                                             <h3 className="text-3xl text-green-400 font-bold mb-4 w-full border-b-2 border-green-800 pb-2">OBJECTES MOROS</h3>
                                             <div className="flex flex-wrap gap-4 mb-8 justify-center">
-                                                {OBJECTES_DB.filter(o=>o.faction==='moro').map(o => <div key={o.id} className="w-[80px] h-[80px] bg-green-900 border-2 border-green-400 flex items-center justify-center relative group cursor-help"><img src={o.img} className="w-full h-full object-cover" /><div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-64 bg-black p-2 pixel-border opacity-0 group-hover:opacity-100 z-[210] pointer-events-none text-center"><p className="text-yellow-300 font-bold">{o.name}</p><p className="text-sm">{o.desc}</p></div></div>)}
+                                                {OBJECTES_DB.filter(o=>o.faction==='moro').map(o => renderCollectionItem(o, 'objecte'))}
                                             </div>
 
                                             <h3 className="text-3xl text-orange-400 font-bold mb-4 w-full border-b-2 border-orange-800 pb-2">BEGUDES</h3>
                                             <div className="flex flex-wrap gap-4 mb-8 justify-center">
-                                                {BEGUDES_DB.map(b => <div key={b.id} className="w-[80px] h-[80px] bg-orange-900 border-2 border-orange-400 flex items-center justify-center p-1 relative group cursor-help"><img src={b.img} className="w-full h-full object-contain" /><div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-64 bg-black p-2 pixel-border opacity-0 group-hover:opacity-100 z-[210] pointer-events-none text-center"><p className="text-yellow-300 font-bold">{b.name}</p><p className="text-sm">{b.desc}</p></div></div>)}
+                                                {BEGUDES_DB.map(b => renderCollectionItem(b, 'beguda'))}
                                             </div>
 
                                             <button onClick={() => setOptionsSubView('main')} className="bg-gray-600 px-8 py-3 pixel-border font-bold text-xl mt-4">TORNAR</button>
@@ -906,8 +1015,9 @@
                                         </ul>
                                     </div>
                                     <div className="flex gap-8 justify-center">
-                                        <button onClick={() => setGameState('SELECT_FACTION')} className="bg-blue-600 hover:bg-blue-500 px-16 py-8 pixel-border text-5xl font-bold animate-pulse shadow-[8px_8px_0_0_#000]">COMENÇAR PARTIDA</button>
-                                        <button onClick={() => { setShowOptionsModal(true); setOptionsSubView('main'); }} className="bg-gray-700 hover:bg-gray-600 px-16 py-8 pixel-border text-5xl font-bold shadow-[8px_8px_0_0_#000]">OPCIONS</button>
+                                        {hasSavedGame && <button onClick={loadSavedGame} className="bg-orange-600 hover:bg-orange-500 px-12 py-8 pixel-border text-4xl font-bold animate-pulse shadow-[8px_8px_0_0_#000]">CONTINUAR PARTIDA</button>}
+                                        <button onClick={() => setGameState('SELECT_FACTION')} className="bg-blue-600 hover:bg-blue-500 px-12 py-8 pixel-border text-4xl font-bold shadow-[8px_8px_0_0_#000]">NOVA PARTIDA</button>
+                                        <button onClick={() => { setShowOptionsModal(true); setOptionsSubView('main'); }} className="bg-gray-700 hover:bg-gray-600 px-12 py-8 pixel-border text-4xl font-bold shadow-[8px_8px_0_0_#000]">OPCIONS</button>
                                     </div>
                                 </div>
                             </div>
