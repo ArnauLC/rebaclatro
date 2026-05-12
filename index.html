@@ -219,6 +219,14 @@
             const paddedRank = String(rank).padStart(2, '0');
             return `${SPANISH_DECK_URL}${letter}-${paddedRank}.PNG`;
         };
+        
+        const getEnemyImage = (en) => {
+            const emojis = {
+                'Guerrer Moro': '🥷', 'Sargent Moro': '👳', 'Alferes Moro': '🗡️', 'Capità Moro': '🏴‍☠️', 'Al-Azraq': '👑',
+                'Guerrer Cristià': '🤺', 'Sargent Cristià': '💂', 'Alferes Cristià': '⚔️', 'Capità Cristià': '🛡️', 'Jaume I': '🤴'
+            };
+            return emojis[en] || '👤';
+        };
 
         const Card = ({ card, onClick, isSelected, disabled, isAi, hidden, isMuestra, displayFichas, highContrast }) => {
             if (!card || hidden) {
@@ -309,8 +317,8 @@
             const [objectes, setObjectes] = useState([]);
             const [begudes, setBegudes] = useState([]); 
             
-            const [shopEvents, setShopEvents] = useState([null, null, null, null]);
-            const [shopMixed, setShopMixed] = useState([null, null, null, null]);
+            const [shopEvents, setShopEvents] = useState([null, null, null, null, null]);
+            const [shopMixed, setShopMixed] = useState([null, null, null, null, null]);
             
             const [rankUpgrades, setRankUpgrades] = useState({});
 
@@ -358,7 +366,8 @@
                         setCurrentAiCard(saved.currentAiCard); setPlayedPlayerCard(saved.playedPlayerCard);
                         setTurnLeader(saved.turnLeader); setEvents(saved.events);
                         setObjectes(saved.objectes); setBegudes(saved.begudes);
-                        setShopEvents(saved.shopEvents); setShopMixed(saved.shopMixed);
+                        setShopEvents(saved.shopEvents || [null,null,null,null,null]); 
+                        setShopMixed(saved.shopMixed || [null,null,null,null,null]);
                         setRankUpgrades(saved.rankUpgrades); setBaseMult(saved.baseMult);
                         setTempMult(saved.tempMult); setTempFichas(saved.tempFichas);
                         setFichasAcumuladas(saved.fichasAcumuladas); setCantesRealizados(saved.cantesRealizados);
@@ -799,14 +808,14 @@
             const sortHandByPower = () => { setPlayerHand([...playerHand].sort((a, b) => { if (isTriunfo(a.suit, events) && !isTriunfo(b.suit, events)) return -1; if (!isTriunfo(a.suit, events) && isTriunfo(b.suit, events)) return 1; if (getPoder(a.rank) !== getPoder(b.rank)) return getPoder(b.rank) - getPoder(a.rank); return SUITS.indexOf(a.suit) - SUITS.indexOf(b.suit); })); };
 
             const generateShop = (currentFaction) => {
-                let sE = [null, null, null, null];
-                let sM = [null, null, null, null];
+                let sE = new Array(5).fill(null);
+                let sM = new Array(5).fill(null);
                 
                 let avE = EVENTS_DB.filter(e => !events.some(my => my.id === e.id));
                 let avO = OBJECTES_DB.filter(o => o.faction === currentFaction && !objectes.some(my => my.id === o.id)).map(o => ({...o, type: 'objecte'}));
                 let avB = [...BEGUDES_DB].map(b => ({...b, type: 'beguda'}));
                 
-                for(let i=0; i<4; i++) {
+                for(let i=0; i<5; i++) {
                     if(avE.length) sE[i] = { ...avE.splice(Math.floor(Math.random() * avE.length), 1)[0], uId: Math.random() };
                 }
                 
@@ -815,12 +824,12 @@
                 if (avB.length) mixedPool.push({ ...avB.splice(Math.floor(Math.random() * avB.length), 1)[0], uId: Math.random() });
                 
                 let remainingMixed = [...avO, ...avB].sort(() => Math.random() - 0.5);
-                while (mixedPool.length < 4 && remainingMixed.length > 0) {
+                while (mixedPool.length < 5 && remainingMixed.length > 0) {
                     mixedPool.push({ ...remainingMixed.shift(), uId: Math.random() });
                 }
                 
                 mixedPool.sort(() => Math.random() - 0.5);
-                for(let i=0; i<4; i++) {
+                for(let i=0; i<5; i++) {
                     if(mixedPool[i]) sM[i] = mixedPool[i];
                 }
                 
@@ -853,10 +862,7 @@
                         }
                     }
 
-                    // Afegeix l'ítem a la col·lecció desbloquejada
-                    if (!unlockedItems.includes(item.id)) {
-                        setUnlockedItems([...unlockedItems, item.id]);
-                    }
+                    if (!unlockedItems.includes(item.id)) setUnlockedItems([...unlockedItems, item.id]);
                 } 
             };
             
@@ -912,6 +918,48 @@
                     </div>
                 );
             };
+            
+            const renderRunSummary = () => (
+                <div className="bg-[#1a2b22] p-8 pixel-border max-w-4xl w-full flex flex-col items-center mb-12 shadow-[0_0_50px_rgba(0,0,0,0.8)] z-10 relative">
+                    <h2 className="text-4xl text-yellow-400 mb-6 font-bold border-b-4 border-yellow-600 pb-2">RESUM DE LA PARTIDA</h2>
+                    <div className="flex w-full justify-around mb-6">
+                        <div className="text-center">
+                            <p className="text-gray-400 text-xl">Bàndol</p>
+                            <p className="text-3xl text-white font-bold">{faction ? faction.toUpperCase() : ''}</p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-gray-400 text-xl">Coto Arribat</p>
+                            <p className="text-3xl text-white font-bold">{round}</p>
+                        </div>
+                    </div>
+                    
+                    <div className="w-full mb-6">
+                        <p className="text-gray-400 text-xl mb-2 text-center">Esdeveniments Aconseguits</p>
+                        <div className="flex justify-center gap-2 flex-wrap">
+                            {events.length > 0 ? events.map(e => (
+                                <div key={e.id} className="w-16 h-16 bg-purple-900 border-2 border-purple-400 flex items-center justify-center group relative cursor-help">
+                                    <img src={`${RELICS_BASE_URL}${e.img}`} alt={e.name} className="w-full h-full object-contain p-1" />
+                                    <div className="absolute bottom-[110%] w-48 bg-black p-2 pixel-border text-center text-sm opacity-0 group-hover:opacity-100 pointer-events-none z-50">
+                                        <span className="text-yellow-300 font-bold">{e.name}</span>
+                                    </div>
+                                </div>
+                            )) : <span className="text-gray-500 font-bold">Cap esdeveniment</span>}
+                        </div>
+                    </div>
+
+                    <div className="w-full">
+                        <p className="text-gray-400 text-xl mb-2 text-center">Millores de Cartes (Begudes)</p>
+                        <div className="flex justify-center gap-2 flex-wrap">
+                            {Object.keys(rankUpgrades).length > 0 ? Object.entries(rankUpgrades).map(([rank, upg]) => (
+                                <div key={rank} className="bg-[#3a2010] border-2 border-orange-500 px-4 py-2 flex flex-col items-center">
+                                    <span className="text-xl font-bold text-orange-300">Nº {rank}</span>
+                                    <span className="text-green-400 font-bold text-lg">+{upg} Pts</span>
+                                </div>
+                            )) : <span className="text-gray-500 font-bold">Sense millores</span>}
+                        </div>
+                    </div>
+                </div>
+            );
 
             const playerVisualMult = ((baseMult + tempMult) * aiPenaltyMult).toFixed(2).replace(/\.00$/, '');
             const aiCardsRevealed = events.some(r=>r.id==='r9');
@@ -922,9 +970,9 @@
                     <style>{globalStyles}</style>
                     <div style={{ width: '1920px', height: '1080px', minWidth: '1920px', minHeight: '1080px', transform: `scale(${scale})`, transformOrigin: 'center' }} className="bg-felt text-white flex flex-col relative select-none shadow-[0_0_50px_rgba(0,0,0,1)] border-4 border-black overflow-hidden shrink-0" onClick={handleGlobalClick}>
                         
-                        {/* BOTÓ OPCIONS TOP-RIGHT - Sempre visible excepte si està el modal obert */}
-                        {!showOptionsModal && (
-                            <button onClick={() => { setShowOptionsModal(true); setOptionsSubView('main'); }} className="absolute top-4 right-4 z-[999] bg-gray-800 text-white px-6 py-3 pixel-border font-bold text-xl hover:bg-gray-700">
+                        {/* BOTÓ OPCIONS - S'oculta si el menú està actiu, es mou a la part inferior dreta */}
+                        {!showOptionsModal && gameState !== 'MENU' && (
+                            <button onClick={() => { setShowOptionsModal(true); setOptionsSubView('main'); }} className="absolute bottom-4 right-4 z-[999] bg-gray-800 text-white px-6 py-3 pixel-border font-bold text-xl hover:bg-gray-700 shadow-xl">
                                 ⚙️ OPCIONS
                             </button>
                         )}
@@ -939,7 +987,7 @@
                                         <>
                                             <h2 className="text-6xl text-yellow-400 font-bold mb-12 text-shadow">MENÚ D'OPCIONS</h2>
                                             <div className="flex flex-col gap-6 w-[400px]">
-                                                <button onClick={() => setShowOptionsModal(false)} className="bg-blue-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-blue-500">TORNAR A LA PARTIDA</button>
+                                                {gameState !== 'MENU' && <button onClick={() => setShowOptionsModal(false)} className="bg-blue-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-blue-500">TORNAR A LA PARTIDA</button>}
                                                 {faction && <button onClick={() => quitToMenu()} className="bg-yellow-600 text-black px-8 py-4 pixel-border font-bold text-2xl hover:bg-yellow-500">EIXIR DE LA PARTIDA</button>}
                                                 <button onClick={() => setHighContrastCards(!highContrastCards)} className="bg-purple-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-purple-500">ALT CONTRAST: {highContrastCards ? 'ON' : 'OFF'}</button>
                                                 <button onClick={() => setOptionsSubView('collection')} className="bg-green-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-green-500">COL·LECCIÓ</button>
@@ -1015,8 +1063,14 @@
                                         </ul>
                                     </div>
                                     <div className="flex gap-8 justify-center">
-                                        {hasSavedGame && <button onClick={loadSavedGame} className="bg-orange-600 hover:bg-orange-500 px-12 py-8 pixel-border text-4xl font-bold animate-pulse shadow-[8px_8px_0_0_#000]">CONTINUAR PARTIDA</button>}
-                                        <button onClick={() => setGameState('SELECT_FACTION')} className="bg-blue-600 hover:bg-blue-500 px-12 py-8 pixel-border text-4xl font-bold shadow-[8px_8px_0_0_#000]">NOVA PARTIDA</button>
+                                        {hasSavedGame ? (
+                                            <>
+                                                <button onClick={loadSavedGame} className="bg-orange-600 hover:bg-orange-500 px-12 py-8 pixel-border text-4xl font-bold animate-pulse shadow-[8px_8px_0_0_#000]">CONTINUAR</button>
+                                                <button onClick={() => setGameState('SELECT_FACTION')} className="bg-blue-600 hover:bg-blue-500 px-12 py-8 pixel-border text-4xl font-bold shadow-[8px_8px_0_0_#000]">NOVA PARTIDA</button>
+                                            </>
+                                        ) : (
+                                            <button onClick={() => setGameState('SELECT_FACTION')} className="bg-blue-600 hover:bg-blue-500 px-12 py-8 pixel-border text-4xl font-bold shadow-[8px_8px_0_0_#000]">JUGAR</button>
+                                        )}
                                         <button onClick={() => { setShowOptionsModal(true); setOptionsSubView('main'); }} className="bg-gray-700 hover:bg-gray-600 px-12 py-8 pixel-border text-4xl font-bold shadow-[8px_8px_0_0_#000]">OPCIONS</button>
                                     </div>
                                 </div>
@@ -1042,25 +1096,30 @@
                                 <div className="flex items-center gap-0 mb-16 px-12 w-full justify-center">
                                     {enemiesList.map((en, idx) => (
                                         <React.Fragment key={idx}>
-                                            <div className="flex flex-col items-center relative">
-                                                <div className={`w-[140px] h-[140px] rounded-full border-8 flex items-center justify-center text-center p-4 font-bold text-xl leading-tight transition-all duration-500
-                                                    ${round - 1 === idx ? 'bg-yellow-500 border-white scale-[1.3] z-10 text-black shadow-[0_0_30px_rgba(250,204,21,1)]' : 
+                                            <div className="flex flex-col items-center justify-start h-[180px] relative">
+                                                <div className={`w-[120px] h-[120px] rounded-full border-8 flex items-center justify-center text-6xl transition-all duration-500 z-10
+                                                    ${round - 1 === idx ? 'bg-yellow-500 border-white scale-[1.3] text-black shadow-[0_0_30px_rgba(250,204,21,1)]' : 
                                                     round - 1 > idx ? 'bg-green-700 border-green-400 opacity-60' : 'bg-gray-800 border-gray-600 text-gray-400'}`}>
+                                                    {getEnemyImage(en)}
+                                                </div>
+                                                <div className={`absolute top-[125%] text-center font-bold w-[160px] text-xl transition-all duration-500
+                                                    ${round - 1 === idx ? 'text-yellow-400 scale-[1.2]' : 'text-gray-400'}`}>
                                                     {en}
                                                 </div>
                                             </div>
                                             {idx < enemiesList.length - 1 && (
-                                                <div className={`w-[100px] h-4 transition-all duration-500 ${round - 1 > idx ? 'bg-green-400 shadow-[0_0_15px_rgba(74,222,128,1)]' : 'bg-gray-700'}`} />
+                                                <div className={`w-[100px] h-4 mb-[60px] transition-all duration-500 ${round - 1 > idx ? 'bg-green-400 shadow-[0_0_15px_rgba(74,222,128,1)]' : 'bg-gray-700'}`} />
                                             )}
                                         </React.Fragment>
                                     ))}
                                 </div>
-                                <h3 className="text-5xl text-red-500 mb-12 font-bold animate-pulse">Pròxim Enfrontament: <span className="text-white">{enemiesList[round - 1]}</span></h3>
+                                <h3 className="text-5xl text-red-500 mb-12 font-bold animate-pulse mt-8">Pròxim Enfrontament: <span className="text-white">{enemiesList[round - 1]}</span></h3>
                                 <button onClick={() => initRound(round)} className="bg-red-700 px-16 py-8 pixel-border text-5xl font-bold shadow-[8px_8px_0_0_#000]">COMENÇAR BATALLA ➔</button>
                             </div>
                         )}
 
-                        {(gameState === 'PLAYING' || gameState === 'RESOLVING') && (
+                        {/* RENDERITZAT DEL TAULELL COMPARTIT */}
+                        {(gameState === 'PLAYING' || gameState === 'RESOLVING' || gameState === 'SHOP' || gameState === 'SELECT_TRUMP') && (
                             <div className="w-full h-[80px] bg-[#0a1711] border-b-8 border-black px-6 flex justify-between items-center z-30 shadow-lg shrink-0">
                                 <div className="w-[300px] flex flex-col">
                                     <div className="text-3xl text-yellow-400 text-shadow">COTO {round} <span className="text-gray-400 text-xl">/ {TARGETS.length}</span></div>
@@ -1076,11 +1135,12 @@
                             </div>
                         )}
 
+                        {/* SELECT TRUMP OVERLAY MODAL */}
                         {gameState === 'SELECT_TRUMP' && (
-                            <div className="absolute inset-0 bg-black bg-opacity-95 z-[100] flex flex-col items-center justify-center p-8">
+                            <div className="absolute inset-0 bg-black bg-opacity-70 z-50 flex flex-col items-center justify-center pointer-events-auto">
                                 <div className="bg-[#1a2b22] p-12 pixel-border max-w-4xl w-full flex flex-col items-center text-center shadow-[0_0_50px_rgba(250,204,21,0.5)]">
                                     <h2 className="text-6xl text-yellow-400 mb-8 font-bold"><FormatText text="Presentació de Càrrecs" /></h2>
-                                    <p className="text-3xl text-white mb-12">Tria el teu Pal de Triomf per a aquest Coto:</p>
+                                    <p className="text-3xl text-white mb-12">Veus les teues cartes baix. Tria el teu Pal de Triomf per a aquest Coto:</p>
                                     <div className="flex gap-8">
                                         {SUITS.map(suit => (
                                             <button key={suit} onClick={() => selectTrumpSuit(suit)} className="bg-[#0f1a14] hover:bg-gray-800 p-8 pixel-border text-6xl flex flex-col items-center gap-4 transition-transform hover:scale-110">
@@ -1093,7 +1153,7 @@
                             </div>
                         )}
 
-                        {(gameState === 'PLAYING' || gameState === 'RESOLVING' || gameState === 'SHOP') && (
+                        {(gameState === 'PLAYING' || gameState === 'RESOLVING' || gameState === 'SHOP' || gameState === 'SELECT_TRUMP') && (
                             <div className="flex-1 flex flex-row overflow-hidden relative">
                                 
                                 {/* ESQUERRA: ESDEVENIMENTS (6 slots) */}
@@ -1112,62 +1172,66 @@
                                 {/* CENTRE: CAMP DE BATALLA / PARAETA */}
                                 <div className="flex-1 flex flex-col items-center relative px-8 justify-between overflow-hidden">
                                     {gameState === 'SHOP' && (
-                                        <div className="w-full h-full flex flex-col items-center justify-between py-12">
-                                            <div className="flex flex-col items-center">
+                                        <div className="w-full h-full flex flex-col items-center justify-start py-8 relative">
+                                            {/* Valor de la bossa a l'esquerra */}
+                                            <div className="absolute top-4 left-4 bg-[#0d3b22] px-6 py-3 rounded-xl border-2 border-green-500 shadow-[4px_4px_0_0_#000] flex items-center gap-4">
+                                                <span className="text-3xl text-yellow-400 font-bold">💰 {monedas}</span>
+                                            </div>
+
+                                            <div className="flex flex-col items-center mb-12">
                                                 <h2 className="text-6xl text-yellow-400 mb-4 text-shadow font-bold">MERCADER AMBULANT</h2>
-                                                <div className="bg-[#0d3b22] bg-opacity-90 p-4 rounded-xl shadow-2xl flex items-center gap-8">
-                                                    <p className="text-3xl bg-[#1f1626] px-8 py-3 pixel-border font-bold">Bossa: <span className="text-yellow-400">💰 {monedas}</span></p>
-                                                    <button onClick={handleReroll} disabled={monedas < 2} className={`text-2xl px-8 py-3 pixel-border font-bold transition-all shadow-[6px_6px_0_0_#000] ${monedas >= 2 ? 'bg-blue-600 hover:bg-blue-500' : 'bg-gray-800 text-gray-500'}`}>RENOVAR (💰2)</button>
-                                                </div>
+                                                <button onClick={handleReroll} disabled={monedas < 2} className={`text-2xl px-8 py-3 pixel-border font-bold transition-all shadow-[6px_6px_0_0_#000] ${monedas >= 2 ? 'bg-blue-600 hover:bg-blue-500' : 'bg-gray-800 text-gray-500'}`}>RENOVAR BOTIGA (💰2)</button>
                                             </div>
                                             
-                                            <div className="flex flex-row w-full px-16 gap-12 mt-6">
-                                                <div className="flex-1">
-                                                    <h3 className="text-3xl text-purple-400 text-center mb-4 border-b-4 border-purple-900 pb-2">🔮 ESDEVENIMENTS</h3>
-                                                    <div className="grid grid-cols-2 gap-4">
+                                            <div className="flex flex-col w-full px-16 gap-8">
+                                                {/* FILA D'ESDEVENIMENTS */}
+                                                <div className="flex flex-col items-center w-full bg-black bg-opacity-40 p-6 rounded-xl border-2 border-purple-900">
+                                                    <h3 className="text-3xl text-purple-400 text-center mb-6 border-b-2 border-purple-900 pb-2 w-full">🔮 ESDEVENIMENTS</h3>
+                                                    <div className="flex flex-row gap-6 justify-center w-full">
                                                         {shopEvents.map((item, i) => {
-                                                            if (!item) return <div key={`sE-${i}`} className="h-[150px] bg-[#1a1122] border-dashed border-gray-600 flex items-center justify-center text-xl text-gray-500">VENUT</div>;
+                                                            if (!item) return <div key={`sE-${i}`} className="w-[140px] h-[180px] bg-[#1a1122] border-dashed border-gray-600 border-2 flex items-center justify-center text-xl text-gray-500 font-bold">VENUT</div>;
                                                             const actualCost = getActualCost(item, 'event');
                                                             return (
-                                                                <div key={item.uId} className="h-[150px] bg-[#2a1b38] pixel-border p-3 flex flex-col items-center justify-between group relative hover:bg-[#342247] transition-colors">
-                                                                    <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-[300px] bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
+                                                                <div key={item.uId} onClick={() => buyItem(item, i, 'event')} className={`w-[140px] h-[180px] bg-[#2a1b38] border-4 border-purple-600 p-2 flex flex-col items-center justify-between group relative cursor-pointer hover:bg-[#3d2652] hover:scale-105 transition-all shadow-lg ${monedas < actualCost || events.length >= 6 ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}>
+                                                                    <div className="absolute top-[105%] left-1/2 -translate-x-1/2 w-[300px] bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
                                                                         <h3 className="text-2xl text-yellow-300 font-bold mb-2"><FormatText text={item.name} /></h3><p className="text-lg text-white"><FormatText text={item.desc} /></p>
                                                                     </div>
-                                                                    <div className="flex items-center w-full h-[60px] gap-2">
-                                                                        <div className="w-[60px] h-[60px] shrink-0 border-2 border-purple-500 bg-black flex items-center justify-center p-1"><img src={`${RELICS_BASE_URL}${item.img}`} alt={item.name} className="w-full h-full object-contain" /></div>
-                                                                        <span className="text-xl font-bold leading-tight flex-1 line-clamp-2"><FormatText text={item.name} /></span>
+                                                                    <div className="flex-1 flex items-center justify-center w-full p-2 bg-black border border-purple-800">
+                                                                        <img src={`${RELICS_BASE_URL}${item.img}`} alt={item.name} className="w-full h-full object-contain" />
                                                                     </div>
-                                                                    <button onClick={() => buyItem(item, i, 'event')} disabled={monedas < actualCost || events.length >= 6} className={`w-full py-2 pixel-border font-bold text-xl mt-2 ${monedas < actualCost || events.length >= 6 ? 'bg-gray-800 text-gray-500' : 'bg-green-600 hover:bg-green-500 text-white'}`}>{events.length >= 6 ? 'PLE' : `💰 ${actualCost}`}</button>
+                                                                    <div className="w-full text-center mt-2 bg-black py-1 border border-gray-600">
+                                                                        <span className="text-2xl font-bold text-yellow-400">💰 {actualCost}</span>
+                                                                    </div>
                                                                 </div>
                                                             );
                                                         })}
                                                     </div>
                                                 </div>
                                                 
-                                                <div className="flex-1">
-                                                    <h3 className="text-3xl text-blue-400 text-center mb-4 border-b-4 border-blue-900 pb-2">📦 OBJECTES I 🍹 BEGUDES</h3>
-                                                    <div className="grid grid-cols-2 gap-4">
+                                                {/* FILA D'OBJECTES I BEGUDES */}
+                                                <div className="flex flex-col items-center w-full bg-black bg-opacity-40 p-6 rounded-xl border-2 border-blue-900 mt-4">
+                                                    <h3 className="text-3xl text-blue-400 text-center mb-6 border-b-2 border-blue-900 pb-2 w-full">📦 OBJECTES I 🍹 BEGUDES</h3>
+                                                    <div className="flex flex-row gap-6 justify-center w-full">
                                                         {shopMixed.map((item, i) => {
-                                                            if (!item) return <div key={`sM-${i}`} className="h-[150px] bg-[#0f1724] border-dashed border-gray-600 flex items-center justify-center text-xl text-gray-500">VENUT</div>;
+                                                            if (!item) return <div key={`sM-${i}`} className="w-[140px] h-[180px] bg-[#0f1724] border-dashed border-gray-600 border-2 flex items-center justify-center text-xl text-gray-500 font-bold">VENUT</div>;
                                                             const isObj = item.type === 'objecte';
                                                             const isFull = isObj ? objectes.length >= 3 : (begudes.length >= 3 && !begudes.some(b => b.id === item.id));
                                                             const actualCost = getActualCost(item, item.type);
                                                             const isDiscounted = actualCost < item.cost;
                                                             
                                                             return (
-                                                                <div key={item.uId} className={`h-[150px] pixel-border p-3 flex flex-col items-center justify-between group relative transition-colors ${isObj ? 'bg-[#162740] hover:bg-[#1d3354]' : 'bg-[#3a2010] hover:bg-[#4a2b16]'}`}>
-                                                                    <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-[300px] bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
+                                                                <div key={item.uId} onClick={() => buyItem(item, i, item.type)} className={`w-[140px] h-[180px] border-4 p-2 flex flex-col items-center justify-between group relative cursor-pointer transition-all shadow-lg ${isObj ? 'bg-[#162740] border-blue-600 hover:bg-[#1d3354]' : 'bg-[#3a2010] border-orange-600 hover:bg-[#4a2b16]'} hover:scale-105 ${monedas < actualCost || isFull ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}>
+                                                                    <div className="absolute top-[105%] left-1/2 -translate-x-1/2 w-[300px] bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
                                                                         <h3 className="text-2xl text-yellow-300 font-bold mb-2"><FormatText text={item.name} /></h3><p className="text-lg text-white"><FormatText text={item.desc} /></p>
                                                                     </div>
-                                                                    <div className="flex items-center w-full h-[60px] gap-2">
-                                                                        <div className={`w-[60px] h-[60px] shrink-0 border-2 bg-black flex items-center justify-center overflow-hidden ${isObj ? 'border-blue-500 p-0' : 'border-orange-500 p-1'}`}>
-                                                                            <img src={item.img} alt={item.name} className={`w-full h-full ${isObj ? 'object-cover' : 'object-contain'}`} />
-                                                                        </div>
-                                                                        <span className="text-xl font-bold leading-tight flex-1 line-clamp-2"><FormatText text={item.name} /></span>
+                                                                    <div className="flex-1 flex items-center justify-center w-full bg-black border border-gray-700 overflow-hidden">
+                                                                        <img src={item.img} alt={item.name} className={`w-full h-full ${isObj ? 'object-cover' : 'object-contain p-2'}`} />
                                                                     </div>
-                                                                    <button onClick={() => buyItem(item, i, item.type)} disabled={monedas < actualCost || isFull} className={`w-full py-2 pixel-border font-bold text-xl mt-2 ${monedas < actualCost || isFull ? 'bg-gray-800 text-gray-500' : 'bg-green-600 hover:bg-green-500 text-white'}`}>
-                                                                        {isFull ? 'PLE' : (isDiscounted ? <span>💰 <del className="text-red-400 text-sm mr-1">{item.cost}</del> {actualCost}</span> : `💰 ${actualCost}`)}
-                                                                    </button>
+                                                                    <div className="w-full text-center mt-2 bg-black py-1 border border-gray-600">
+                                                                        <span className="text-2xl font-bold text-yellow-400">
+                                                                            {isDiscounted ? <span>💰<del className="text-red-400 text-sm ml-1">{item.cost}</del> {actualCost}</span> : `💰 ${actualCost}`}
+                                                                        </span>
+                                                                    </div>
                                                                 </div>
                                                             );
                                                         })}
@@ -1175,11 +1239,11 @@
                                                 </div>
                                             </div>
 
-                                            <button onClick={() => setGameState('ROUTE_MAP')} className="bg-blue-600 px-16 py-4 pixel-border shadow-[8px_8px_0_0_#000] text-4xl font-bold animate-pulse mt-8">CONTINUAR ➔</button>
+                                            <button onClick={() => setGameState('ROUTE_MAP')} className="bg-blue-600 px-16 py-4 pixel-border shadow-[8px_8px_0_0_#000] text-4xl font-bold animate-pulse mt-12">CONTINUAR ➔</button>
                                         </div>
                                     )}
 
-                                    {(gameState === 'PLAYING' || gameState === 'RESOLVING') && (
+                                    {(gameState === 'PLAYING' || gameState === 'RESOLVING' || gameState === 'SELECT_TRUMP') && (
                                         <>
                                             <div className="w-full flex justify-center mt-4 shrink-0"><div className="flex -space-x-8 scale-[0.85] opacity-80 pointer-events-none">{aiHand.map((c, i) => <Card key={i} card={c} hidden={!aiCardsRevealed && !c.revealed} isAi displayFichas={getCardFichas(c, events) + (c.bonusR7 || 0)} highContrast={highContrastCards} />)}</div></div>
                                             <div className="absolute left-8 top-4 flex flex-col items-center z-20">
@@ -1198,7 +1262,7 @@
                                                     </div>
                                                 </div>
                                                 <div className="flex-1 flex flex-col items-center justify-center gap-6 relative">
-                                                    <div className="z-10">{ (turnLeader === 'ai' || gameState === 'RESOLVING') ? <Card card={currentAiCard} isAi displayFichas={currentAiCard ? getCardFichas(currentAiCard, events)+(currentAiCard.bonusR7||0) : 0} highContrast={highContrastCards}/> : <div className="w-[100px] h-[150px] border-4 border-dashed border-gray-600 rounded-xl opacity-20" /> }</div>
+                                                    <div className="z-10">{ (turnLeader === 'ai' || gameState === 'RESOLVING') && gameState !== 'SELECT_TRUMP' ? <Card card={currentAiCard} isAi displayFichas={currentAiCard ? getCardFichas(currentAiCard, events)+(currentAiCard.bonusR7||0) : 0} highContrast={highContrastCards}/> : <div className="w-[100px] h-[150px] border-4 border-dashed border-gray-600 rounded-xl opacity-20" /> }</div>
                                                     <div className="text-5xl text-gray-500 opacity-40 font-bold">VS</div>
                                                     <div onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); const i = parseInt(e.dataTransfer.getData('text/plain')); if (!isNaN(i)) playCard(playerHand[i]); setDraggedIndex(null); }} className={`w-[110px] h-[160px] border-8 border-dashed rounded-xl flex items-center justify-center transition-colors z-10 ${draggedIndex !== null ? 'border-green-400 bg-green-600 bg-opacity-40 animate-pulse' : 'border-blue-600 bg-blue-900 bg-opacity-30'}`}>{playedPlayerCard && <Card card={playedPlayerCard} isAi displayFichas={getCardFichas(playedPlayerCard, events)+(playedPlayerCard.bonusR7||0)} highContrast={highContrastCards}/>}</div>
                                                     {bazaResult && <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none w-[800px] flex justify-center"><div className={`text-center inline-block bg-[#0b141a] bg-opacity-95 p-8 pixel-border shadow-2xl ${bazaResult.bac ? 'animate-bac' : 'animate-bounce'}`}><h2 className={`text-4xl font-bold mb-4 ${bazaResult.winner === 'player' || bazaResult.winner === 'canto' ? 'text-yellow-400' : 'text-red-500'}`}><FormatText text={bazaResult.message} /></h2>{bazaResult.winner === 'player' && <><div className="text-3xl text-white flex gap-4 justify-center"><span className="text-blue-300 bg-blue-900 px-3 py-1 rounded">{bazaResult.fichas} Fitxes</span><span className="text-red-400 bg-red-900 px-3 py-1 rounded">x{bazaResult.mult}</span></div><div className="text-6xl text-green-400 mt-6 font-bold">+ {bazaResult.total}</div></>}</div></div>}
@@ -1213,17 +1277,17 @@
                                                 </div>
                                                 <div className="flex gap-4 h-12 mb-2 justify-center">{gameState === 'PLAYING' && getPosiblesCantes().map((c, i) => <button key={i} onClick={() => cantar(c)} className="bg-yellow-600 px-8 py-2 pixel-border-sm text-xl font-bold">¡CANTAR <FormatText text={c.nombre} />!</button>)}</div>
                                                 <div className="flex gap-8 mb-2 justify-center">
-                                                    <div className="relative"><button onClick={handlePlayCardBtn} disabled={selectedCards.length !== 1 || tiradasLeft <= 0} className={`w-[260px] py-4 pixel-border text-2xl font-bold ${selectedCards.length === 1 && tiradasLeft > 0 ? 'bg-blue-600' : 'bg-gray-800 text-gray-600'}`}>JUGAR ({tiradasLeft})</button>{extraPlayMsg && <div className="absolute -top-10 left-1/2 -translate-x-1/2 text-green-400 text-2xl font-bold animate-bounce whitespace-nowrap">+1 JUGADA!</div>}</div>
-                                                    <button onClick={handleDiscard} disabled={selectedCards.length === 0 || descartesLeft <= 0 || (deck.length === 0 && !muestra)} className={`w-[260px] py-4 pixel-border text-2xl font-bold ${selectedCards.length > 0 && descartesLeft > 0 ? 'bg-red-600' : 'bg-gray-800 text-gray-600'}`}>DESCARTAR ({descartesLeft})</button>
+                                                    <div className="relative"><button onClick={handlePlayCardBtn} disabled={selectedCards.length !== 1 || tiradasLeft <= 0 || gameState === 'SELECT_TRUMP'} className={`w-[260px] py-4 pixel-border text-2xl font-bold ${selectedCards.length === 1 && tiradasLeft > 0 && gameState === 'PLAYING' ? 'bg-blue-600' : 'bg-gray-800 text-gray-600'}`}>JUGAR ({tiradasLeft})</button>{extraPlayMsg && <div className="absolute -top-10 left-1/2 -translate-x-1/2 text-green-400 text-2xl font-bold animate-bounce whitespace-nowrap">+1 JUGADA!</div>}</div>
+                                                    <button onClick={handleDiscard} disabled={selectedCards.length === 0 || descartesLeft <= 0 || (deck.length === 0 && !muestra) || gameState === 'SELECT_TRUMP'} className={`w-[260px] py-4 pixel-border text-2xl font-bold ${selectedCards.length > 0 && descartesLeft > 0 && gameState === 'PLAYING' ? 'bg-red-600' : 'bg-gray-800 text-gray-600'}`}>DESCARTAR ({descartesLeft})</button>
                                                 </div>
                                                 <div className="w-full flex justify-center items-end max-w-[1200px] gap-6">
-                                                    <div className="flex justify-center items-center gap-4 bg-black bg-opacity-60 px-8 pt-6 pb-2 rounded-t-2xl pixel-border border-b-0 h-[210px] shrink-0">
+                                                    <div className="flex justify-center items-center gap-4 bg-black bg-opacity-60 px-8 pt-6 pb-2 rounded-t-2xl pixel-border border-b-0 h-[210px] shrink-0 z-40">
                                                         {playerHand.map((c, i) => <div key={c.id} draggable={gameState === 'PLAYING'} onDragStart={e => handleDragStart(e, i)} onDragOver={e => e.preventDefault()} onDrop={e => handleDropInHand(e, i)} onDragEnd={() => setDraggedIndex(null)} className={`cursor-move flex flex-col justify-end ${draggedIndex === i ? 'opacity-30' : 'opacity-100'}`}><Card card={c} onClick={() => toggleCardSelection(c)} isSelected={selectedCards.find(sc => sc.id === c.id)} disabled={gameState !== 'PLAYING'} displayFichas={getCardFichas(c, events) + (c.bonusR7 || 0)} highContrast={highContrastCards} /></div>)}
                                                     </div>
-                                                    <div className="flex flex-col gap-4 bg-black bg-opacity-60 p-4 pb-2 pixel-border-sm rounded-t-2xl border-b-0 mb-4 shrink-0">
+                                                    <div className="flex flex-col gap-4 bg-black bg-opacity-60 p-4 pb-2 pixel-border-sm rounded-t-2xl border-b-0 mb-4 shrink-0 z-40">
                                                         <span className="text-xl text-gray-400 text-center font-bold">ORDENAR</span>
-                                                        <button onClick={sortHandBySuit} className="bg-blue-800 px-6 py-3 pixel-border-sm font-bold shadow-[4px_4px_0_0_#000]">PAL</button>
-                                                        <button onClick={sortHandByPower} className="bg-red-800 px-6 py-3 pixel-border-sm font-bold shadow-[4px_4px_0_0_#000]">PUNTS</button>
+                                                        <button onClick={sortHandBySuit} className="bg-blue-800 px-6 py-3 pixel-border-sm font-bold shadow-[4px_4px_0_0_#000]" disabled={gameState !== 'PLAYING' && gameState !== 'SELECT_TRUMP'}>PAL</button>
+                                                        <button onClick={sortHandByPower} className="bg-red-800 px-6 py-3 pixel-border-sm font-bold shadow-[4px_4px_0_0_#000]" disabled={gameState !== 'PLAYING' && gameState !== 'SELECT_TRUMP'}>PUNTS</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1307,12 +1371,34 @@
                                     <p className="text-4xl text-gray-300 mb-6">Tirades restants: <span className="text-green-400 font-bold">{roundSummary.tiradasLeft}</span></p>
                                     <p className="text-5xl text-yellow-400 mt-6 font-bold bg-black px-8 py-4 pixel-border-sm">Recompensa: +{roundSummary.monedasEarned} 💰</p>
                                 </div>
-                                <button onClick={nextRoundAndShop} className="bg-blue-600 px-16 py-8 pixel-border text-5xl font-bold">ANAR AL MERCADER ➔</button>
+                                <button onClick={nextRoundAndShop} className="bg-blue-600 px-16 py-8 pixel-border text-5xl font-bold shadow-[8px_8px_0_0_#000]">ANAR AL MERCADER ➔</button>
                             </div>
                         )}
 
-                        {gameState === 'DERROTA' && <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20"><h1 className="text-[150px] text-red-600 mb-8 font-bold">AL POU</h1><p className="text-4xl text-gray-300 mb-16">T'has quedat sense tirades al Coto {round}.</p><button onClick={() => startGame(faction)} className="bg-yellow-600 text-black px-16 py-8 pixel-border text-4xl font-bold">TORNAR A INTENTAR COM A {faction.toUpperCase()}</button></div>}
-                        {gameState === 'VICTÒRIA' && <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20"><h1 className="text-[120px] text-yellow-400 mb-8 font-bold animate-bac text-center">¡ETS EL REI<br/>DEL BAC!</h1><p className="text-4xl text-gray-300 mb-16">Has arruïnat al poble guanyant tots els cotos.</p><button onClick={() => { setGameState('MENU'); setFaction(null); }} className="bg-green-600 px-16 py-8 pixel-border text-4xl font-bold">TORNAR AL MENÚ PRINCIPAL</button></div>}
+                        {gameState === 'DERROTA' && (
+                            <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20">
+                                <h1 className="text-[150px] text-red-600 mb-8 font-bold">AL POU</h1>
+                                <p className="text-4xl text-gray-300 mb-12">T'has quedat sense tirades al Coto {round}.</p>
+                                
+                                {renderRunSummary()}
+
+                                <div className="flex gap-8">
+                                    <button onClick={() => startGame(faction)} className="bg-yellow-600 text-black px-12 py-6 pixel-border text-4xl font-bold shadow-[8px_8px_0_0_#000]">REINTENTAR</button>
+                                    <button onClick={quitToMenu} className="bg-gray-700 text-white px-12 py-6 pixel-border text-4xl font-bold shadow-[8px_8px_0_0_#000]">TORNAR AL MENÚ</button>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {gameState === 'VICTÒRIA' && (
+                            <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20">
+                                <h1 className="text-[120px] text-yellow-400 mb-8 font-bold animate-bac text-center">¡ETS EL REI<br/>DEL BAC!</h1>
+                                <p className="text-4xl text-gray-300 mb-12">Has arruïnat al poble guanyant tots els cotos.</p>
+                                
+                                {renderRunSummary()}
+
+                                <button onClick={quitToMenu} className="bg-green-600 px-16 py-8 pixel-border text-4xl font-bold shadow-[8px_8px_0_0_#000]">TORNAR AL MENÚ PRINCIPAL</button>
+                            </div>
+                        )}
                     </div>
                 </div>
             );
