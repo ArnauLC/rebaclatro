@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rebaclatro</title>
+    <title>Rebaclatro - Festes Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -116,16 +116,16 @@
         const getDrinkSvg = (emoji) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="70">${emoji}</text></svg>`;
 
         const BEGUDES_DB = [
-            { id: 'b1', rank: 1, name: 'Cassalla', img: getDrinkSvg('🥂'), desc: 'Millora de forma permanent tots els Asos (+30 Fitxes).', cost: 8, upgradeAmount: 30 },
-            { id: 'b2', rank: 2, name: 'Aigua', img: getDrinkSvg('💧'), desc: 'Millora de forma permanent tots els 2 (+10 Fitxes).', cost: 3, upgradeAmount: 10 },
-            { id: 'b3', rank: 3, name: 'Biri Biri', img: getDrinkSvg('🍊'), desc: 'Millora de forma permanent tots els 3 (+25 Fitxes).', cost: 7, upgradeAmount: 25 },
-            { id: 'b4', rank: 4, name: 'Coca-Cola', img: getDrinkSvg('🥤'), desc: 'Millora de forma permanent tots els 4 (+10 Fitxes).', cost: 4, upgradeAmount: 10 },
-            { id: 'b5', rank: 5, name: 'Aigua-llimó', img: getDrinkSvg('🍋'), desc: 'Millora de forma permanent tots els 5 (+10 Fitxes).', cost: 4, upgradeAmount: 10 },
-            { id: 'b6', rank: 6, name: 'Cervesa', img: getDrinkSvg('🍺'), desc: 'Millora de forma permanent tots els 6 (+15 Fitxes).', cost: 5, upgradeAmount: 15 },
-            { id: 'b7', rank: 7, name: 'Vi', img: getDrinkSvg('🍷'), desc: 'Millora de forma permanent tots els 7 (+15 Fitxes).', cost: 5, upgradeAmount: 15 },
-            { id: 'b10', rank: 10, name: 'Mentira', img: getDrinkSvg('☕'), desc: 'Millora de forma permanent totes les Sotes (+20 Fitxes).', cost: 6, upgradeAmount: 20 },
-            { id: 'b11', rank: 11, name: 'Plis-Play', img: getDrinkSvg('🧊'), desc: 'Millora de forma permanent tots els Cavalls (+20 Fitxes).', cost: 6, upgradeAmount: 20 },
-            { id: 'b12', rank: 12, name: 'Somriure Alcoià', img: getDrinkSvg('😁'), desc: 'Millora de forma permanent tots els Reis (+20 Fitxes).', cost: 6, upgradeAmount: 20 }
+            { id: 'b1', rank: 1, name: 'Cassalla', img: getDrinkSvg('🥂'), desc: 'Millora permanentment tots els Asos (+30 Fitxes).', cost: 8, upgradeAmount: 30 },
+            { id: 'b2', rank: 2, name: 'Aigua', img: getDrinkSvg('💧'), desc: 'Millora permanentment tots els 2 (+10 Fitxes).', cost: 3, upgradeAmount: 10 },
+            { id: 'b3', rank: 3, name: 'Biri Biri', img: getDrinkSvg('🍊'), desc: 'Millora permanentment tots els 3 (+25 Fitxes).', cost: 7, upgradeAmount: 25 },
+            { id: 'b4', rank: 4, name: 'Coca-Cola', img: getDrinkSvg('🥤'), desc: 'Millora permanentment tots els 4 (+10 Fitxes).', cost: 4, upgradeAmount: 10 },
+            { id: 'b5', rank: 5, name: 'Aigua-llimó', img: getDrinkSvg('🍋'), desc: 'Millora permanentment tots els 5 (+10 Fitxes).', cost: 4, upgradeAmount: 10 },
+            { id: 'b6', rank: 6, name: 'Cervesa', img: getDrinkSvg('🍺'), desc: 'Millora permanentment tots els 6 (+15 Fitxes).', cost: 5, upgradeAmount: 15 },
+            { id: 'b7', rank: 7, name: 'Vi', img: getDrinkSvg('🍷'), desc: 'Millora permanentment tots els 7 (+15 Fitxes).', cost: 5, upgradeAmount: 15 },
+            { id: 'b10', rank: 10, name: 'Mentira', img: getDrinkSvg('☕'), desc: 'Millora permanentment totes les Sotes (+20 Fitxes).', cost: 6, upgradeAmount: 20 },
+            { id: 'b11', rank: 11, name: 'Plis-Play', img: getDrinkSvg('🧊'), desc: 'Millora permanentment tots els Cavalls (+20 Fitxes).', cost: 6, upgradeAmount: 20 },
+            { id: 'b12', rank: 12, name: 'Somriure Alcoià', img: getDrinkSvg('😁'), desc: 'Millora permanentment tots els Reis (+20 Fitxes).', cost: 6, upgradeAmount: 20 }
         ];
 
         const globalStyles = `
@@ -248,9 +248,8 @@
             const [objectes, setObjectes] = useState([]);
             const [begudes, setBegudes] = useState([]); 
             
-            const [shopEvents, setShopEvents] = useState([null, null, null]);
-            const [shopObjectes, setShopObjectes] = useState([null, null, null]);
-            const [shopBegudes, setShopBegudes] = useState([null, null, null]);
+            const [shopEvents, setShopEvents] = useState([null, null, null, null]);
+            const [shopMixed, setShopMixed] = useState([null, null, null, null]);
             
             const [rankUpgrades, setRankUpgrades] = useState({});
 
@@ -324,7 +323,7 @@
                 setTempFichas(0); setFichasAcumuladas(0); setActiveActionId(null);
                 setPlayerLastTrick(null); setAiLastTrick(null); setAiCantesRealizados([]);
                 setAiPenaltyMult(1); setHasWonTrick(false); setRankUpgrades({});
-                generateShop(); setGameState('INITIAL_SHOP'); 
+                generateShop(); setGameState('SHOP'); 
             };
 
             const initRound = (r) => {
@@ -636,23 +635,51 @@
             const sortHandByPower = () => { setPlayerHand([...playerHand].sort((a, b) => { if (isTriunfo(a.suit, events) && !isTriunfo(b.suit, events)) return -1; if (!isTriunfo(a.suit, events) && isTriunfo(b.suit, events)) return 1; if (getPoder(a.rank) !== getPoder(b.rank)) return getPoder(b.rank) - getPoder(a.rank); return SUITS.indexOf(a.suit) - SUITS.indexOf(b.suit); })); };
 
             const generateShop = () => {
-                let sE = [null, null, null], sO = [null, null, null], sB = [null, null, null];
+                let sE = [null, null, null, null];
+                let sM = [null, null, null, null];
+                
                 let avE = EVENTS_DB.filter(e => !events.some(my => my.id === e.id));
-                let avO = OBJECTES_DB.filter(o => !objectes.some(my => my.id === o.id));
-                let avB = BEGUDES_DB.filter(b => !begudes.some(my => my.id === b.id));
+                let avO = OBJECTES_DB.filter(o => !objectes.some(my => my.id === o.id)).map(o => ({...o, type: 'objecte'}));
+                let avB = BEGUDES_DB.filter(b => !begudes.some(my => my.id === b.id)).map(b => ({...b, type: 'beguda'}));
                 
-                for(let i=0; i<3; i++) if(avE.length) sE[i] = { ...avE.splice(Math.floor(Math.random() * avE.length), 1)[0], uId: Math.random() };
-                for(let i=0; i<3; i++) if(avO.length) sO[i] = { ...avO.splice(Math.floor(Math.random() * avO.length), 1)[0], uId: Math.random() };
-                for(let i=0; i<3; i++) if(avB.length) sB[i] = { ...avB.splice(Math.floor(Math.random() * avB.length), 1)[0], uId: Math.random() };
+                // Omplir 4 Esdeveniments
+                for(let i=0; i<4; i++) {
+                    if(avE.length) sE[i] = { ...avE.splice(Math.floor(Math.random() * avE.length), 1)[0], uId: Math.random() };
+                }
                 
-                setShopEvents(sE); setShopObjectes(sO); setShopBegudes(sB);
+                // Omplir Mix d'Objectes i Begudes garantint mínim 1 de cadascú
+                let mixedPool = [];
+                if (avO.length) mixedPool.push({ ...avO.splice(Math.floor(Math.random() * avO.length), 1)[0], uId: Math.random() });
+                if (avB.length) mixedPool.push({ ...avB.splice(Math.floor(Math.random() * avB.length), 1)[0], uId: Math.random() });
+                
+                let remainingMixed = [...avO, ...avB].sort(() => Math.random() - 0.5);
+                while (mixedPool.length < 4 && remainingMixed.length > 0) {
+                    mixedPool.push({ ...remainingMixed.shift(), uId: Math.random() });
+                }
+                
+                // Barrejar els mixts
+                mixedPool.sort(() => Math.random() - 0.5);
+                for(let i=0; i<4; i++) {
+                    if(mixedPool[i]) sM[i] = mixedPool[i];
+                }
+                
+                setShopEvents(sE); setShopMixed(sM);
             };
 
             const buyItem = (item, index, type) => { 
                 if (monedas >= item.cost) { 
-                    if (type === 'event' && events.length < 6) { setMonedas(m => m - item.cost); setEvents([...events, item]); let n = [...shopEvents]; n[index] = null; setShopEvents(n); }
-                    else if (type === 'objecte' && objectes.length < 3) { setMonedas(m => m - item.cost); setObjectes([...objectes, item]); let n = [...shopObjectes]; n[index] = null; setShopObjectes(n); }
-                    else if (type === 'beguda' && begudes.length < 3) { setMonedas(m => m - item.cost); setBegudes([...begudes, item]); let n = [...shopBegudes]; n[index] = null; setShopBegudes(n); }
+                    if (type === 'event' && events.length < 6) { 
+                        setMonedas(m => m - item.cost); setEvents([...events, item]); 
+                        let n = [...shopEvents]; n[index] = null; setShopEvents(n); 
+                    }
+                    else if (type === 'objecte' && objectes.length < 3) { 
+                        setMonedas(m => m - item.cost); setObjectes([...objectes, item]); 
+                        let n = [...shopMixed]; n[index] = null; setShopMixed(n); 
+                    }
+                    else if (type === 'beguda' && begudes.length < 3) { 
+                        setMonedas(m => m - item.cost); setBegudes([...begudes, item]); 
+                        let n = [...shopMixed]; n[index] = null; setShopMixed(n); 
+                    }
                 } 
             };
             
@@ -690,89 +717,85 @@
                             </div>
                         )}
 
-                        {(gameState === 'PLAYING' || gameState === 'RESOLVING' || gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && (
-                            <div className="flex-1 flex flex-row overflow-hidden">
+                        {(gameState === 'PLAYING' || gameState === 'RESOLVING' || gameState === 'SHOP') && (
+                            <div className="flex-1 flex flex-row overflow-hidden relative">
                                 
                                 {/* ESQUERRA: ESDEVENIMENTS (6 slots) */}
-                                <div className="w-[180px] flex flex-col items-center py-6 gap-4 bg-black bg-opacity-40 border-r-4 border-black z-40 shrink-0 overflow-y-auto hide-scrollbar">
+                                <div className="w-[180px] flex flex-col items-center py-6 gap-4 bg-black bg-opacity-40 border-r-4 border-black z-[60] shrink-0 overflow-visible">
                                     <span className="text-xl text-purple-300 font-bold">ESDEVENIMENTS</span>
                                     {events.map((e, i) => (
                                         <div key={i} onClick={ev => { ev.stopPropagation(); setActiveActionId(activeActionId === `e-${i}` ? null : `e-${i}`); }} className="w-[100px] h-[100px] bg-purple-900 border-4 border-purple-400 flex items-center justify-center cursor-pointer group relative shrink-0">
                                             <img src={`${RELICS_BASE_URL}${e.img}`} alt={e.name} className="w-full h-full object-contain p-2" onError={ev => {ev.target.style.display='none'}} />
-                                            {activeActionId !== `e-${i}` && <div className="absolute top-1/2 left-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-50 pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2">{e.name}</p><p className="text-xl">{e.desc}</p></div>}
-                                            {activeActionId === `e-${i}` && (gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => sellItem(e, i, 'event')} className="absolute top-1/2 left-[120%] -translate-y-1/2 bg-red-600 px-6 py-3 pixel-border text-2xl whitespace-nowrap z-50">VENDRE (+{Math.max(1, Math.floor(e.cost / 2))}💰)</button>}
+                                            {activeActionId !== `e-${i}` && <div className="absolute top-1/2 left-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2">{e.name}</p><p className="text-xl">{e.desc}</p></div>}
+                                            {activeActionId === `e-${i}` && gameState === 'SHOP' && <button onClick={() => sellItem(e, i, 'event')} className="absolute top-1/2 left-[120%] -translate-y-1/2 bg-red-600 px-6 py-3 pixel-border text-2xl whitespace-nowrap z-[100]">VENDRE (+{Math.max(1, Math.floor(e.cost / 2))}💰)</button>}
                                         </div>
                                     ))}
                                     {Array.from({ length: 6 - events.length }).map((_, i) => <div key={`empty-ev-${i}`} className="w-[100px] h-[100px] border-4 border-dashed border-purple-800 bg-black bg-opacity-30 shrink-0" />)}
                                 </div>
 
-                                {/* CENTRE: CAMP DE BATALLA / TENDA */}
+                                {/* CENTRE: CAMP DE BATALLA / PARAETA */}
                                 <div className="flex-1 flex flex-col items-center relative px-8 justify-between overflow-hidden">
-                                    {(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && (
+                                    {gameState === 'SHOP' && (
                                         <div className="w-full h-full flex flex-col items-center justify-between py-12">
                                             <div className="flex flex-col items-center">
-                                                <h2 className="text-6xl text-yellow-400 mb-4 text-shadow font-bold">{gameState === 'INITIAL_SHOP' ? 'TENDA INICIAL' : 'PREPARACIÓ DE COTO'}</h2>
+                                                <h2 className="text-6xl text-yellow-400 mb-4 text-shadow font-bold">{round === 1 ? 'PARAETA INICIAL' : 'PREPARACIÓ DE PARAETA'}</h2>
                                                 <div className="bg-[#0d3b22] bg-opacity-90 p-4 rounded-xl shadow-2xl flex items-center gap-8">
                                                     <p className="text-3xl bg-[#1f1626] px-8 py-3 pixel-border font-bold">Bossa: <span className="text-yellow-400">💰 {monedas}</span></p>
                                                     <button onClick={handleReroll} disabled={monedas < 2} className={`text-2xl px-8 py-3 pixel-border font-bold transition-all shadow-[6px_6px_0_0_#000] ${monedas >= 2 ? 'bg-blue-600 hover:bg-blue-500' : 'bg-gray-800 text-gray-500'}`}>RENOVAR (💰2)</button>
                                                 </div>
                                             </div>
                                             
-                                            {/* Tenda - 3 columnes */}
-                                            <div className="flex flex-row w-full px-8 gap-8">
-                                                {/* Esdeveniments */}
+                                            {/* Paraeta - 2 columnes generals */}
+                                            <div className="flex flex-row w-full px-16 gap-12 mt-6">
+                                                
+                                                {/* Esdeveniments (4 Slots) */}
                                                 <div className="flex-1">
-                                                    <h3 className="text-2xl text-purple-400 text-center mb-4 border-b-4 border-purple-900">🔮 ESDEVENIMENTS</h3>
-                                                    <div className="flex flex-col gap-4">
+                                                    <h3 className="text-3xl text-purple-400 text-center mb-4 border-b-4 border-purple-900 pb-2">🔮 ESDEVENIMENTS</h3>
+                                                    <div className="grid grid-cols-2 gap-4">
                                                         {shopEvents.map((item, i) => item ? (
-                                                            <div key={item.uId} className="h-[140px] bg-[#2a1b38] pixel-border p-3 flex items-center justify-between group relative hover:bg-[#342247] transition-colors">
-                                                                <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-[320px] bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-50 pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
+                                                            <div key={item.uId} className="h-[150px] bg-[#2a1b38] pixel-border p-3 flex flex-col items-center justify-between group relative hover:bg-[#342247] transition-colors">
+                                                                <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-[300px] bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-50 pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
                                                                     <h3 className="text-2xl text-yellow-300 font-bold mb-2">{item.name}</h3><p className="text-lg text-white">{item.desc}</p>
                                                                 </div>
-                                                                <div className="w-[100px] h-[100px] shrink-0 border-2 border-purple-500 bg-black flex items-center justify-center p-2"><img src={`${RELICS_BASE_URL}${item.img}`} alt={item.name} className="w-full h-full object-contain" /></div>
-                                                                <div className="flex-1 flex justify-center px-4"><span className="text-xl font-bold truncate max-w-[150px]">{item.name}</span></div>
-                                                                <button onClick={() => buyItem(item, i, 'event')} disabled={monedas < item.cost || events.length >= 6} className={`px-4 py-6 pixel-border font-bold text-xl h-full shrink-0 ${monedas < item.cost || events.length >= 6 ? 'bg-gray-800 text-gray-500' : 'bg-green-600 hover:bg-green-500 text-white'}`}>{events.length >= 6 ? 'PLE' : `💰${item.cost}`}</button>
+                                                                <div className="flex items-center w-full h-[60px] gap-2">
+                                                                    <div className="w-[60px] h-[60px] shrink-0 border-2 border-purple-500 bg-black flex items-center justify-center p-1"><img src={`${RELICS_BASE_URL}${item.img}`} alt={item.name} className="w-full h-full object-contain" /></div>
+                                                                    <span className="text-xl font-bold leading-tight flex-1 line-clamp-2">{item.name}</span>
+                                                                </div>
+                                                                <button onClick={() => buyItem(item, i, 'event')} disabled={monedas < item.cost || events.length >= 6} className={`w-full py-2 pixel-border font-bold text-xl mt-2 ${monedas < item.cost || events.length >= 6 ? 'bg-gray-800 text-gray-500' : 'bg-green-600 hover:bg-green-500 text-white'}`}>{events.length >= 6 ? 'PLE' : `COMPRAR (💰${item.cost})`}</button>
                                                             </div>
-                                                        ) : <div key={`sE-${i}`} className="h-[140px] bg-[#1a1122] border-dashed border-gray-600 flex items-center justify-center text-xl text-gray-500">VENUT</div>)}
+                                                        ) : <div key={`sE-${i}`} className="h-[150px] bg-[#1a1122] border-dashed border-gray-600 flex items-center justify-center text-xl text-gray-500">VENUT</div>)}
                                                     </div>
                                                 </div>
                                                 
-                                                {/* Objectes */}
+                                                {/* Objectes i Begudes (4 Slots Mixts) */}
                                                 <div className="flex-1">
-                                                    <h3 className="text-2xl text-blue-400 text-center mb-4 border-b-4 border-blue-900">🛡️ OBJECTES</h3>
-                                                    <div className="flex flex-col gap-4">
-                                                        {shopObjectes.map((item, i) => item ? (
-                                                            <div key={item.uId} className="h-[140px] bg-[#162740] pixel-border p-3 flex items-center justify-between group relative hover:bg-[#1d3354] transition-colors">
-                                                                <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-[320px] bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-50 pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
-                                                                    <h3 className="text-2xl text-yellow-300 font-bold mb-2">{item.name}</h3><p className="text-lg text-white">{item.desc}</p>
+                                                    <h3 className="text-3xl text-blue-400 text-center mb-4 border-b-4 border-blue-900 pb-2">📦 OBJECTES I 🍹 BEGUDES</h3>
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        {shopMixed.map((item, i) => {
+                                                            if (!item) return <div key={`sM-${i}`} className="h-[150px] bg-[#0f1724] border-dashed border-gray-600 flex items-center justify-center text-xl text-gray-500">VENUT</div>;
+                                                            const isObj = item.type === 'objecte';
+                                                            const isFull = isObj ? objectes.length >= 3 : begudes.length >= 3;
+                                                            return (
+                                                                <div key={item.uId} className={`h-[150px] pixel-border p-3 flex flex-col items-center justify-between group relative transition-colors ${isObj ? 'bg-[#162740] hover:bg-[#1d3354]' : 'bg-[#3a2010] hover:bg-[#4a2b16]'}`}>
+                                                                    <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-[300px] bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-50 pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
+                                                                        <h3 className="text-2xl text-yellow-300 font-bold mb-2">{item.name}</h3><p className="text-lg text-white">{item.desc}</p>
+                                                                    </div>
+                                                                    <div className="flex items-center w-full h-[60px] gap-2">
+                                                                        <div className={`w-[60px] h-[60px] shrink-0 border-2 bg-black flex items-center justify-center overflow-hidden ${isObj ? 'border-blue-500 p-0' : 'border-orange-500 p-1'}`}>
+                                                                            <img src={item.img} alt={item.name} className={`w-full h-full ${isObj ? 'object-cover' : 'object-contain'}`} />
+                                                                        </div>
+                                                                        <span className="text-xl font-bold leading-tight flex-1 line-clamp-2">{item.name}</span>
+                                                                    </div>
+                                                                    <button onClick={() => buyItem(item, i, item.type)} disabled={monedas < item.cost || isFull} className={`w-full py-2 pixel-border font-bold text-xl mt-2 ${monedas < item.cost || isFull ? 'bg-gray-800 text-gray-500' : 'bg-green-600 hover:bg-green-500 text-white'}`}>{isFull ? 'PLE' : `COMPRAR (💰${item.cost})`}</button>
                                                                 </div>
-                                                                <div className="w-[100px] h-[100px] shrink-0 border-2 border-blue-500 bg-black flex items-center justify-center overflow-hidden"><img src={item.img} alt={item.name} className="w-full h-full object-cover" /></div>
-                                                                <div className="flex-1 flex justify-center px-4"><span className="text-xl font-bold truncate max-w-[150px]">{item.name}</span></div>
-                                                                <button onClick={() => buyItem(item, i, 'objecte')} disabled={monedas < item.cost || objectes.length >= 3} className={`px-4 py-6 pixel-border font-bold text-xl h-full shrink-0 ${monedas < item.cost || objectes.length >= 3 ? 'bg-gray-800 text-gray-500' : 'bg-green-600 hover:bg-green-500 text-white'}`}>{objectes.length >= 3 ? 'PLE' : `💰${item.cost}`}</button>
-                                                            </div>
-                                                        ) : <div key={`sO-${i}`} className="h-[140px] bg-[#0f1724] border-dashed border-gray-600 flex items-center justify-center text-xl text-gray-500">VENUT</div>)}
+                                                            );
+                                                        })}
                                                     </div>
                                                 </div>
 
-                                                {/* Begudes */}
-                                                <div className="flex-1">
-                                                    <h3 className="text-2xl text-orange-400 text-center mb-4 border-b-4 border-orange-900">🍹 BEGUDES</h3>
-                                                    <div className="flex flex-col gap-4">
-                                                        {shopBegudes.map((item, i) => item ? (
-                                                            <div key={item.uId} className="h-[140px] bg-[#3a2010] pixel-border p-3 flex items-center justify-between group relative hover:bg-[#4a2b16] transition-colors">
-                                                                <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-[320px] bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-50 pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
-                                                                    <h3 className="text-2xl text-yellow-300 font-bold mb-2">{item.name}</h3><p className="text-lg text-white">{item.desc}</p>
-                                                                </div>
-                                                                <div className="w-[100px] h-[100px] shrink-0 border-2 border-orange-500 bg-black flex items-center justify-center p-2"><img src={item.img} alt={item.name} className="w-full h-full object-contain" /></div>
-                                                                <div className="flex-1 flex justify-center px-4"><span className="text-xl font-bold truncate max-w-[150px]">{item.name}</span></div>
-                                                                <button onClick={() => buyItem(item, i, 'beguda')} disabled={monedas < item.cost || begudes.length >= 3} className={`px-4 py-6 pixel-border font-bold text-xl h-full shrink-0 ${monedas < item.cost || begudes.length >= 3 ? 'bg-gray-800 text-gray-500' : 'bg-green-600 hover:bg-green-500 text-white'}`}>{begudes.length >= 3 ? 'PLE' : `💰${item.cost}`}</button>
-                                                            </div>
-                                                        ) : <div key={`sB-${i}`} className="h-[140px] bg-[#20120a] border-dashed border-gray-600 flex items-center justify-center text-xl text-gray-500">VENUT</div>)}
-                                                    </div>
-                                                </div>
                                             </div>
 
-                                            <button onClick={() => gameState === 'INITIAL_SHOP' ? initRound(1) : nextRound()} className="bg-blue-600 px-16 py-4 pixel-border shadow-[8px_8px_0_0_#000] text-4xl font-bold animate-pulse mt-8">COMENÇAR PARTIDA ➔</button>
+                                            <button onClick={() => round === 1 && score === 0 && !hasWonTrick ? initRound(1) : nextRound()} className="bg-blue-600 px-16 py-4 pixel-border shadow-[8px_8px_0_0_#000] text-4xl font-bold animate-pulse mt-8">COMENÇAR PARTIDA ➔</button>
                                         </div>
                                     )}
 
@@ -829,14 +852,14 @@
                                 </div>
 
                                 {/* DRETA: OBJECTES (3 slots) + BEGUDES (3 slots) */}
-                                <div className="w-[180px] flex flex-col items-center py-4 bg-black bg-opacity-40 border-l-4 border-black z-40 shrink-0 overflow-y-auto hide-scrollbar">
+                                <div className="w-[180px] flex flex-col items-center py-4 bg-black bg-opacity-40 border-l-4 border-black z-[60] shrink-0 overflow-visible">
                                     <span className="text-xl text-blue-300 font-bold mb-2">OBJECTES</span>
                                     <div className="flex flex-col gap-4 w-full items-center">
                                         {objectes.map((o, i) => (
-                                            <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `o-${i}` ? null : `o-${i}`); }} className="w-[85px] h-[85px] bg-blue-900 border-4 border-blue-400 flex items-center justify-center cursor-pointer group relative overflow-hidden shrink-0">
+                                            <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `o-${i}` ? null : `o-${i}`); }} className="w-[85px] h-[85px] bg-blue-900 border-4 border-blue-400 flex items-center justify-center cursor-pointer group relative shrink-0">
                                                 <img src={o.img} alt={o.name} className="w-full h-full object-cover" onError={e => {e.target.style.display='none'}} />
-                                                {activeActionId !== `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-50 pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2">{o.name}</p><p className="text-xl">{o.desc}</p></div>}
-                                                {activeActionId === `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-50 flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeObjecte(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">USAR ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(o, i, 'objecte'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(o.cost / 2))}💰)</button>}</div>}
+                                                {activeActionId !== `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2">{o.name}</p><p className="text-xl">{o.desc}</p></div>}
+                                                {activeActionId === `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeObjecte(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">USAR ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(o, i, 'objecte'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(o.cost / 2))}💰)</button>}</div>}
                                             </div>
                                         ))}
                                         {Array.from({ length: 3 - objectes.length }).map((_, i) => <div key={`empty-obj-${i}`} className="w-[85px] h-[85px] border-4 border-dashed border-blue-800 bg-black bg-opacity-30 shrink-0" />)}
@@ -849,8 +872,8 @@
                                         {begudes.map((b, i) => (
                                             <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `b-${i}` ? null : `b-${i}`); }} className="w-[85px] h-[85px] bg-orange-900 border-4 border-orange-400 flex items-center justify-center cursor-pointer group relative shrink-0">
                                                 <img src={b.img} alt={b.name} className="w-full h-full object-contain p-1" />
-                                                {activeActionId !== `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-50 pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2">{b.name}</p><p className="text-xl">{b.desc}</p></div>}
-                                                {activeActionId === `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-50 flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeBeguda(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">BEURE ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(b, i, 'beguda'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(b.cost / 2))}💰)</button>}</div>}
+                                                {activeActionId !== `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2">{b.name}</p><p className="text-xl">{b.desc}</p></div>}
+                                                {activeActionId === `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeBeguda(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">BEURE ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(b, i, 'beguda'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(b.cost / 2))}💰)</button>}</div>}
                                             </div>
                                         ))}
                                         {Array.from({ length: 3 - begudes.length }).map((_, i) => <div key={`empty-drink-${i}`} className="w-[85px] h-[85px] border-4 border-dashed border-orange-800 bg-black bg-opacity-30 flex items-center justify-center opacity-20 text-3xl shrink-0">☕</div>)}
@@ -902,7 +925,7 @@
                                     <p className="text-4xl text-gray-300 mb-6">Tirades restants: <span className="text-green-400 font-bold">{roundSummary.tiradasLeft}</span></p>
                                     <p className="text-5xl text-yellow-400 mt-6 font-bold bg-black px-8 py-4 pixel-border-sm">Recompensa: +{roundSummary.monedasEarned} 💰</p>
                                 </div>
-                                <button onClick={() => setGameState('SHOP')} className="bg-blue-600 px-16 py-8 pixel-border text-5xl font-bold">ANAR A LA TENDA ➔</button>
+                                <button onClick={() => setGameState('SHOP')} className="bg-blue-600 px-16 py-8 pixel-border text-5xl font-bold">ANAR A LA PARAETA ➔</button>
                             </div>
                         )}
 
