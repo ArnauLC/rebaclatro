@@ -704,7 +704,7 @@
                         setMonedas(m => m + finalCoins);
                         setRoundSummary({ score: newScore, target: targetScore, tiradasLeft: newTiradas + extraRes, descartesLeft: descartesLeft + extraRes, monedasEarned: finalCoins });
                         setGameState('ROUND_SUMMARY');
-                    } else if ((newTiradas + extraRes) <= 0) setGameState('GAMEOVER');
+                    } else if ((newTiradas + extraRes) <= 0) setGameState('DERROTA');
                     else {
                         if (winner === 'ai') {
                             let nextAiPlay = aiLeadLogic(nextAHand, trumpSuit, events);
@@ -793,7 +793,7 @@
 
             const nextRoundAndShop = () => { 
                 if (round >= TARGETS.length) {
-                    setGameState('VICTORY'); 
+                    setGameState('VICTÒRIA'); 
                 } else { 
                     setRound(r => r + 1); 
                     setTargetScore(TARGETS[round]); 
@@ -1202,7 +1202,7 @@
                         )}
 
                         {gameState === 'DERROTA' && <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20"><h1 className="text-[150px] text-red-600 mb-8 font-bold">AL POU</h1><p className="text-4xl text-gray-300 mb-16">T'has quedat sense tirades al Coto {round}.</p><button onClick={() => startGame(faction)} className="bg-yellow-600 text-black px-16 py-8 pixel-border text-4xl font-bold">TORNAR A INTENTAR COM A {faction.toUpperCase()}</button></div>}
-                        {gameState === 'VICTÒRIA' && <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20"><h1 className="text-[120px] text-yellow-400 mb-8 font-bold animate-bac text-center">¡ETS EL REI<br/>DEL bac!</h1><p className="text-4xl text-gray-300 mb-16">Has arruïnat al poble guanyant tots els cotos.</p><button onClick={() => { setGameState('MENU'); setFaction(null); }} className="bg-green-600 px-16 py-8 pixel-border text-4xl font-bold">TORNAR AL MENÚ PRINCIPAL</button></div>}
+                        {gameState === 'VICTÒRIA' && <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20"><h1 className="text-[120px] text-yellow-400 mb-8 font-bold animate-bac text-center">¡ETS EL REI<br/>DEL BAC!</h1><p className="text-4xl text-gray-300 mb-16">Has arruïnat al poble guanyant tots els cotos.</p><button onClick={() => { setGameState('MENU'); setFaction(null); }} className="bg-green-600 px-16 py-8 pixel-border text-4xl font-bold">TORNAR AL MENÚ PRINCIPAL</button></div>}
                     </div>
                 </div>
             );
