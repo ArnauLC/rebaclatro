@@ -86,7 +86,7 @@
             { id: 'r6', img: 'r6.png', cost: 8, name: 'Copa Sagrada', desc: 'Les Copes compten com a Triomf secundari.' },
             { id: 'r7', img: 'r7.png', cost: 5, name: 'Roponà', desc: 'Descartar atorga +5 Fitxes a les cartes que es queden a la mà.' },
             { id: 'r8', img: 'r8.png', cost: 6, name: 'Esquadra de negres', desc: 'Si guanyes amb una figura [10,11,12], reps 2 monedes extres.' },
-            { id: 'r9', img: 'r9.png', cost: 7, name: 'Destapada del Cartell', desc: 'Es juga amb les cartes al descobert (veus les cartes del rival).' },
+            { id: 'r9', img: 'r9.png', cost: 7, name: 'Destapada del Cartell', desc: 'Es jugs amb les cartes al descobert (veus les cartes del rival).' },
             { id: 'r10', img: 'r10.png', cost: 6, name: 'Partitura del Himne', desc: 'Afegeix +10 Fitxes al pot al cantar, a més pots fer-ho sense haver guanyat una bassa.' },
             { id: 'r11', img: 'r11.png', cost: 8, name: 'Sargento Gloriero', desc: 'Les figures [10,11,12] multipliquen x2 el seu valor base en fitxes.' },
             { id: 'r12', img: 'r12.png', cost: 5, name: 'Gloria infantil', desc: 'Les cartes [2, 4, 5, 6, 7] guanyades sumen +1 fitxa extra.' },
@@ -166,7 +166,7 @@
         .pixel-border-sm { border: 4px solid #000; box-shadow: 4px 4px 0px 0px #000; }
         .bg-felt { background-color: #0d3b22; background-image: radial-gradient(#12472b 3px, transparent 3px); background-size: 36px 36px; }
 
-        @keyframes cau-shake {
+        @keyframes bac-shake {
           0% { transform: translate(3px, 3px) rotate(0deg) scale(1.1); }
           10% { transform: translate(-3px, -4px) rotate(-2deg) scale(1.1); }
           20% { transform: translate(-6px, 0px) rotate(2deg) scale(1.1); }
@@ -179,7 +179,7 @@
           90% { transform: translate(3px, 4px) rotate(0deg) scale(1.1); }
           100% { transform: translate(3px, -4px) rotate(-2deg) scale(1.1); }
         }
-        .animate-cau { animation: cau-shake 0.5s; animation-iteration-count: infinite; }
+        .animate-bac { animation: bac-shake 0.5s; animation-iteration-count: infinite; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
@@ -375,7 +375,7 @@
                 setAiPenaltyMult(1); setHasWonTrick(false); setRankUpgrades({});
                 
                 generateShop(chosenFaction); 
-                setGameState('ROUTE_MAP'); 
+                setGameState('SHOP'); 
                 setShowOptionsModal(false);
             };
 
@@ -516,7 +516,7 @@
                 if (events.some(r => r.id === 'r4')) multBonus *= 2; 
                 setTempMult(m => m + multBonus);
                 if (events.some(r => r.id === 'r10')) setFichasAcumuladas(f => f + 10);
-                setBazaResult({ message: `¡CANTES LES ${cante.nombre.toUpperCase()}! (+${multBonus} Mult)`, winner: 'canto', cau: false });
+                setBazaResult({ message: `¡CANTES LES ${cante.nombre.toUpperCase()}! (+${multBonus} Mult)`, winner: 'canto', bac: false });
                 setTimeout(() => setBazaResult(null), 1500);
             };
 
@@ -560,7 +560,7 @@
                 if (obj.efecte.tiradas) setTiradasLeft(t => t + obj.efecte.tiradas);
                 if (obj.efecte.descartes) setDescartesLeft(d => d + obj.efecte.descartes);
                 
-                setBazaResult({ message: `¡Utilitzes ${obj.name}!`, winner: 'canto', cau: false });
+                setBazaResult({ message: `¡Utilitzes ${obj.name}!`, winner: 'canto', bac: false });
                 setTimeout(() => setBazaResult(null), 1200);
                 setObjectes(o => o.filter((_, i) => i !== index));
             };
@@ -580,7 +580,7 @@
                 setDiscardPile(discardPile.map(applyUpgrade));
                 if (muestra && muestra.rank === rank) setMuestra(applyUpgrade(muestra));
                 
-                setBazaResult({ message: `¡Tots els ${rank} pugen +${amount} Fitxes!`, winner: 'canto', cau: false });
+                setBazaResult({ message: `¡Tots els ${rank} pugen +${amount} Fitxes!`, winner: 'canto', bac: false });
                 setTimeout(() => setBazaResult(null), 1500);
 
                 let newB = [...begudes];
@@ -602,7 +602,7 @@
                     if (hasSuit && pCard.suit !== currentAiCard.suit) valid = false;
                     else if (!hasSuit && hasTrump && !isTriunfo(pCard.suit, events)) valid = false;
                     if (!valid) {
-                        setBazaResult({ message: "¡ASSISTEIX AL PAL O TIRA TRIOMF!", winner: 'error', cau: false });
+                        setBazaResult({ message: "¡ASSISTEIX AL PAL O TIRA TRIOMF!", winner: 'error', bac: false });
                         setTimeout(() => setBazaResult(null), 1500);
                         return;
                     }
@@ -636,14 +636,14 @@
                 if (events.some(r=>r.id==='r13') && ['Copes', 'Espases'].includes(pCard.suit)) fichasBase *= 2;
                 if (events.some(r=>r.id==='r14') && ['Ors', 'Bastos'].includes(pCard.suit)) fichasBase *= 2;
                 
-                let isCau = false;
+                let isBac = false;
                 let pMult = (baseMult + tempMult) * aiPenaltyMult; 
                 let xMult = 1, message = '';
                 let nextAiPenalty = 1;
 
                 if (winner === 'player') {
                     setHasWonTrick(true);
-                    if (pCard.rank === (muestra ? muestra.rank : -1)) { isCau = true; xMult = 3; message = "¡EL CAU!"; }
+                    if (pCard.rank === (muestra ? muestra.rank : -1)) { isBac = true; xMult = 3; message = "¡BAC! i ¡REBAC!"; }
                     else message = "¡BASSA GUANYADA!";
                     if ([2,4,5,6,7].includes(pCard.rank) && events.some(r => r.id === 'r1')) setBaseMult(m => m + 1);
                     if ([10,11,12].includes(pCard.rank) && events.some(r => r.id === 'r8')) setMonedas(m => m + 2);
@@ -665,7 +665,7 @@
                     }
                 }
                 const totalPuntos = Math.floor(fichasBase * pMult * xMult);
-                setBazaResult({ winner, message, fichas: fichasBase, mult: Number(pMult.toFixed(2)), xMult, total: totalPuntos, cau: isCau });
+                setBazaResult({ winner, message, fichas: fichasBase, mult: Number(pMult.toFixed(2)), xMult, total: totalPuntos, bac: isBac });
                 
                 let newDiscardPile = [...discardPile, pCard, aiCard];
                 setDiscardPile(newDiscardPile);
@@ -703,7 +703,7 @@
                         const finalCoins = 4 + Math.floor((newTiradas + extraRes) / 2);
                         setMonedas(m => m + finalCoins);
                         setRoundSummary({ score: newScore, target: targetScore, tiradasLeft: newTiradas + extraRes, descartesLeft: descartesLeft + extraRes, monedasEarned: finalCoins });
-                        generateShop(faction); setGameState('ROUND_SUMMARY');
+                        setGameState('ROUND_SUMMARY');
                     } else if ((newTiradas + extraRes) <= 0) setGameState('GAMEOVER');
                     else {
                         if (winner === 'ai') {
@@ -790,8 +790,18 @@
                     setBegudes(newB);
                 }
             };
-            
-            const nextRound = () => { if (round >= TARGETS.length) setGameState('VICTORY'); else { setRound(r => r + 1); setTargetScore(TARGETS[round]); setGameState('ROUTE_MAP'); } };
+
+            const nextRoundAndShop = () => { 
+                if (round >= TARGETS.length) {
+                    setGameState('VICTORY'); 
+                } else { 
+                    setRound(r => r + 1); 
+                    setTargetScore(TARGETS[round]); 
+                    generateShop(faction); 
+                    setGameState('SHOP'); 
+                } 
+            };
+
             const handleReroll = () => { if (monedas >= 2) { setMonedas(m => m - 2); generateShop(faction); } };
 
             const playerVisualMult = ((baseMult + tempMult) * aiPenaltyMult).toFixed(2).replace(/\.00$/, '');
@@ -803,16 +813,16 @@
                     <style>{globalStyles}</style>
                     <div style={{ width: '1920px', height: '1080px', minWidth: '1920px', minHeight: '1080px', transform: `scale(${scale})`, transformOrigin: 'center' }} className="bg-felt text-white flex flex-col relative select-none shadow-[0_0_50px_rgba(0,0,0,1)] border-4 border-black overflow-hidden shrink-0" onClick={handleGlobalClick}>
                         
-                        {/* BOTÓ OPCIONS TOP-RIGHT */}
-                        {gameState !== 'MENU' && !showOptionsModal && (
-                            <button onClick={() => { setShowOptionsModal(true); setOptionsSubView('main'); }} className="absolute top-4 right-4 z-[150] bg-gray-800 text-white px-6 py-3 pixel-border font-bold text-xl hover:bg-gray-700">
+                        {/* BOTÓ OPCIONS TOP-RIGHT - Sempre visible excepte si està el modal obert */}
+                        {!showOptionsModal && (
+                            <button onClick={() => { setShowOptionsModal(true); setOptionsSubView('main'); }} className="absolute top-4 right-4 z-[999] bg-gray-800 text-white px-6 py-3 pixel-border font-bold text-xl hover:bg-gray-700">
                                 ⚙️ OPCIONS
                             </button>
                         )}
 
                         {/* MODAL D'OPCIONS */}
                         {showOptionsModal && (
-                            <div className="absolute inset-0 bg-black bg-opacity-95 z-[200] flex flex-col items-center justify-center p-8">
+                            <div className="absolute inset-0 bg-black bg-opacity-95 z-[999] flex flex-col items-center justify-center p-8">
                                 <div className="bg-[#1a2b22] p-12 pixel-border max-w-5xl w-full flex flex-col items-center relative overflow-hidden" style={{ maxHeight: '900px' }}>
                                     <button onClick={() => setShowOptionsModal(false)} className="absolute top-4 right-4 bg-red-600 px-4 py-2 pixel-border font-bold text-xl">X</button>
                                     
@@ -821,11 +831,11 @@
                                             <h2 className="text-6xl text-yellow-400 font-bold mb-12 text-shadow">MENÚ D'OPCIONS</h2>
                                             <div className="flex flex-col gap-6 w-[400px]">
                                                 <button onClick={() => setShowOptionsModal(false)} className="bg-blue-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-blue-500">TORNAR A LA PARTIDA</button>
-                                                <button onClick={() => startGame(faction)} className="bg-yellow-600 text-black px-8 py-4 pixel-border font-bold text-2xl hover:bg-yellow-500">REINICIAR PARTIDA</button>
+                                                {faction && <button onClick={() => startGame(faction)} className="bg-yellow-600 text-black px-8 py-4 pixel-border font-bold text-2xl hover:bg-yellow-500">REINICIAR PARTIDA</button>}
                                                 <button onClick={() => setHighContrastCards(!highContrastCards)} className="bg-purple-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-purple-500">ALT CONTRAST: {highContrastCards ? 'ON' : 'OFF'}</button>
                                                 <button onClick={() => setOptionsSubView('collection')} className="bg-green-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-green-500">COL·LECCIÓ</button>
                                                 <button onClick={() => setOptionsSubView('cards')} className="bg-indigo-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-indigo-500">VALOR CARTES</button>
-                                                <button onClick={() => { setGameState('MENU'); setShowOptionsModal(false); }} className="bg-red-800 px-8 py-4 pixel-border font-bold text-2xl hover:bg-red-700 mt-8">EIXIR AL MENÚ</button>
+                                                <button onClick={() => { setGameState('MENU'); setFaction(null); setShowOptionsModal(false); }} className="bg-red-800 px-8 py-4 pixel-border font-bold text-2xl hover:bg-red-700 mt-8">EIXIR AL MENÚ</button>
                                             </div>
                                         </>
                                     )}
@@ -883,6 +893,39 @@
                             </div>
                         )}
 
+                        {gameState === 'MENU' && (
+                            <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-80 z-20 p-8">
+                                <div className="bg-[#0f1a14] p-16 pixel-border border-green-600 max-w-5xl w-full text-center shadow-[0_0_50px_rgba(22,163,74,0.4)]">
+                                    <h1 className="text-[140px] text-yellow-400 mb-6 font-bold leading-none">REBACLATRO</h1>
+                                    <p className="text-3xl text-green-400 mb-12 font-bold tracking-widest">EL ROGUELIKE DEL JOC DE COTOS</p>
+                                    <div className="text-2xl text-gray-300 mb-16 text-left bg-black bg-opacity-50 p-10 pixel-border-sm leading-relaxed mx-auto w-4/5">
+                                        <ul className="list-disc pl-8 space-y-4">
+                                            <li><strong>Arrossegament:</strong> En últimes, s'ha d'assistir al pal o tirar triomf.</li>
+                                            <li><strong>Bac:</strong> Guanyar amb el mateix número que la Mostra triplica els punts.</li>
+                                            <li><strong>Bonus:</strong> Cada 100 punts aconsegueixes +1 Tirada i +1 Descart extra.</li>
+                                        </ul>
+                                    </div>
+                                    <div className="flex gap-8 justify-center">
+                                        <button onClick={() => setGameState('SELECT_FACTION')} className="bg-blue-600 hover:bg-blue-500 px-16 py-8 pixel-border text-5xl font-bold animate-pulse shadow-[8px_8px_0_0_#000]">COMENÇAR PARTIDA</button>
+                                        <button onClick={() => { setShowOptionsModal(true); setOptionsSubView('main'); }} className="bg-gray-700 hover:bg-gray-600 px-16 py-8 pixel-border text-5xl font-bold shadow-[8px_8px_0_0_#000]">OPCIONS</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {gameState === 'SELECT_FACTION' && (
+                            <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-80 z-20 p-8">
+                                <div className="bg-[#0f1a14] p-16 pixel-border border-green-600 max-w-5xl w-full text-center shadow-[0_0_50px_rgba(22,163,74,0.4)]">
+                                    <h2 className="text-6xl text-yellow-400 mb-12 font-bold">SELECCIONA EL TEU BÀNDOL</h2>
+                                    <div className="flex gap-8 justify-center mt-12">
+                                        <button onClick={() => startGame('cristia')} className="bg-blue-600 hover:bg-blue-500 px-12 py-6 pixel-border text-4xl font-bold shadow-[8px_8px_0_0_#000] hover:scale-105 transition-transform">BÀNDOL CRISTIÀ</button>
+                                        <button onClick={() => startGame('moro')} className="bg-green-700 hover:bg-green-600 px-12 py-6 pixel-border text-4xl font-bold shadow-[8px_8px_0_0_#000] hover:scale-105 transition-transform">BÀNDOL MORO</button>
+                                    </div>
+                                    <button onClick={() => setGameState('MENU')} className="mt-16 text-gray-400 hover:text-white text-2xl underline">Tornar enrere</button>
+                                </div>
+                            </div>
+                        )}
+
                         {gameState === 'ROUTE_MAP' && (
                             <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20">
                                 <h2 className="text-6xl text-yellow-400 font-bold mb-16 text-shadow">RUTA DE CAMPANYA ({faction.toUpperCase()})</h2>
@@ -903,7 +946,7 @@
                                     ))}
                                 </div>
                                 <h3 className="text-5xl text-red-500 mb-12 font-bold animate-pulse">Pròxim Enfrontament: <span className="text-white">{enemiesList[round - 1]}</span></h3>
-                                <button onClick={() => setGameState('SHOP')} className="bg-blue-600 px-16 py-8 pixel-border text-5xl font-bold shadow-[8px_8px_0_0_#000]">VISITAR EL MERCADER ➔</button>
+                                <button onClick={() => initRound(round)} className="bg-red-700 px-16 py-8 pixel-border text-5xl font-bold shadow-[8px_8px_0_0_#000]">COMENÇAR BATALLA ➔</button>
                             </div>
                         )}
 
@@ -1022,7 +1065,7 @@
                                                 </div>
                                             </div>
 
-                                            <button onClick={() => initRound(round)} className="bg-red-700 px-16 py-4 pixel-border shadow-[8px_8px_0_0_#000] text-4xl font-bold animate-pulse mt-8">COMENÇAR BATALLA ➔</button>
+                                            <button onClick={() => setGameState('ROUTE_MAP')} className="bg-blue-600 px-16 py-4 pixel-border shadow-[8px_8px_0_0_#000] text-4xl font-bold animate-pulse mt-8">CONTINUAR ➔</button>
                                         </div>
                                     )}
 
@@ -1041,14 +1084,14 @@
                                                     </div>
                                                     <div className="ml-[80px] flex flex-col items-center bg-black bg-opacity-70 p-4 rounded pixel-border-sm z-40">
                                                         <span className="text-2xl text-yellow-300 font-bold flex items-center gap-2">TRIOMF {trumpSuit && <span className="text-4xl" title={`Pal de Triomf: ${trumpSuit}`}>{suitEmojis[trumpSuit]}</span>}</span>
-                                                        {muestra && <span className="bg-black text-white text-sm px-2 py-1 rounded border border-gray-500 font-bold mt-2" title="Fitxes que atorgarà el Cau">CAU: {getCardFichas(muestra, events)}</span>}
+                                                        {muestra && <span className="bg-black text-white text-sm px-2 py-1 rounded border border-gray-500 font-bold mt-2" title="Fitxes que atorgarà el Bac">BAC: {getCardFichas(muestra, events)}</span>}
                                                     </div>
                                                 </div>
                                                 <div className="flex-1 flex flex-col items-center justify-center gap-6 relative">
                                                     <div className="z-10">{ (turnLeader === 'ai' || gameState === 'RESOLVING') ? <Card card={currentAiCard} isAi displayFichas={currentAiCard ? getCardFichas(currentAiCard, events)+(currentAiCard.bonusR7||0) : 0} highContrast={highContrastCards}/> : <div className="w-[100px] h-[150px] border-4 border-dashed border-gray-600 rounded-xl opacity-20" /> }</div>
                                                     <div className="text-5xl text-gray-500 opacity-40 font-bold">VS</div>
                                                     <div onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); const i = parseInt(e.dataTransfer.getData('text/plain')); if (!isNaN(i)) playCard(playerHand[i]); setDraggedIndex(null); }} className={`w-[110px] h-[160px] border-8 border-dashed rounded-xl flex items-center justify-center transition-colors z-10 ${draggedIndex !== null ? 'border-green-400 bg-green-600 bg-opacity-40 animate-pulse' : 'border-blue-600 bg-blue-900 bg-opacity-30'}`}>{playedPlayerCard && <Card card={playedPlayerCard} isAi displayFichas={getCardFichas(playedPlayerCard, events)+(playedPlayerCard.bonusR7||0)} highContrast={highContrastCards}/>}</div>
-                                                    {bazaResult && <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none w-[800px] flex justify-center"><div className={`text-center inline-block bg-[#0b141a] bg-opacity-95 p-8 pixel-border shadow-2xl ${bazaResult.cau ? 'animate-cau' : 'animate-bounce'}`}><h2 className={`text-4xl font-bold mb-4 ${bazaResult.winner === 'player' || bazaResult.winner === 'canto' ? 'text-yellow-400' : 'text-red-500'}`}><FormatText text={bazaResult.message} /></h2>{bazaResult.winner === 'player' && <><div className="text-3xl text-white flex gap-4 justify-center"><span className="text-blue-300 bg-blue-900 px-3 py-1 rounded">{bazaResult.fichas} Fitxes</span><span className="text-red-400 bg-red-900 px-3 py-1 rounded">x{bazaResult.mult}</span></div><div className="text-6xl text-green-400 mt-6 font-bold">+ {bazaResult.total}</div></>}</div></div>}
+                                                    {bazaResult && <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none w-[800px] flex justify-center"><div className={`text-center inline-block bg-[#0b141a] bg-opacity-95 p-8 pixel-border shadow-2xl ${bazaResult.bac ? 'animate-bac' : 'animate-bounce'}`}><h2 className={`text-4xl font-bold mb-4 ${bazaResult.winner === 'player' || bazaResult.winner === 'canto' ? 'text-yellow-400' : 'text-red-500'}`}><FormatText text={bazaResult.message} /></h2>{bazaResult.winner === 'player' && <><div className="text-3xl text-white flex gap-4 justify-center"><span className="text-blue-300 bg-blue-900 px-3 py-1 rounded">{bazaResult.fichas} Fitxes</span><span className="text-red-400 bg-red-900 px-3 py-1 rounded">x{bazaResult.mult}</span></div><div className="text-6xl text-green-400 mt-6 font-bold">+ {bazaResult.total}</div></>}</div></div>}
                                                 </div>
                                                 <div className="w-[400px] flex items-center justify-center">
                                                     {fichasAcumuladas > 0 && <div className="flex flex-col items-center animate-pulse"><span className="text-2xl text-orange-300 font-bold">POT</span><span className="text-4xl text-yellow-400 font-bold bg-black px-6 py-2 pixel-border">+{fichasAcumuladas}</span></div>}
@@ -1154,32 +1197,12 @@
                                     <p className="text-4xl text-gray-300 mb-6">Tirades restants: <span className="text-green-400 font-bold">{roundSummary.tiradasLeft}</span></p>
                                     <p className="text-5xl text-yellow-400 mt-6 font-bold bg-black px-8 py-4 pixel-border-sm">Recompensa: +{roundSummary.monedasEarned} 💰</p>
                                 </div>
-                                <button onClick={() => nextRound()} className="bg-blue-600 px-16 py-8 pixel-border text-5xl font-bold">CONTINUAR RUTA ➔</button>
+                                <button onClick={nextRoundAndShop} className="bg-blue-600 px-16 py-8 pixel-border text-5xl font-bold">ANAR AL MERCADER ➔</button>
                             </div>
                         )}
 
-                        {gameState === 'MENU' && (
-                            <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-80 z-20 p-8">
-                                <div className="bg-[#0f1a14] p-16 pixel-border border-green-600 max-w-5xl w-full text-center shadow-[0_0_50px_rgba(22,163,74,0.4)]">
-                                    <h1 className="text-[140px] text-yellow-400 mb-6 font-bold leading-none">REBACLATRO</h1>
-                                    <p className="text-3xl text-green-400 mb-12 font-bold tracking-widest">EL ROGUELIKE DEL JOC DE COTOS</p>
-                                    <div className="text-2xl text-gray-300 mb-16 text-left bg-black bg-opacity-50 p-10 pixel-border-sm leading-relaxed mx-auto w-4/5">
-                                        <ul className="list-disc pl-8 space-y-4">
-                                            <li><strong>Arrossegament:</strong> En últimes, s'ha d'assistir al pal o tirar triomf.</li>
-                                            <li><strong>El Cau:</strong> Guanyar amb el mateix número que la Mostra triplica els punts.</li>
-                                            <li><strong>Bonus:</strong> Cada 100 punts aconsegueixes +1 Tirada i +1 Descart extra.</li>
-                                        </ul>
-                                    </div>
-                                    <div className="flex gap-8 justify-center">
-                                        <button onClick={() => startGame('cristia')} className="bg-blue-600 hover:bg-blue-500 px-12 py-6 pixel-border text-4xl font-bold animate-pulse shadow-[8px_8px_0_0_#000]">JUGAR COM A CRISTIÀ</button>
-                                        <button onClick={() => startGame('moro')} className="bg-green-700 hover:bg-green-600 px-12 py-6 pixel-border text-4xl font-bold animate-pulse shadow-[8px_8px_0_0_#000]">JUGAR COM A MORO</button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {gameState === 'GAMEOVER' && <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20"><h1 className="text-[150px] text-red-600 mb-8 font-bold">AL POU</h1><p className="text-4xl text-gray-300 mb-16">T'has quedat sense tirades al Coto {round}.</p><button onClick={() => startGame(faction)} className="bg-yellow-600 text-black px-16 py-8 pixel-border text-4xl font-bold">TORNAR A INTENTAR COM A {faction.toUpperCase()}</button></div>}
-                        {gameState === 'VICTORY' && <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20"><h1 className="text-[120px] text-yellow-400 mb-8 font-bold animate-cau text-center">¡ETS EL REI<br/>DEL CAU!</h1><p className="text-4xl text-gray-300 mb-16">Has arruïnat al poble guanyant tots els cotos.</p><button onClick={() => { setGameState('MENU'); setFaction(null); }} className="bg-green-600 px-16 py-8 pixel-border text-4xl font-bold">TORNAR AL MENÚ PRINCIPAL</button></div>}
+                        {gameState === 'DERROTA' && <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20"><h1 className="text-[150px] text-red-600 mb-8 font-bold">AL POU</h1><p className="text-4xl text-gray-300 mb-16">T'has quedat sense tirades al Coto {round}.</p><button onClick={() => startGame(faction)} className="bg-yellow-600 text-black px-16 py-8 pixel-border text-4xl font-bold">TORNAR A INTENTAR COM A {faction.toUpperCase()}</button></div>}
+                        {gameState === 'VICTÒRIA' && <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20"><h1 className="text-[120px] text-yellow-400 mb-8 font-bold animate-bac text-center">¡ETS EL REI<br/>DEL bac!</h1><p className="text-4xl text-gray-300 mb-16">Has arruïnat al poble guanyant tots els cotos.</p><button onClick={() => { setGameState('MENU'); setFaction(null); }} className="bg-green-600 px-16 py-8 pixel-border text-4xl font-bold">TORNAR AL MENÚ PRINCIPAL</button></div>}
                     </div>
                 </div>
             );
