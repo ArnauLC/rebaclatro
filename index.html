@@ -15,6 +15,24 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+        // --- SISTEMA DE FORMATEIG DE TEXT PER COLORS DE PAL ---
+        const FormatText = ({ text, className = "text-white" }) => {
+            if (!text || typeof text !== 'string') return <span className={className}>{text}</span>;
+            const parts = text.split(/(Ors|Copes|Espases|Bastos)/gi);
+            return (
+                <span className={className}>
+                    {parts.map((part, i) => {
+                        const lower = part.toLowerCase();
+                        if (lower === 'ors') return <span key={i} className="text-yellow-400 font-bold">{part}</span>;
+                        if (lower === 'copes') return <span key={i} className="text-red-500 font-bold">{part}</span>;
+                        if (lower === 'espases') return <span key={i} className="text-blue-400 font-bold">{part}</span>;
+                        if (lower === 'bastos') return <span key={i} className="text-green-500 font-bold">{part}</span>;
+                        return part;
+                    })}
+                </span>
+            );
+        };
+
         class ErrorBoundary extends React.Component {
             constructor(props) {
                 super(props);
@@ -80,6 +98,10 @@
             { id: 'r18', img: 'r18.png', cost: 6, name: 'Diana del Cavallet', desc: 'Es pot cantar amb cavall i rei [11 i 12] (en comptes de sota i rei).' },
             { id: 'r19', img: 'r19.png', cost: 8, name: 'Contraban', desc: 'Afegeix un descart extra per cada bassa que guanyes.' },
             { id: 'r20', img: 'r20.png', cost: 6, name: 'Retreta', desc: 'En les últimes no s\'arrastra, pots tirar qualsevol carta lliurement.' },
+            { id: 'r21', img: 'r21.png', cost: 7, name: 'Mig Any', desc: 'Les begudes valen la meitat del seu preu habitual (arrodonit amunt).' },
+            { id: 'r22', img: 'r22.png', cost: 7, name: 'Trofeu Filaes', desc: 'Els objectes valen la meitat del seu preu habitual (arrodonit amunt).' },
+            { id: 'r23', img: 'r23.png', cost: 8, name: 'Processó de la Relíquia', desc: 'No es pot cantar, però el Multiplicador base augmenta a x5.' },
+            { id: 'r24', img: 'r24.png', cost: 8, name: 'Presentació de Càrrecs', desc: 'Pots triar el pal de triomf en començar cada coto.' }
         ];
 
         const OBJECTES_DB = [
@@ -155,6 +177,8 @@
           100% { transform: translate(3px, -4px) rotate(-2deg) scale(1.1); }
         }
         .animate-cau { animation: cau-shake 0.5s; animation-iteration-count: infinite; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         `;
 
         const REVERSO_URL = 'https://raw.githubusercontent.com/ArnauLC/rebaclatro/refs/heads/main/cards/reverso.png';
@@ -267,6 +291,13 @@
 
             const handleGlobalClick = () => { setActiveActionId(null); };
 
+            const getActualCost = (item, type) => {
+                if (!item) return 0;
+                if (type === 'beguda' && events.some(r => r.id === 'r21')) return Math.ceil(item.cost / 2);
+                if (type === 'objecte' && events.some(r => r.id === 'r22')) return Math.ceil(item.cost / 2);
+                return item.cost;
+            };
+
             const getCardFichas = (card, activeEvents) => {
                 let f = card.fichasBase;
                 if (activeEvents.some(r=>r.id==='r15') && card.rank === 11) return 13;
@@ -333,18 +364,43 @@
                 let aHand = newDeck.splice(0, 6);
                 
                 setDeck(newDeck); setDiscardPile([]); setPlayerHand(pHand);
-                setMuestra(m); setTrumpSuit(m.suit); setTurnLeader('ai');
+                setMuestra(m); setTurnLeader('ai');
                 
-                let nextAiPlay = aiLeadLogic(aHand, m.suit, events);
-                aHand = aHand.filter(c => c.id !== nextAiPlay.id);
-                setCurrentAiCard(nextAiPlay);
-                
-                setAiHand(aHand); setTiradasLeft(10); setDescartesLeft(3); setScore(0);
+                setScore(0); setTiradasLeft(10); setDescartesLeft(3);
                 setSelectedCards([]); setPlayedPlayerCard(null); setBazaResult(null);
                 setFichasAcumuladas(0); setCantesRealizados([]); setAiCantesRealizados([]);
-                setAiPenaltyMult(1); setHasWonTrick(false); setBaseMult(1); 
+                setAiPenaltyMult(1); setHasWonTrick(false); 
+                
+                let initialMult = events.some(e => e.id === 'r23') ? 5 : 1;
+                setBaseMult(initialMult); 
                 setTempMult(0); setTempFichas(0); setActiveActionId(null);
-                setPlayerLastTrick(null); setAiLastTrick(null); setGameState('PLAYING');
+                setPlayerLastTrick(null); setAiLastTrick(null);
+
+                if (events.some(e => e.id === 'r24')) {
+                    setTrumpSuit(null);
+                    setCurrentAiCard(null);
+                    setAiHand(aHand);
+                    setGameState('SELECT_TRUMP');
+                } else {
+                    setTrumpSuit(m.suit);
+                    let nextAiPlay = aiLeadLogic(aHand, m.suit, events);
+                    if(nextAiPlay) aHand = aHand.filter(c => c.id !== nextAiPlay.id);
+                    setCurrentAiCard(nextAiPlay);
+                    setAiHand(aHand);
+                    setGameState('PLAYING');
+                }
+            };
+
+            const selectTrumpSuit = (suit) => {
+                setTrumpSuit(suit);
+                let currentAHand = [...aiHand];
+                let nextAiPlay = aiLeadLogic(currentAHand, suit, events);
+                if (nextAiPlay) {
+                    currentAHand = currentAHand.filter(c => c.id !== nextAiPlay.id);
+                    setCurrentAiCard(nextAiPlay);
+                    setAiHand(currentAHand);
+                }
+                setGameState('PLAYING');
             };
 
             const drawCards = (currentDeck, amount, currentMuestra) => {
@@ -417,6 +473,7 @@
             };
 
             const getPosiblesCantes = () => {
+                if (events.some(r=>r.id==='r23')) return [];
                 if (!hasWonTrick && !events.some(r=>r.id==='r10')) return [];
                 let cantes = [];
                 const figura = events.some(r=>r.id==='r18') ? 11 : 10; 
@@ -442,6 +499,7 @@
             };
 
             const checkAiCantes = (hand, tSuit, currentCantes, activeEvents) => {
+                if (activeEvents.some(r=>r.id==='r23')) return null;
                 const figura = activeEvents.some(r=>r.id==='r18') ? 11 : 10;
                 for (let suit of SUITS) {
                     if (!currentCantes.includes(suit)) {
@@ -502,7 +560,14 @@
                 
                 setBazaResult({ message: `¡Tots els ${rank} pugen +${amount} Fitxes!`, winner: 'canto', cau: false });
                 setTimeout(() => setBazaResult(null), 1500);
-                setBegudes(b => b.filter((_, i) => i !== index));
+
+                let newB = [...begudes];
+                if (newB[index].count > 1) {
+                    newB[index].count -= 1;
+                } else {
+                    newB.splice(index, 1);
+                }
+                setBegudes(newB);
             };
 
             const playCard = (pCard) => {
@@ -607,7 +672,7 @@
                         let freshDeck = [...newDiscardPile].sort(() => Math.random() - 0.5);
                         let m = freshDeck.splice(0, 1)[0];
                         nextPHand = freshDeck.splice(0, 6); nextAHand = freshDeck.splice(0, 6);
-                        setDeck(freshDeck); setDiscardPile([]); if (m) { setMuestra(m); setTrumpSuit(m.suit); }
+                        setDeck(freshDeck); setDiscardPile([]); if (m) { setMuestra(m); }
                     } else { setDeck(secondDraw.newDeck); setMuestra(secondDraw.newMuestra); }
                     
                     setPlayerHand(nextPHand);
@@ -640,14 +705,12 @@
                 
                 let avE = EVENTS_DB.filter(e => !events.some(my => my.id === e.id));
                 let avO = OBJECTES_DB.filter(o => !objectes.some(my => my.id === o.id)).map(o => ({...o, type: 'objecte'}));
-                let avB = BEGUDES_DB.filter(b => !begudes.some(my => my.id === b.id)).map(b => ({...b, type: 'beguda'}));
+                let avB = [...BEGUDES_DB].map(b => ({...b, type: 'beguda'}));
                 
-                // Omplir 4 Esdeveniments
                 for(let i=0; i<4; i++) {
                     if(avE.length) sE[i] = { ...avE.splice(Math.floor(Math.random() * avE.length), 1)[0], uId: Math.random() };
                 }
                 
-                // Omplir Mix d'Objectes i Begudes garantint mínim 1 de cadascú
                 let mixedPool = [];
                 if (avO.length) mixedPool.push({ ...avO.splice(Math.floor(Math.random() * avO.length), 1)[0], uId: Math.random() });
                 if (avB.length) mixedPool.push({ ...avB.splice(Math.floor(Math.random() * avB.length), 1)[0], uId: Math.random() });
@@ -657,7 +720,6 @@
                     mixedPool.push({ ...remainingMixed.shift(), uId: Math.random() });
                 }
                 
-                // Barrejar els mixts
                 mixedPool.sort(() => Math.random() - 0.5);
                 for(let i=0; i<4; i++) {
                     if(mixedPool[i]) sM[i] = mixedPool[i];
@@ -667,27 +729,44 @@
             };
 
             const buyItem = (item, index, type) => { 
-                if (monedas >= item.cost) { 
+                const actualCost = getActualCost(item, type);
+                if (monedas >= actualCost) { 
                     if (type === 'event' && events.length < 6) { 
-                        setMonedas(m => m - item.cost); setEvents([...events, item]); 
+                        setMonedas(m => m - actualCost); setEvents([...events, item]); 
                         let n = [...shopEvents]; n[index] = null; setShopEvents(n); 
                     }
                     else if (type === 'objecte' && objectes.length < 3) { 
-                        setMonedas(m => m - item.cost); setObjectes([...objectes, item]); 
+                        setMonedas(m => m - actualCost); setObjectes([...objectes, item]); 
                         let n = [...shopMixed]; n[index] = null; setShopMixed(n); 
                     }
-                    else if (type === 'beguda' && begudes.length < 3) { 
-                        setMonedas(m => m - item.cost); setBegudes([...begudes, item]); 
-                        let n = [...shopMixed]; n[index] = null; setShopMixed(n); 
+                    else if (type === 'beguda') { 
+                        const existingIndex = begudes.findIndex(b => b.id === item.id);
+                        if (existingIndex !== -1) {
+                            setMonedas(m => m - actualCost);
+                            let newBegudes = [...begudes];
+                            newBegudes[existingIndex].count = (newBegudes[existingIndex].count || 1) + 1;
+                            setBegudes(newBegudes);
+                            let n = [...shopMixed]; n[index] = null; setShopMixed(n);
+                        } else if (begudes.length < 3) {
+                            setMonedas(m => m - actualCost); 
+                            setBegudes([...begudes, { ...item, count: 1 }]); 
+                            let n = [...shopMixed]; n[index] = null; setShopMixed(n); 
+                        }
                     }
                 } 
             };
             
             const sellItem = (item, index, type) => { 
-                setMonedas(m => m + Math.max(1, Math.floor(item.cost / 2))); 
+                const actualCost = getActualCost(item, type);
+                setMonedas(m => m + Math.max(1, Math.floor(actualCost / 2))); 
                 if (type === 'event') setEvents(events.filter((_, i) => i !== index)); 
                 else if (type === 'objecte') setObjectes(objectes.filter((_, i) => i !== index)); 
-                else setBegudes(begudes.filter((_, i) => i !== index)); 
+                else {
+                    let newB = [...begudes];
+                    if (newB[index].count > 1) newB[index].count -= 1;
+                    else newB.splice(index, 1);
+                    setBegudes(newB);
+                }
             };
             
             const nextRound = () => { if (round >= TARGETS.length) setGameState('VICTORY'); else { setRound(r => r + 1); setTargetScore(TARGETS[round]); initRound(round + 1); } };
@@ -717,6 +796,23 @@
                             </div>
                         )}
 
+                        {gameState === 'SELECT_TRUMP' && (
+                            <div className="absolute inset-0 bg-black bg-opacity-95 z-[100] flex flex-col items-center justify-center p-8">
+                                <div className="bg-[#1a2b22] p-12 pixel-border max-w-4xl w-full flex flex-col items-center text-center shadow-[0_0_50px_rgba(250,204,21,0.5)]">
+                                    <h2 className="text-6xl text-yellow-400 mb-8 font-bold"><FormatText text="Presentació de Càrrecs" /></h2>
+                                    <p className="text-3xl text-white mb-12">Tria el teu Pal de Triomf per a aquest Coto:</p>
+                                    <div className="flex gap-8">
+                                        {SUITS.map(suit => (
+                                            <button key={suit} onClick={() => selectTrumpSuit(suit)} className="bg-[#0f1a14] hover:bg-gray-800 p-8 pixel-border text-6xl flex flex-col items-center gap-4 transition-transform hover:scale-110">
+                                                <span>{suitEmojis[suit]}</span>
+                                                <span className="text-2xl font-bold"><FormatText text={suit} /></span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {(gameState === 'PLAYING' || gameState === 'RESOLVING' || gameState === 'SHOP') && (
                             <div className="flex-1 flex flex-row overflow-hidden relative">
                                 
@@ -726,8 +822,8 @@
                                     {events.map((e, i) => (
                                         <div key={i} onClick={ev => { ev.stopPropagation(); setActiveActionId(activeActionId === `e-${i}` ? null : `e-${i}`); }} className="w-[100px] h-[100px] bg-purple-900 border-4 border-purple-400 flex items-center justify-center cursor-pointer group relative shrink-0">
                                             <img src={`${RELICS_BASE_URL}${e.img}`} alt={e.name} className="w-full h-full object-contain p-2" onError={ev => {ev.target.style.display='none'}} />
-                                            {activeActionId !== `e-${i}` && <div className="absolute top-1/2 left-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2">{e.name}</p><p className="text-xl">{e.desc}</p></div>}
-                                            {activeActionId === `e-${i}` && gameState === 'SHOP' && <button onClick={() => sellItem(e, i, 'event')} className="absolute top-1/2 left-[120%] -translate-y-1/2 bg-red-600 px-6 py-3 pixel-border text-2xl whitespace-nowrap z-[100]">VENDRE (+{Math.max(1, Math.floor(e.cost / 2))}💰)</button>}
+                                            {activeActionId !== `e-${i}` && <div className="absolute top-1/2 left-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={e.name} /></p><p className="text-xl"><FormatText text={e.desc} /></p></div>}
+                                            {activeActionId === `e-${i}` && gameState === 'SHOP' && <button onClick={() => sellItem(e, i, 'event')} className="absolute top-1/2 left-[120%] -translate-y-1/2 bg-red-600 px-6 py-3 pixel-border text-2xl whitespace-nowrap z-[100]">VENDRE (+{Math.max(1, Math.floor(getActualCost(e, 'event') / 2))}💰)</button>}
                                         </div>
                                     ))}
                                     {Array.from({ length: 6 - events.length }).map((_, i) => <div key={`empty-ev-${i}`} className="w-[100px] h-[100px] border-4 border-dashed border-purple-800 bg-black bg-opacity-30 shrink-0" />)}
@@ -738,7 +834,7 @@
                                     {gameState === 'SHOP' && (
                                         <div className="w-full h-full flex flex-col items-center justify-between py-12">
                                             <div className="flex flex-col items-center">
-                                                <h2 className="text-6xl text-yellow-400 mb-4 text-shadow font-bold">{round === 1 ? 'PARAETA INICIAL' : 'PREPARACIÓ DE PARAETA'}</h2>
+                                                <h2 className="text-6xl text-yellow-400 mb-4 text-shadow font-bold">PARAETA</h2>
                                                 <div className="bg-[#0d3b22] bg-opacity-90 p-4 rounded-xl shadow-2xl flex items-center gap-8">
                                                     <p className="text-3xl bg-[#1f1626] px-8 py-3 pixel-border font-bold">Bossa: <span className="text-yellow-400">💰 {monedas}</span></p>
                                                     <button onClick={handleReroll} disabled={monedas < 2} className={`text-2xl px-8 py-3 pixel-border font-bold transition-all shadow-[6px_6px_0_0_#000] ${monedas >= 2 ? 'bg-blue-600 hover:bg-blue-500' : 'bg-gray-800 text-gray-500'}`}>RENOVAR (💰2)</button>
@@ -752,18 +848,22 @@
                                                 <div className="flex-1">
                                                     <h3 className="text-3xl text-purple-400 text-center mb-4 border-b-4 border-purple-900 pb-2">🔮 ESDEVENIMENTS</h3>
                                                     <div className="grid grid-cols-2 gap-4">
-                                                        {shopEvents.map((item, i) => item ? (
-                                                            <div key={item.uId} className="h-[150px] bg-[#2a1b38] pixel-border p-3 flex flex-col items-center justify-between group relative hover:bg-[#342247] transition-colors">
-                                                                <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-[300px] bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-50 pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
-                                                                    <h3 className="text-2xl text-yellow-300 font-bold mb-2">{item.name}</h3><p className="text-lg text-white">{item.desc}</p>
+                                                        {shopEvents.map((item, i) => {
+                                                            if (!item) return <div key={`sE-${i}`} className="h-[150px] bg-[#1a1122] border-dashed border-gray-600 flex items-center justify-center text-xl text-gray-500">VENUT</div>;
+                                                            const actualCost = getActualCost(item, 'event');
+                                                            return (
+                                                                <div key={item.uId} className="h-[150px] bg-[#2a1b38] pixel-border p-3 flex flex-col items-center justify-between group relative hover:bg-[#342247] transition-colors">
+                                                                    <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-[300px] bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
+                                                                        <h3 className="text-2xl text-yellow-300 font-bold mb-2"><FormatText text={item.name} /></h3><p className="text-lg text-white"><FormatText text={item.desc} /></p>
+                                                                    </div>
+                                                                    <div className="flex items-center w-full h-[60px] gap-2">
+                                                                        <div className="w-[60px] h-[60px] shrink-0 border-2 border-purple-500 bg-black flex items-center justify-center p-1"><img src={`${RELICS_BASE_URL}${item.img}`} alt={item.name} className="w-full h-full object-contain" /></div>
+                                                                        <span className="text-xl font-bold leading-tight flex-1 line-clamp-2"><FormatText text={item.name} /></span>
+                                                                    </div>
+                                                                    <button onClick={() => buyItem(item, i, 'event')} disabled={monedas < actualCost || events.length >= 6} className={`w-full py-2 pixel-border font-bold text-xl mt-2 ${monedas < actualCost || events.length >= 6 ? 'bg-gray-800 text-gray-500' : 'bg-green-600 hover:bg-green-500 text-white'}`}>{events.length >= 6 ? 'PLE' : `💰 ${actualCost}`}</button>
                                                                 </div>
-                                                                <div className="flex items-center w-full h-[60px] gap-2">
-                                                                    <div className="w-[60px] h-[60px] shrink-0 border-2 border-purple-500 bg-black flex items-center justify-center p-1"><img src={`${RELICS_BASE_URL}${item.img}`} alt={item.name} className="w-full h-full object-contain" /></div>
-                                                                    <span className="text-xl font-bold leading-tight flex-1 line-clamp-2">{item.name}</span>
-                                                                </div>
-                                                                <button onClick={() => buyItem(item, i, 'event')} disabled={monedas < item.cost || events.length >= 6} className={`w-full py-2 pixel-border font-bold text-xl mt-2 ${monedas < item.cost || events.length >= 6 ? 'bg-gray-800 text-gray-500' : 'bg-green-600 hover:bg-green-500 text-white'}`}>{events.length >= 6 ? 'PLE' : `COMPRAR (💰${item.cost})`}</button>
-                                                            </div>
-                                                        ) : <div key={`sE-${i}`} className="h-[150px] bg-[#1a1122] border-dashed border-gray-600 flex items-center justify-center text-xl text-gray-500">VENUT</div>)}
+                                                            );
+                                                        })}
                                                     </div>
                                                 </div>
                                                 
@@ -774,19 +874,24 @@
                                                         {shopMixed.map((item, i) => {
                                                             if (!item) return <div key={`sM-${i}`} className="h-[150px] bg-[#0f1724] border-dashed border-gray-600 flex items-center justify-center text-xl text-gray-500">VENUT</div>;
                                                             const isObj = item.type === 'objecte';
-                                                            const isFull = isObj ? objectes.length >= 3 : begudes.length >= 3;
+                                                            const isFull = isObj ? objectes.length >= 3 : (begudes.length >= 3 && !begudes.some(b => b.id === item.id));
+                                                            const actualCost = getActualCost(item, item.type);
+                                                            const isDiscounted = actualCost < item.cost;
+                                                            
                                                             return (
                                                                 <div key={item.uId} className={`h-[150px] pixel-border p-3 flex flex-col items-center justify-between group relative transition-colors ${isObj ? 'bg-[#162740] hover:bg-[#1d3354]' : 'bg-[#3a2010] hover:bg-[#4a2b16]'}`}>
-                                                                    <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-[300px] bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-50 pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
-                                                                        <h3 className="text-2xl text-yellow-300 font-bold mb-2">{item.name}</h3><p className="text-lg text-white">{item.desc}</p>
+                                                                    <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-[300px] bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
+                                                                        <h3 className="text-2xl text-yellow-300 font-bold mb-2"><FormatText text={item.name} /></h3><p className="text-lg text-white"><FormatText text={item.desc} /></p>
                                                                     </div>
                                                                     <div className="flex items-center w-full h-[60px] gap-2">
                                                                         <div className={`w-[60px] h-[60px] shrink-0 border-2 bg-black flex items-center justify-center overflow-hidden ${isObj ? 'border-blue-500 p-0' : 'border-orange-500 p-1'}`}>
                                                                             <img src={item.img} alt={item.name} className={`w-full h-full ${isObj ? 'object-cover' : 'object-contain'}`} />
                                                                         </div>
-                                                                        <span className="text-xl font-bold leading-tight flex-1 line-clamp-2">{item.name}</span>
+                                                                        <span className="text-xl font-bold leading-tight flex-1 line-clamp-2"><FormatText text={item.name} /></span>
                                                                     </div>
-                                                                    <button onClick={() => buyItem(item, i, item.type)} disabled={monedas < item.cost || isFull} className={`w-full py-2 pixel-border font-bold text-xl mt-2 ${monedas < item.cost || isFull ? 'bg-gray-800 text-gray-500' : 'bg-green-600 hover:bg-green-500 text-white'}`}>{isFull ? 'PLE' : `COMPRAR (💰${item.cost})`}</button>
+                                                                    <button onClick={() => buyItem(item, i, item.type)} disabled={monedas < actualCost || isFull} className={`w-full py-2 pixel-border font-bold text-xl mt-2 ${monedas < actualCost || isFull ? 'bg-gray-800 text-gray-500' : 'bg-green-600 hover:bg-green-500 text-white'}`}>
+                                                                        {isFull ? 'PLE' : (isDiscounted ? <span>💰 <del className="text-red-400 text-sm mr-1">{item.cost}</del> {actualCost}</span> : `💰 ${actualCost}`)}
+                                                                    </button>
                                                                 </div>
                                                             );
                                                         })}
@@ -813,15 +918,15 @@
                                                         {deck.length === 0 && muestra && <div className="absolute top-[105%] left-0 w-[100px] text-center text-red-500 font-bold bg-black bg-opacity-80 px-2 rounded pixel-border-sm animate-pulse">ÚLTIMA</div>}
                                                     </div>
                                                     <div className="ml-[80px] flex flex-col items-center bg-black bg-opacity-70 p-4 rounded pixel-border-sm z-40">
-                                                        <span className="text-2xl text-yellow-300 font-bold">TRIOMF</span>
-                                                        {muestra && <span className="bg-black text-white text-xl px-4 py-1 rounded border-2 border-gray-500 font-bold">{getCardFichas(muestra, events)}</span>}
+                                                        <span className="text-2xl text-yellow-300 font-bold flex items-center gap-2">TRIOMF {trumpSuit && <span className="text-4xl" title={`Pal de Triomf: ${trumpSuit}`}>{suitEmojis[trumpSuit]}</span>}</span>
+                                                        {muestra && <span className="bg-black text-white text-sm px-2 py-1 rounded border border-gray-500 font-bold mt-2" title="Fitxes que atorgarà el Cau">CAU: {getCardFichas(muestra, events)}</span>}
                                                     </div>
                                                 </div>
                                                 <div className="flex-1 flex flex-col items-center justify-center gap-6 relative">
                                                     <div className="z-10">{ (turnLeader === 'ai' || gameState === 'RESOLVING') ? <Card card={currentAiCard} isAi displayFichas={currentAiCard ? getCardFichas(currentAiCard, events)+(currentAiCard.bonusR7||0) : 0}/> : <div className="w-[100px] h-[150px] border-4 border-dashed border-gray-600 rounded-xl opacity-20" /> }</div>
                                                     <div className="text-5xl text-gray-500 opacity-40 font-bold">VS</div>
                                                     <div onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); const i = parseInt(e.dataTransfer.getData('text/plain')); if (!isNaN(i)) playCard(playerHand[i]); setDraggedIndex(null); }} className={`w-[110px] h-[160px] border-8 border-dashed rounded-xl flex items-center justify-center transition-colors z-10 ${draggedIndex !== null ? 'border-green-400 bg-green-600 bg-opacity-40 animate-pulse' : 'border-blue-600 bg-blue-900 bg-opacity-30'}`}>{playedPlayerCard && <Card card={playedPlayerCard} isAi displayFichas={getCardFichas(playedPlayerCard, events)+(playedPlayerCard.bonusR7||0)}/>}</div>
-                                                    {bazaResult && <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none w-[800px] flex justify-center"><div className={`text-center inline-block bg-[#0b141a] bg-opacity-95 p-8 pixel-border shadow-2xl ${bazaResult.cau ? 'animate-cau' : 'animate-bounce'}`}><h2 className={`text-4xl font-bold mb-4 ${bazaResult.winner === 'player' || bazaResult.winner === 'canto' ? 'text-yellow-400' : 'text-red-500'}`}>{bazaResult.message}</h2>{bazaResult.winner === 'player' && <><div className="text-3xl text-white flex gap-4 justify-center"><span className="text-blue-300 bg-blue-900 px-3 py-1 rounded">{bazaResult.fichas} Fitxes</span><span className="text-red-400 bg-red-900 px-3 py-1 rounded">x{bazaResult.mult}</span></div><div className="text-6xl text-green-400 mt-6 font-bold">+ {bazaResult.total}</div></>}</div></div>}
+                                                    {bazaResult && <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none w-[800px] flex justify-center"><div className={`text-center inline-block bg-[#0b141a] bg-opacity-95 p-8 pixel-border shadow-2xl ${bazaResult.cau ? 'animate-cau' : 'animate-bounce'}`}><h2 className={`text-4xl font-bold mb-4 ${bazaResult.winner === 'player' || bazaResult.winner === 'canto' ? 'text-yellow-400' : 'text-red-500'}`}><FormatText text={bazaResult.message} /></h2>{bazaResult.winner === 'player' && <><div className="text-3xl text-white flex gap-4 justify-center"><span className="text-blue-300 bg-blue-900 px-3 py-1 rounded">{bazaResult.fichas} Fitxes</span><span className="text-red-400 bg-red-900 px-3 py-1 rounded">x{bazaResult.mult}</span></div><div className="text-6xl text-green-400 mt-6 font-bold">+ {bazaResult.total}</div></>}</div></div>}
                                                 </div>
                                                 <div className="w-[400px] flex items-center justify-center">
                                                     {fichasAcumuladas > 0 && <div className="flex flex-col items-center animate-pulse"><span className="text-2xl text-orange-300 font-bold">POT</span><span className="text-4xl text-yellow-400 font-bold bg-black px-6 py-2 pixel-border">+{fichasAcumuladas}</span></div>}
@@ -831,7 +936,7 @@
                                                 <div className="absolute left-8 bottom-0 w-[150px] flex items-end pb-8">
                                                     {playerLastTrick ? <div className="w-[80px] h-[120px] relative cursor-pointer hover:scale-110 transition-transform" onClick={() => { setModalTrick(playerLastTrick); setShowLastTrick(true); }}><div className="absolute inset-0 bg-blue-900 opacity-40 rounded pixel-border-sm overflow-hidden flex items-center justify-center border-blue-600"><img src={REVERSO_URL} className="w-full h-full object-cover opacity-50" /></div><span className="absolute bottom-[-25px] w-[130px] left-1/2 -translate-x-1/2 text-sm text-yellow-300 font-bold text-center bg-black bg-opacity-70 px-2 rounded">La Teua Última Bassa</span></div> : <div className="w-[80px] h-[120px] border-4 border-dashed border-gray-700 opacity-30" />}
                                                 </div>
-                                                <div className="flex gap-4 h-12 mb-2 justify-center">{gameState === 'PLAYING' && getPosiblesCantes().map((c, i) => <button key={i} onClick={() => cantar(c)} className="bg-yellow-600 px-8 py-2 pixel-border-sm text-xl font-bold">¡CANTAR {c.nombre}!</button>)}</div>
+                                                <div className="flex gap-4 h-12 mb-2 justify-center">{gameState === 'PLAYING' && getPosiblesCantes().map((c, i) => <button key={i} onClick={() => cantar(c)} className="bg-yellow-600 px-8 py-2 pixel-border-sm text-xl font-bold">¡CANTAR <FormatText text={c.nombre} />!</button>)}</div>
                                                 <div className="flex gap-8 mb-2 justify-center">
                                                     <div className="relative"><button onClick={handlePlayCardBtn} disabled={selectedCards.length !== 1 || tiradasLeft <= 0} className={`w-[260px] py-4 pixel-border text-2xl font-bold ${selectedCards.length === 1 && tiradasLeft > 0 ? 'bg-blue-600' : 'bg-gray-800 text-gray-600'}`}>JUGAR ({tiradasLeft})</button>{extraPlayMsg && <div className="absolute -top-10 left-1/2 -translate-x-1/2 text-green-400 text-2xl font-bold animate-bounce whitespace-nowrap">+1 JUGADA!</div>}</div>
                                                     <button onClick={handleDiscard} disabled={selectedCards.length === 0 || descartesLeft <= 0 || (deck.length === 0 && !muestra)} className={`w-[260px] py-4 pixel-border text-2xl font-bold ${selectedCards.length > 0 && descartesLeft > 0 ? 'bg-red-600' : 'bg-gray-800 text-gray-600'}`}>DESCARTAR ({descartesLeft})</button>
@@ -858,8 +963,8 @@
                                         {objectes.map((o, i) => (
                                             <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `o-${i}` ? null : `o-${i}`); }} className="w-[85px] h-[85px] bg-blue-900 border-4 border-blue-400 flex items-center justify-center cursor-pointer group relative shrink-0">
                                                 <img src={o.img} alt={o.name} className="w-full h-full object-cover" onError={e => {e.target.style.display='none'}} />
-                                                {activeActionId !== `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2">{o.name}</p><p className="text-xl">{o.desc}</p></div>}
-                                                {activeActionId === `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeObjecte(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">USAR ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(o, i, 'objecte'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(o.cost / 2))}💰)</button>}</div>}
+                                                {activeActionId !== `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={o.name} /></p><p className="text-xl"><FormatText text={o.desc} /></p></div>}
+                                                {activeActionId === `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeObjecte(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">USAR ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(o, i, 'objecte'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(getActualCost(o, 'objecte') / 2))}💰)</button>}</div>}
                                             </div>
                                         ))}
                                         {Array.from({ length: 3 - objectes.length }).map((_, i) => <div key={`empty-obj-${i}`} className="w-[85px] h-[85px] border-4 border-dashed border-blue-800 bg-black bg-opacity-30 shrink-0" />)}
@@ -872,8 +977,9 @@
                                         {begudes.map((b, i) => (
                                             <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `b-${i}` ? null : `b-${i}`); }} className="w-[85px] h-[85px] bg-orange-900 border-4 border-orange-400 flex items-center justify-center cursor-pointer group relative shrink-0">
                                                 <img src={b.img} alt={b.name} className="w-full h-full object-contain p-1" />
-                                                {activeActionId !== `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2">{b.name}</p><p className="text-xl">{b.desc}</p></div>}
-                                                {activeActionId === `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeBeguda(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">BEURE ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(b, i, 'beguda'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(b.cost / 2))}💰)</button>}</div>}
+                                                {b.count > 1 && <div className="absolute -top-2 -right-2 bg-red-600 text-white text-lg font-bold px-2 py-0.5 rounded-full pixel-border-sm z-[80]">x{b.count}</div>}
+                                                {activeActionId !== `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={b.name} /></p><p className="text-xl"><FormatText text={b.desc} /></p></div>}
+                                                {activeActionId === `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeBeguda(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">BEURE ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(b, i, 'beguda'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(getActualCost(b, 'beguda') / 2))}💰)</button>}</div>}
                                             </div>
                                         ))}
                                         {Array.from({ length: 3 - begudes.length }).map((_, i) => <div key={`empty-drink-${i}`} className="w-[85px] h-[85px] border-4 border-dashed border-orange-800 bg-black bg-opacity-30 flex items-center justify-center opacity-20 text-3xl shrink-0">☕</div>)}
@@ -900,7 +1006,7 @@
                         {showDeckModal && (
                             <div className="absolute inset-0 bg-black bg-opacity-95 z-[100] flex flex-col items-center justify-center">
                                 <div className="max-w-[1500px] w-full flex flex-col items-center">
-                                    <div className="flex justify-between items-center w-full mb-8 px-12"><h2 className="text-6xl text-yellow-400 font-bold">REGISTRE DE LA BARAJA</h2><button onClick={() => setShowDeckModal(false)} className="bg-red-600 px-8 py-4 pixel-border font-bold text-2xl">TANCAR</button></div>
+                                    <div className="flex justify-between items-center w-full mb-8 px-12"><h2 className="text-6xl text-yellow-400 font-bold">REGISTRE DE LA BARALLA</h2><button onClick={() => setShowDeckModal(false)} className="bg-red-600 px-8 py-4 pixel-border font-bold text-2xl">TANCAR</button></div>
                                     <div className="flex flex-col gap-4 w-full items-center bg-[#1a2b22] p-8 pixel-border rounded-xl">
                                         {SUITS.map(suit => (
                                             <div key={suit} className="flex flex-row -space-x-8 justify-center w-full relative">
@@ -908,11 +1014,12 @@
                                                     const upgrade = rankUpgrades[rank] || 0;
                                                     const dummyCard = { suit, rank, fichasBase: getFichasBase(rank) + upgrade };
                                                     const seen = deck.some(c => c.suit === suit && c.rank === rank) || aiHand.some(c => c.suit === suit && c.rank === rank) || (muestra && muestra.suit === suit && muestra.rank === rank);
-                                                    return <div key={rank} className={`transition-opacity transform scale-90 ${seen ? 'opacity-100 hover:scale-105 z-10 hover:z-50' : 'opacity-30 grayscale'}`}><Card card={dummyCard} disabled isAi displayFichas={getCardFichas(dummyCard, events)} /></div>;
+                                                    return <div key={rank} className={`transition-opacity transform scale-90 ${seen ? 'opacity-100 hover:scale-105 z-10 hover:z-50 text-white' : 'opacity-30 grayscale text-gray-500'}`}><Card card={dummyCard} disabled isAi displayFichas={getCardFichas(dummyCard, events)} /></div>;
                                                 })}
                                             </div>
                                         ))}
                                     </div>
+                                    <p className="text-gray-500 text-2xl mt-4 font-bold bg-black px-6 py-2 rounded pixel-border-sm">*Les cartes en gris encara no s'han vist en esta ronda</p>
                                 </div>
                             </div>
                         )}
@@ -932,8 +1039,8 @@
                         {gameState === 'MENU' && (
                             <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-80 z-20 p-8">
                                 <div className="bg-[#0f1a14] p-16 pixel-border border-green-600 max-w-5xl w-full text-center shadow-[0_0_50px_rgba(22,163,74,0.4)]">
-                                    <h1 className="text-[120px] text-yellow-400 mb-6 font-bold leading-none">REBACLATRO <br/><span className="text-6xl text-white">Festes Edition</span></h1>
-                                    <p className="text-3xl text-green-400 mb-12 font-bold tracking-widest">EL ROGUELIKE DE BARAJA ESPANYOLA</p>
+                                    <h1 className="text-[140px] text-yellow-400 mb-6 font-bold leading-none">REBACLATRO</h1>
+                                    <p className="text-3xl text-green-400 mb-12 font-bold tracking-widest">EL ROGUELIKE DEL JOC DE COTOS</p>
                                     <div className="text-2xl text-gray-300 mb-16 text-left bg-black bg-opacity-50 p-10 pixel-border-sm leading-relaxed mx-auto w-4/5">
                                         <ul className="list-disc pl-8 space-y-4">
                                             <li><strong>Arrossegament:</strong> En últimes, s'ha d'assistir al pal o tirar triomf.</li>
