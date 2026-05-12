@@ -15,7 +15,6 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // --- SISTEMA DE FORMATEIG DE TEXT PER COLORS DE PAL ---
         const FormatText = ({ text, className = "text-white" }) => {
             if (!text || typeof text !== 'string') return <span className={className}>{text}</span>;
             const parts = text.split(/(Ors|Copes|Espases|Bastos)/gi);
@@ -58,7 +57,8 @@
         
         const SUITS = ['Ors', 'Copes', 'Espases', 'Bastos'];
         const RANKS = [1, 3, 12, 10, 11, 7, 6, 5, 4, 2]; 
-        const TARGETS = [300, 500, 1000, 1500, 2000, 2500, 3000];
+        const TARGETS = [300, 600, 1000, 1500, 2000]; 
+
         const suitEmojis = { Ors: '🪙', Copes: '🍷', Espases: '⚔️', Bastos: '🪵' };
 
         const getFichasBase = (rank) => {
@@ -105,34 +105,37 @@
         ];
 
         const OBJECTES_DB = [
-            { id: 'o1', name: 'Contrabandistes', img: 'https://www.asjordi.org/upload/images/asociacion/01-ANDALUCES.jpg', desc: 'Guanyes +1 Tirada a l\'instant.', cost: 4, efecte: { tiradas: 1 } },
-            { id: 'o2', name: 'Asturians', img: 'https://www.asjordi.org/upload/images/filaes/02-Asturianos.jpg', desc: '+20 Fitxes temporals a la següent bassa.', cost: 3, efecte: { fichas: 20 } },
-            { id: 'o3', name: 'Cids', img: 'https://www.asjordi.org/upload/images/filaes/03-Cides.jpg', desc: '+3 Mult temporal per a aquesta jugada.', cost: 3, efecte: { mult: 3 } },
-            { id: 'o4', name: 'Maseros', img: 'https://www.asjordi.org/upload/images/filaes/04-Labradores.jpg', desc: 'Recuperes +1 Descart.', cost: 3, efecte: { descartes: 1 } },
-            { id: 'o5', name: 'Gusmans', img: 'https://www.asjordi.org/upload/images/guzmanes.jpg', desc: '+30 Fitxes temporals a la següent bassa.', cost: 4, efecte: { fichas: 30 } },
-            { id: 'o6', name: 'Bascos', img: 'https://www.asjordi.org/upload/images/filaes/06-Vascos.jpg', desc: '+4 Mult temporal.', cost: 4, efecte: { mult: 4 } },
-            { id: 'o7', name: 'Mossàrabs', img: 'https://www.asjordi.org/upload/images/filaes/07-Mozarabes.jpg', desc: 'Guanyes +2 Tirades a l\'instant.', cost: 6, efecte: { tiradas: 2 } },
-            { id: 'o8', name: 'Almogàvers', img: 'https://www.asjordi.org/upload/images/filaes/08-Almogavares.jpg', desc: '+5 Mult temporal.', cost: 5, efecte: { mult: 5 } },
-            { id: 'o9', name: 'Navarresos', img: 'https://www.asjordi.org/upload/images/filaes/09-Navarros.jpg', desc: 'Recuperes +2 Descarts.', cost: 5, efecte: { descartes: 2 } },
-            { id: 'o10', name: 'Tomasines', img: 'https://www.asjordi.org/upload/images/filaes/10-Tomasinas.jpg', desc: '+40 Fitxes temporals.', cost: 5, efecte: { fichas: 40 } },
-            { id: 'o11', name: 'Muntanyesos', img: 'https://www.asjordi.org/upload/images/filaes/11-Muntanyesos.jpg', desc: '+1 Tirada i +1 Descart.', cost: 5, efecte: { tiradas: 1, descartes: 1 } },
-            { id: 'o12', name: 'Creuats', img: 'https://www.asjordi.org/upload/images/filaes/12-Cruzados.jpg', desc: '+6 Mult temporal.', cost: 5, efecte: { mult: 6 } },
-            { id: 'o13', name: 'Alcodians', img: 'https://www.asjordi.org/upload/images/filaes/13-Alcodianos.jpg', desc: '+25 Fitxes temporals.', cost: 3, efecte: { fichas: 25 } },
-            { id: 'o14', name: 'Aragonesos', img: 'https://www.asjordi.org/upload/images/filaes/14-Aragonesos.jpg', desc: '+3 Mult temporal.', cost: 3, efecte: { mult: 3 } },
-            { id: 'o15', name: 'Llana', img: 'https://www.asjordi.org/upload/images/asociacion/organizacion/01-Llana.jpg', desc: '+50 Fitxes temporals.', cost: 6, efecte: { fichas: 50 } },
-            { id: 'o16', name: 'Jueus', img: 'https://www.asjordi.org/upload/images/filaes/02-Judios.jpg', desc: '+8 Mult temporal.', cost: 7, efecte: { mult: 8 } },
-            { id: 'o17', name: 'Miqueros', img: 'https://www.asjordi.org/upload/images/filaes/03-Domingo-Miques.jpg', desc: 'Guanyes +1 Tirada a l\'instant.', cost: 4, efecte: { tiradas: 1 } },
-            { id: 'o18', name: 'Xanos', img: 'https://www.asjordi.org/upload/images/noticias/Escut-1.jpg', desc: 'Recuperes +2 Descarts.', cost: 5, efecte: { descartes: 2 } },
-            { id: 'o19', name: 'Verds', img: 'https://www.asjordi.org/upload/images/filaes/05-Verdes.jpg', desc: '+35 Fitxes temporals.', cost: 4, efecte: { fichas: 35 } },
-            { id: 'o20', name: 'Magenta', img: 'https://www.asjordi.org/upload/images/asociacion/organizacion/06-Magenta.jpg', desc: '+4 Mult temporal.', cost: 4, efecte: { mult: 4 } },
-            { id: 'o21', name: 'Cordoners', img: 'https://www.asjordi.org/upload/images/asociacion/07-Cordon.jpg', desc: '+1 Tirada i +20 Fitxes.', cost: 6, efecte: { tiradas: 1, fichas: 20 } },
-            { id: 'o22', name: 'Lleugers', img: 'https://www.asjordi.org/upload/images/asociacion/08-Ligeros.jpg', desc: 'Guanyes +2 Tirades a l\'instant.', cost: 6, efecte: { tiradas: 2 } },
-            { id: 'o23', name: 'Mudejars', img: 'https://www.asjordi.org/upload/images/filaes/09-Mudejares.jpg', desc: '+10 Mult temporal.', cost: 8, efecte: { mult: 10 } },
-            { id: 'o24', name: 'Abencerratges', img: 'https://www.asjordi.org/upload/images/filaes/10-Abencerrajes.jpg', desc: '+60 Fitxes temporals.', cost: 7, efecte: { fichas: 60 } },
-            { id: 'o25', name: 'Marràqueix', img: 'https://www.asjordi.org/upload/images/filaes/MARRAKESH.jpg', desc: 'Recuperes +1 Descart.', cost: 3, efecte: { descartes: 1 } },
-            { id: 'o26', name: 'Realistes', img: 'https://www.asjordi.org/upload/images/filaes/12-Realistes.jpg', desc: '+5 Mult temporal.', cost: 5, efecte: { mult: 5 } },
-            { id: 'o27', name: 'Barbarescs', img: 'https://www.asjordi.org/upload/images/filaes/13-Berberiscos.jpg', desc: '+30 Fitxes temporals.', cost: 4, efecte: { fichas: 30 } },
-            { id: 'o28', name: 'Benimerins', img: 'https://www.asjordi.org/upload/images/filaes/14-Benimerines.jpg', desc: '+1 Tirada i +2 Mult.', cost: 6, efecte: { tiradas: 1, mult: 2 } }
+            // CRISTIANS (14)
+            { id: 'o1', faction: 'cristia', name: 'Contrabandistes', img: 'https://www.asjordi.org/upload/images/asociacion/01-ANDALUCES.jpg', desc: 'Guanyes +1 Tirada a l\'instant.', cost: 4, efecte: { tiradas: 1 } },
+            { id: 'o2', faction: 'cristia', name: 'Asturians', img: 'https://www.asjordi.org/upload/images/filaes/02-Asturianos.jpg', desc: '+20 Fitxes temporals a la següent bassa.', cost: 3, efecte: { fichas: 20 } },
+            { id: 'o3', faction: 'cristia', name: 'Cids', img: 'https://www.asjordi.org/upload/images/filaes/03-Cides.jpg', desc: '+3 Mult temporal per a aquesta jugada.', cost: 3, efecte: { mult: 3 } },
+            { id: 'o4', faction: 'cristia', name: 'Maseros', img: 'https://www.asjordi.org/upload/images/filaes/04-Labradores.jpg', desc: 'Recuperes +1 Descart.', cost: 3, efecte: { descartes: 1 } },
+            { id: 'o5', faction: 'cristia', name: 'Gusmans', img: 'https://www.asjordi.org/upload/images/guzmanes.jpg', desc: '+30 Fitxes temporals a la següent bassa.', cost: 4, efecte: { fichas: 30 } },
+            { id: 'o6', faction: 'cristia', name: 'Bascos', img: 'https://www.asjordi.org/upload/images/filaes/06-Vascos.jpg', desc: '+4 Mult temporal.', cost: 4, efecte: { mult: 4 } },
+            { id: 'o7', faction: 'cristia', name: 'Mossàrabs', img: 'https://www.asjordi.org/upload/images/filaes/07-Mozarabes.jpg', desc: 'Guanyes +2 Tirades a l\'instant.', cost: 6, efecte: { tiradas: 2 } },
+            { id: 'o8', faction: 'cristia', name: 'Almogàvers', img: 'https://www.asjordi.org/upload/images/filaes/08-Almogavares.jpg', desc: '+5 Mult temporal.', cost: 5, efecte: { mult: 5 } },
+            { id: 'o9', faction: 'cristia', name: 'Navarresos', img: 'https://www.asjordi.org/upload/images/filaes/09-Navarros.jpg', desc: 'Recuperes +2 Descarts.', cost: 5, efecte: { descartes: 2 } },
+            { id: 'o10', faction: 'cristia', name: 'Tomasines', img: 'https://www.asjordi.org/upload/images/filaes/10-Tomasinas.jpg', desc: '+40 Fitxes temporals.', cost: 5, efecte: { fichas: 40 } },
+            { id: 'o11', faction: 'cristia', name: 'Muntanyesos', img: 'https://www.asjordi.org/upload/images/filaes/11-Muntanyesos.jpg', desc: '+1 Tirada i +1 Descart.', cost: 5, efecte: { tiradas: 1, descartes: 1 } },
+            { id: 'o12', faction: 'cristia', name: 'Creuats', img: 'https://www.asjordi.org/upload/images/filaes/12-Cruzados.jpg', desc: '+6 Mult temporal.', cost: 5, efecte: { mult: 6 } },
+            { id: 'o13', faction: 'cristia', name: 'Alcodians', img: 'https://www.asjordi.org/upload/images/filaes/13-Alcodianos.jpg', desc: '+25 Fitxes temporals.', cost: 3, efecte: { fichas: 25 } },
+            { id: 'o14', faction: 'cristia', name: 'Aragonesos', img: 'https://www.asjordi.org/upload/images/filaes/14-Aragonesos.jpg', desc: '+3 Mult temporal.', cost: 3, efecte: { mult: 3 } },
+            
+            // MOROS (14)
+            { id: 'o15', faction: 'moro', name: 'Llana', img: 'https://www.asjordi.org/upload/images/asociacion/organizacion/01-Llana.jpg', desc: '+50 Fitxes temporals.', cost: 6, efecte: { fichas: 50 } },
+            { id: 'o16', faction: 'moro', name: 'Jueus', img: 'https://www.asjordi.org/upload/images/filaes/02-Judios.jpg', desc: '+8 Mult temporal.', cost: 7, efecte: { mult: 8 } },
+            { id: 'o17', faction: 'moro', name: 'Miqueros', img: 'https://www.asjordi.org/upload/images/filaes/03-Domingo-Miques.jpg', desc: 'Guanyes +1 Tirada a l\'instant.', cost: 4, efecte: { tiradas: 1 } },
+            { id: 'o18', faction: 'moro', name: 'Xanos', img: 'https://www.asjordi.org/upload/images/noticias/Escut-1.jpg', desc: 'Recuperes +2 Descarts.', cost: 5, efecte: { descartes: 2 } },
+            { id: 'o19', faction: 'moro', name: 'Verds', img: 'https://www.asjordi.org/upload/images/filaes/05-Verdes.jpg', desc: '+35 Fitxes temporals.', cost: 4, efecte: { fichas: 35 } },
+            { id: 'o20', faction: 'moro', name: 'Magenta', img: 'https://www.asjordi.org/upload/images/asociacion/organizacion/06-Magenta.jpg', desc: '+4 Mult temporal.', cost: 4, efecte: { mult: 4 } },
+            { id: 'o21', faction: 'moro', name: 'Cordoners', img: 'https://www.asjordi.org/upload/images/asociacion/07-Cordon.jpg', desc: '+1 Tirada i +20 Fitxes.', cost: 6, efecte: { tiradas: 1, fichas: 20 } },
+            { id: 'o22', faction: 'moro', name: 'Lleugers', img: 'https://www.asjordi.org/upload/images/asociacion/08-Ligeros.jpg', desc: 'Guanyes +2 Tirades a l\'instant.', cost: 6, efecte: { tiradas: 2 } },
+            { id: 'o23', faction: 'moro', name: 'Mudejars', img: 'https://www.asjordi.org/upload/images/filaes/09-Mudejares.jpg', desc: '+10 Mult temporal.', cost: 8, efecte: { mult: 10 } },
+            { id: 'o24', faction: 'moro', name: 'Abencerratges', img: 'https://www.asjordi.org/upload/images/filaes/10-Abencerrajes.jpg', desc: '+60 Fitxes temporals.', cost: 7, efecte: { fichas: 60 } },
+            { id: 'o25', faction: 'moro', name: 'Marràqueix', img: 'https://www.asjordi.org/upload/images/filaes/MARRAKESH.jpg', desc: 'Recuperes +1 Descart.', cost: 3, efecte: { descartes: 1 } },
+            { id: 'o26', faction: 'moro', name: 'Realistes', img: 'https://www.asjordi.org/upload/images/filaes/12-Realistes.jpg', desc: '+5 Mult temporal.', cost: 5, efecte: { mult: 5 } },
+            { id: 'o27', faction: 'moro', name: 'Barbarescs', img: 'https://www.asjordi.org/upload/images/filaes/13-Berberiscos.jpg', desc: '+30 Fitxes temporals.', cost: 4, efecte: { fichas: 30 } },
+            { id: 'o28', faction: 'moro', name: 'Benimerins', img: 'https://www.asjordi.org/upload/images/filaes/14-Benimerines.jpg', desc: '+1 Tirada i +2 Mult.', cost: 6, efecte: { tiradas: 1, mult: 2 } }
         ];
 
         const getDrinkSvg = (emoji) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="70">${emoji}</text></svg>`;
@@ -179,6 +182,8 @@
         .animate-cau { animation: cau-shake 0.5s; animation-iteration-count: infinite; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .high-contrast-card { filter: contrast(1.5) saturate(1.5); }
         `;
 
         const REVERSO_URL = 'https://raw.githubusercontent.com/ArnauLC/rebaclatro/refs/heads/main/cards/reverso.png';
@@ -193,11 +198,11 @@
             return `${SPANISH_DECK_URL}${letter}-${paddedRank}.PNG`;
         };
 
-        const Card = ({ card, onClick, isSelected, disabled, isAi, hidden, isMuestra, displayFichas }) => {
+        const Card = ({ card, onClick, isSelected, disabled, isAi, hidden, isMuestra, displayFichas, highContrast }) => {
             if (!card || hidden) {
                 return (
                     <div className="w-[100px] h-[150px] flex items-center justify-center relative overflow-visible drop-shadow-xl">
-                         <img src={REVERSO_URL} alt="Revers de carta" className="absolute inset-0 w-full h-full object-contain" draggable="false" onError={(e) => { e.target.style.display = 'none'; }} />
+                         <img src={REVERSO_URL} alt="Revers de carta" className={`absolute inset-0 w-full h-full object-contain ${highContrast ? 'high-contrast-card' : ''}`} draggable="false" onError={(e) => { e.target.style.display = 'none'; }} />
                     </div>
                 );
             }
@@ -216,7 +221,7 @@
                         </div>
                     )}
                     <div className="w-[100px] h-[150px] flex flex-col justify-between select-none overflow-visible">
-                        <img src={getCardImageUrl(card.suit, card.rank)} alt={`${card.rank} de ${card.suit}`} className="absolute inset-0 w-full h-full object-contain" draggable="false"
+                        <img src={getCardImageUrl(card.suit, card.rank)} alt={`${card.rank} de ${card.suit}`} className={`absolute inset-0 w-full h-full object-contain ${highContrast ? 'high-contrast-card' : ''}`} draggable="false"
                             onError={(e) => { e.target.onerror = null; e.target.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZWVlIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjE1MCIvPjx0ZXh0IHg9IjUwIiB5PSI3NSIgZm9udC1mYW1pbHk9ImFyaWFsIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMzMzIj5FcnJvciBpbWFnZW48L3RleHQ+PC9zdmc+"; }}
                         />
                     </div>
@@ -238,6 +243,13 @@
             }, []);
 
             const [gameState, setGameState] = useState('MENU'); 
+            const [faction, setFaction] = useState(null); // 'cristia' o 'moro'
+            
+            // Opcions Menu
+            const [showOptionsModal, setShowOptionsModal] = useState(false);
+            const [optionsSubView, setOptionsSubView] = useState('main'); // 'main', 'collection', 'cards'
+            const [highContrastCards, setHighContrastCards] = useState(false);
+
             const [round, setRound] = useState(1);
             const [score, setScore] = useState(0);
             const [targetScore, setTargetScore] = useState(TARGETS[0]);
@@ -288,6 +300,12 @@
             const [hasWonTrick, setHasWonTrick] = useState(false);
 
             const [bazaResult, setBazaResult] = useState(null); 
+
+            const getEnemiesList = () => {
+                if (faction === 'cristia') return ['Guerrer Moro', 'Sargent Moro', 'Alferes Moro', 'Capità Moro', 'Al-Azraq'];
+                if (faction === 'moro') return ['Guerrer Cristià', 'Sargent Cristià', 'Alferes Cristià', 'Capità Cristià', 'Jaume I'];
+                return [];
+            };
 
             const handleGlobalClick = () => { setActiveActionId(null); };
 
@@ -348,13 +366,17 @@
                 return newDeck.sort(() => Math.random() - 0.5);
             };
 
-            const startGame = () => {
+            const startGame = (chosenFaction) => {
+                setFaction(chosenFaction);
                 setRound(1); setTargetScore(TARGETS[0]); setMonedas(10); 
                 setEvents([]); setObjectes([]); setBegudes([]); setBaseMult(1); setTempMult(0);
                 setTempFichas(0); setFichasAcumuladas(0); setActiveActionId(null);
                 setPlayerLastTrick(null); setAiLastTrick(null); setAiCantesRealizados([]);
                 setAiPenaltyMult(1); setHasWonTrick(false); setRankUpgrades({});
-                generateShop(); setGameState('SHOP'); 
+                
+                generateShop(chosenFaction); 
+                setGameState('ROUTE_MAP'); 
+                setShowOptionsModal(false);
             };
 
             const initRound = (r) => {
@@ -681,7 +703,7 @@
                         const finalCoins = 4 + Math.floor((newTiradas + extraRes) / 2);
                         setMonedas(m => m + finalCoins);
                         setRoundSummary({ score: newScore, target: targetScore, tiradasLeft: newTiradas + extraRes, descartesLeft: descartesLeft + extraRes, monedasEarned: finalCoins });
-                        generateShop(); setGameState('ROUND_SUMMARY');
+                        generateShop(faction); setGameState('ROUND_SUMMARY');
                     } else if ((newTiradas + extraRes) <= 0) setGameState('GAMEOVER');
                     else {
                         if (winner === 'ai') {
@@ -699,12 +721,12 @@
             const sortHandBySuit = () => { const order = ['Ors', 'Copes', 'Espases', 'Bastos']; setPlayerHand([...playerHand].sort((a, b) => { if (isTriunfo(a.suit, events) && !isTriunfo(b.suit, events)) return -1; if (!isTriunfo(a.suit, events) && isTriunfo(b.suit, events)) return 1; if (a.suit !== b.suit) return order.indexOf(a.suit) - order.indexOf(b.suit); return getPoder(b.rank) - getPoder(a.rank); })); };
             const sortHandByPower = () => { setPlayerHand([...playerHand].sort((a, b) => { if (isTriunfo(a.suit, events) && !isTriunfo(b.suit, events)) return -1; if (!isTriunfo(a.suit, events) && isTriunfo(b.suit, events)) return 1; if (getPoder(a.rank) !== getPoder(b.rank)) return getPoder(b.rank) - getPoder(a.rank); return SUITS.indexOf(a.suit) - SUITS.indexOf(b.suit); })); };
 
-            const generateShop = () => {
+            const generateShop = (currentFaction) => {
                 let sE = [null, null, null, null];
                 let sM = [null, null, null, null];
                 
                 let avE = EVENTS_DB.filter(e => !events.some(my => my.id === e.id));
-                let avO = OBJECTES_DB.filter(o => !objectes.some(my => my.id === o.id)).map(o => ({...o, type: 'objecte'}));
+                let avO = OBJECTES_DB.filter(o => o.faction === currentFaction && !objectes.some(my => my.id === o.id)).map(o => ({...o, type: 'objecte'}));
                 let avB = [...BEGUDES_DB].map(b => ({...b, type: 'beguda'}));
                 
                 for(let i=0; i<4; i++) {
@@ -769,17 +791,122 @@
                 }
             };
             
-            const nextRound = () => { if (round >= TARGETS.length) setGameState('VICTORY'); else { setRound(r => r + 1); setTargetScore(TARGETS[round]); initRound(round + 1); } };
-            const handleReroll = () => { if (monedas >= 2) { setMonedas(m => m - 2); generateShop(); } };
+            const nextRound = () => { if (round >= TARGETS.length) setGameState('VICTORY'); else { setRound(r => r + 1); setTargetScore(TARGETS[round]); setGameState('ROUTE_MAP'); } };
+            const handleReroll = () => { if (monedas >= 2) { setMonedas(m => m - 2); generateShop(faction); } };
 
             const playerVisualMult = ((baseMult + tempMult) * aiPenaltyMult).toFixed(2).replace(/\.00$/, '');
             const aiCardsRevealed = events.some(r=>r.id==='r9');
+            const enemiesList = getEnemiesList();
 
             return (
                 <div className="fixed inset-0 bg-[#071a10] flex items-center justify-center overflow-hidden">
                     <style>{globalStyles}</style>
                     <div style={{ width: '1920px', height: '1080px', minWidth: '1920px', minHeight: '1080px', transform: `scale(${scale})`, transformOrigin: 'center' }} className="bg-felt text-white flex flex-col relative select-none shadow-[0_0_50px_rgba(0,0,0,1)] border-4 border-black overflow-hidden shrink-0" onClick={handleGlobalClick}>
                         
+                        {/* BOTÓ OPCIONS TOP-RIGHT */}
+                        {gameState !== 'MENU' && !showOptionsModal && (
+                            <button onClick={() => { setShowOptionsModal(true); setOptionsSubView('main'); }} className="absolute top-4 right-4 z-[150] bg-gray-800 text-white px-6 py-3 pixel-border font-bold text-xl hover:bg-gray-700">
+                                ⚙️ OPCIONS
+                            </button>
+                        )}
+
+                        {/* MODAL D'OPCIONS */}
+                        {showOptionsModal && (
+                            <div className="absolute inset-0 bg-black bg-opacity-95 z-[200] flex flex-col items-center justify-center p-8">
+                                <div className="bg-[#1a2b22] p-12 pixel-border max-w-5xl w-full flex flex-col items-center relative overflow-hidden" style={{ maxHeight: '900px' }}>
+                                    <button onClick={() => setShowOptionsModal(false)} className="absolute top-4 right-4 bg-red-600 px-4 py-2 pixel-border font-bold text-xl">X</button>
+                                    
+                                    {optionsSubView === 'main' && (
+                                        <>
+                                            <h2 className="text-6xl text-yellow-400 font-bold mb-12 text-shadow">MENÚ D'OPCIONS</h2>
+                                            <div className="flex flex-col gap-6 w-[400px]">
+                                                <button onClick={() => setShowOptionsModal(false)} className="bg-blue-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-blue-500">TORNAR A LA PARTIDA</button>
+                                                <button onClick={() => startGame(faction)} className="bg-yellow-600 text-black px-8 py-4 pixel-border font-bold text-2xl hover:bg-yellow-500">REINICIAR PARTIDA</button>
+                                                <button onClick={() => setHighContrastCards(!highContrastCards)} className="bg-purple-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-purple-500">ALT CONTRAST: {highContrastCards ? 'ON' : 'OFF'}</button>
+                                                <button onClick={() => setOptionsSubView('collection')} className="bg-green-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-green-500">COL·LECCIÓ</button>
+                                                <button onClick={() => setOptionsSubView('cards')} className="bg-indigo-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-indigo-500">VALOR CARTES</button>
+                                                <button onClick={() => { setGameState('MENU'); setShowOptionsModal(false); }} className="bg-red-800 px-8 py-4 pixel-border font-bold text-2xl hover:bg-red-700 mt-8">EIXIR AL MENÚ</button>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {optionsSubView === 'collection' && (
+                                        <div className="w-full flex flex-col items-center overflow-y-auto hide-scrollbar">
+                                            <h2 className="text-5xl text-yellow-400 font-bold mb-8">COL·LECCIÓ COMPLETA</h2>
+                                            
+                                            <h3 className="text-3xl text-purple-400 font-bold mb-4 w-full border-b-2 border-purple-800 pb-2">ESDEVENIMENTS</h3>
+                                            <div className="flex flex-wrap gap-4 mb-8 justify-center">
+                                                {EVENTS_DB.map(e => <div key={e.id} className="w-[80px] h-[80px] bg-purple-900 border-2 border-purple-400 flex items-center justify-center p-1 relative group cursor-help"><img src={`${RELICS_BASE_URL}${e.img}`} className="w-full h-full object-contain" /><div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-64 bg-black p-2 pixel-border opacity-0 group-hover:opacity-100 z-[210] pointer-events-none text-center"><p className="text-yellow-300 font-bold">{e.name}</p><p className="text-sm">{e.desc}</p></div></div>)}
+                                            </div>
+
+                                            <h3 className="text-3xl text-blue-400 font-bold mb-4 w-full border-b-2 border-blue-800 pb-2">OBJECTES CRISTIANS</h3>
+                                            <div className="flex flex-wrap gap-4 mb-8 justify-center">
+                                                {OBJECTES_DB.filter(o=>o.faction==='cristia').map(o => <div key={o.id} className="w-[80px] h-[80px] bg-blue-900 border-2 border-blue-400 flex items-center justify-center relative group cursor-help"><img src={o.img} className="w-full h-full object-cover" /><div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-64 bg-black p-2 pixel-border opacity-0 group-hover:opacity-100 z-[210] pointer-events-none text-center"><p className="text-yellow-300 font-bold">{o.name}</p><p className="text-sm">{o.desc}</p></div></div>)}
+                                            </div>
+
+                                            <h3 className="text-3xl text-green-400 font-bold mb-4 w-full border-b-2 border-green-800 pb-2">OBJECTES MOROS</h3>
+                                            <div className="flex flex-wrap gap-4 mb-8 justify-center">
+                                                {OBJECTES_DB.filter(o=>o.faction==='moro').map(o => <div key={o.id} className="w-[80px] h-[80px] bg-green-900 border-2 border-green-400 flex items-center justify-center relative group cursor-help"><img src={o.img} className="w-full h-full object-cover" /><div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-64 bg-black p-2 pixel-border opacity-0 group-hover:opacity-100 z-[210] pointer-events-none text-center"><p className="text-yellow-300 font-bold">{o.name}</p><p className="text-sm">{o.desc}</p></div></div>)}
+                                            </div>
+
+                                            <h3 className="text-3xl text-orange-400 font-bold mb-4 w-full border-b-2 border-orange-800 pb-2">BEGUDES</h3>
+                                            <div className="flex flex-wrap gap-4 mb-8 justify-center">
+                                                {BEGUDES_DB.map(b => <div key={b.id} className="w-[80px] h-[80px] bg-orange-900 border-2 border-orange-400 flex items-center justify-center p-1 relative group cursor-help"><img src={b.img} className="w-full h-full object-contain" /><div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-64 bg-black p-2 pixel-border opacity-0 group-hover:opacity-100 z-[210] pointer-events-none text-center"><p className="text-yellow-300 font-bold">{b.name}</p><p className="text-sm">{b.desc}</p></div></div>)}
+                                            </div>
+
+                                            <button onClick={() => setOptionsSubView('main')} className="bg-gray-600 px-8 py-3 pixel-border font-bold text-xl mt-4">TORNAR</button>
+                                        </div>
+                                    )}
+
+                                    {optionsSubView === 'cards' && (
+                                        <div className="w-full flex flex-col items-center">
+                                            <h2 className="text-5xl text-yellow-400 font-bold mb-8">VALOR ACTUAL DE LES CARTES</h2>
+                                            <div className="flex flex-row justify-center gap-4 flex-wrap max-w-4xl">
+                                                {RANKS.map(rank => {
+                                                    const upgrade = rankUpgrades[rank] || 0;
+                                                    const total = getFichasBase(rank) + upgrade;
+                                                    return (
+                                                        <div key={rank} className="flex flex-col items-center bg-black bg-opacity-50 p-4 pixel-border-sm w-[150px]">
+                                                            <div className="w-[60px] h-[90px] mb-4 scale-110 pointer-events-none">
+                                                                <Card card={{suit:'Ors', rank: rank}} disabled highContrast={highContrastCards} displayFichas={total} />
+                                                            </div>
+                                                            <span className="text-3xl font-bold text-blue-300">Nº {rank}</span>
+                                                            <span className="text-xl text-green-400 mt-2">+{total} Fitxes</span>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                            <button onClick={() => setOptionsSubView('main')} className="bg-gray-600 px-8 py-3 pixel-border font-bold text-xl mt-12">TORNAR</button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {gameState === 'ROUTE_MAP' && (
+                            <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20">
+                                <h2 className="text-6xl text-yellow-400 font-bold mb-16 text-shadow">RUTA DE CAMPANYA ({faction.toUpperCase()})</h2>
+                                <div className="flex items-center gap-0 mb-16 px-12 w-full justify-center">
+                                    {enemiesList.map((en, idx) => (
+                                        <React.Fragment key={idx}>
+                                            <div className="flex flex-col items-center relative">
+                                                <div className={`w-[140px] h-[140px] rounded-full border-8 flex items-center justify-center text-center p-4 font-bold text-xl leading-tight transition-all duration-500
+                                                    ${round - 1 === idx ? 'bg-yellow-500 border-white scale-[1.3] z-10 text-black shadow-[0_0_30px_rgba(250,204,21,1)]' : 
+                                                    round - 1 > idx ? 'bg-green-700 border-green-400 opacity-60' : 'bg-gray-800 border-gray-600 text-gray-400'}`}>
+                                                    {en}
+                                                </div>
+                                            </div>
+                                            {idx < enemiesList.length - 1 && (
+                                                <div className={`w-[100px] h-4 transition-all duration-500 ${round - 1 > idx ? 'bg-green-400 shadow-[0_0_15px_rgba(74,222,128,1)]' : 'bg-gray-700'}`} />
+                                            )}
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                                <h3 className="text-5xl text-red-500 mb-12 font-bold animate-pulse">Pròxim Enfrontament: <span className="text-white">{enemiesList[round - 1]}</span></h3>
+                                <button onClick={() => setGameState('SHOP')} className="bg-blue-600 px-16 py-8 pixel-border text-5xl font-bold shadow-[8px_8px_0_0_#000]">VISITAR EL MERCADER ➔</button>
+                            </div>
+                        )}
+
                         {(gameState === 'PLAYING' || gameState === 'RESOLVING') && (
                             <div className="w-full h-[80px] bg-[#0a1711] border-b-8 border-black px-6 flex justify-between items-center z-30 shadow-lg shrink-0">
                                 <div className="w-[300px] flex flex-col">
@@ -834,17 +961,14 @@
                                     {gameState === 'SHOP' && (
                                         <div className="w-full h-full flex flex-col items-center justify-between py-12">
                                             <div className="flex flex-col items-center">
-                                                <h2 className="text-6xl text-yellow-400 mb-4 text-shadow font-bold">PARAETA</h2>
+                                                <h2 className="text-6xl text-yellow-400 mb-4 text-shadow font-bold">MERCADER AMBULANT</h2>
                                                 <div className="bg-[#0d3b22] bg-opacity-90 p-4 rounded-xl shadow-2xl flex items-center gap-8">
                                                     <p className="text-3xl bg-[#1f1626] px-8 py-3 pixel-border font-bold">Bossa: <span className="text-yellow-400">💰 {monedas}</span></p>
                                                     <button onClick={handleReroll} disabled={monedas < 2} className={`text-2xl px-8 py-3 pixel-border font-bold transition-all shadow-[6px_6px_0_0_#000] ${monedas >= 2 ? 'bg-blue-600 hover:bg-blue-500' : 'bg-gray-800 text-gray-500'}`}>RENOVAR (💰2)</button>
                                                 </div>
                                             </div>
                                             
-                                            {/* Paraeta - 2 columnes generals */}
                                             <div className="flex flex-row w-full px-16 gap-12 mt-6">
-                                                
-                                                {/* Esdeveniments (4 Slots) */}
                                                 <div className="flex-1">
                                                     <h3 className="text-3xl text-purple-400 text-center mb-4 border-b-4 border-purple-900 pb-2">🔮 ESDEVENIMENTS</h3>
                                                     <div className="grid grid-cols-2 gap-4">
@@ -867,7 +991,6 @@
                                                     </div>
                                                 </div>
                                                 
-                                                {/* Objectes i Begudes (4 Slots Mixts) */}
                                                 <div className="flex-1">
                                                     <h3 className="text-3xl text-blue-400 text-center mb-4 border-b-4 border-blue-900 pb-2">📦 OBJECTES I 🍹 BEGUDES</h3>
                                                     <div className="grid grid-cols-2 gap-4">
@@ -897,23 +1020,22 @@
                                                         })}
                                                     </div>
                                                 </div>
-
                                             </div>
 
-                                            <button onClick={() => round === 1 && score === 0 && !hasWonTrick ? initRound(1) : nextRound()} className="bg-blue-600 px-16 py-4 pixel-border shadow-[8px_8px_0_0_#000] text-4xl font-bold animate-pulse mt-8">COMENÇAR PARTIDA ➔</button>
+                                            <button onClick={() => initRound(round)} className="bg-red-700 px-16 py-4 pixel-border shadow-[8px_8px_0_0_#000] text-4xl font-bold animate-pulse mt-8">COMENÇAR BATALLA ➔</button>
                                         </div>
                                     )}
 
                                     {(gameState === 'PLAYING' || gameState === 'RESOLVING') && (
                                         <>
-                                            <div className="w-full flex justify-center mt-4 shrink-0"><div className="flex -space-x-8 scale-[0.85] opacity-80 pointer-events-none">{aiHand.map((c, i) => <Card key={i} card={c} hidden={!aiCardsRevealed && !c.revealed} isAi displayFichas={getCardFichas(c, events) + (c.bonusR7 || 0)} />)}</div></div>
+                                            <div className="w-full flex justify-center mt-4 shrink-0"><div className="flex -space-x-8 scale-[0.85] opacity-80 pointer-events-none">{aiHand.map((c, i) => <Card key={i} card={c} hidden={!aiCardsRevealed && !c.revealed} isAi displayFichas={getCardFichas(c, events) + (c.bonusR7 || 0)} highContrast={highContrastCards} />)}</div></div>
                                             <div className="absolute left-8 top-4 flex flex-col items-center z-20">
                                                 {aiLastTrick ? <div className="w-[80px] h-[120px] relative cursor-pointer hover:scale-110 transition-transform" onClick={() => { setModalTrick(aiLastTrick); setShowLastTrick(true); }}><div className="absolute inset-0 bg-red-900 opacity-40 rounded pixel-border-sm overflow-hidden flex items-center justify-center border-red-600"><img src={REVERSO_URL} className="w-full h-full object-cover opacity-50" /></div><span className="absolute bottom-[-25px] w-[130px] left-1/2 -translate-x-1/2 text-sm text-red-300 font-bold text-center bg-black bg-opacity-70 px-2 rounded">Bassa Rival</span></div> : <div className="w-[80px] h-[120px] border-4 border-dashed border-gray-700 opacity-20" />}
                                             </div>
                                             <div className="w-full flex justify-between items-center flex-1">
                                                 <div className="w-[400px] flex items-center pl-8">
                                                     <div className="relative w-[130px] h-[180px] flex items-center justify-start">
-                                                        {muestra ? <div className="absolute left-12 top-1/2 -translate-y-1/2 rotate-90 w-[100px] h-[150px] z-10"><Card card={muestra} isMuestra /></div> : <div className="absolute left-12 top-1/2 -translate-y-1/2 text-8xl opacity-80 z-10">{suitEmojis[trumpSuit]}</div>}
+                                                        {muestra ? <div className="absolute left-12 top-1/2 -translate-y-1/2 rotate-90 w-[100px] h-[150px] z-10"><Card card={muestra} isMuestra highContrast={highContrastCards} /></div> : <div className="absolute left-12 top-1/2 -translate-y-1/2 text-8xl opacity-80 z-10">{suitEmojis[trumpSuit]}</div>}
                                                         {deck.length > 0 && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[100px] h-[150px] cursor-pointer z-30 hover:scale-105 transition-transform" onClick={() => setShowDeckModal(true)}>{Array.from({ length: Math.min(4, Math.ceil(deck.length/8)) }).map((_, i) => <img key={i} src={REVERSO_URL} className="absolute w-full h-full object-contain drop-shadow-xl" style={{ top: `${i*-3}px`, left: `${i*-3}px` }} />)}<div className="absolute top-0 right-0 bg-red-600 text-white font-bold px-2 py-1 text-lg rounded pixel-border-sm translate-x-1/2 -translate-y-1/2">{deck.length}</div></div>}
                                                         {deck.length === 0 && muestra && <div className="absolute top-[105%] left-0 w-[100px] text-center text-red-500 font-bold bg-black bg-opacity-80 px-2 rounded pixel-border-sm animate-pulse">ÚLTIMA</div>}
                                                     </div>
@@ -923,9 +1045,9 @@
                                                     </div>
                                                 </div>
                                                 <div className="flex-1 flex flex-col items-center justify-center gap-6 relative">
-                                                    <div className="z-10">{ (turnLeader === 'ai' || gameState === 'RESOLVING') ? <Card card={currentAiCard} isAi displayFichas={currentAiCard ? getCardFichas(currentAiCard, events)+(currentAiCard.bonusR7||0) : 0}/> : <div className="w-[100px] h-[150px] border-4 border-dashed border-gray-600 rounded-xl opacity-20" /> }</div>
+                                                    <div className="z-10">{ (turnLeader === 'ai' || gameState === 'RESOLVING') ? <Card card={currentAiCard} isAi displayFichas={currentAiCard ? getCardFichas(currentAiCard, events)+(currentAiCard.bonusR7||0) : 0} highContrast={highContrastCards}/> : <div className="w-[100px] h-[150px] border-4 border-dashed border-gray-600 rounded-xl opacity-20" /> }</div>
                                                     <div className="text-5xl text-gray-500 opacity-40 font-bold">VS</div>
-                                                    <div onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); const i = parseInt(e.dataTransfer.getData('text/plain')); if (!isNaN(i)) playCard(playerHand[i]); setDraggedIndex(null); }} className={`w-[110px] h-[160px] border-8 border-dashed rounded-xl flex items-center justify-center transition-colors z-10 ${draggedIndex !== null ? 'border-green-400 bg-green-600 bg-opacity-40 animate-pulse' : 'border-blue-600 bg-blue-900 bg-opacity-30'}`}>{playedPlayerCard && <Card card={playedPlayerCard} isAi displayFichas={getCardFichas(playedPlayerCard, events)+(playedPlayerCard.bonusR7||0)}/>}</div>
+                                                    <div onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); const i = parseInt(e.dataTransfer.getData('text/plain')); if (!isNaN(i)) playCard(playerHand[i]); setDraggedIndex(null); }} className={`w-[110px] h-[160px] border-8 border-dashed rounded-xl flex items-center justify-center transition-colors z-10 ${draggedIndex !== null ? 'border-green-400 bg-green-600 bg-opacity-40 animate-pulse' : 'border-blue-600 bg-blue-900 bg-opacity-30'}`}>{playedPlayerCard && <Card card={playedPlayerCard} isAi displayFichas={getCardFichas(playedPlayerCard, events)+(playedPlayerCard.bonusR7||0)} highContrast={highContrastCards}/>}</div>
                                                     {bazaResult && <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none w-[800px] flex justify-center"><div className={`text-center inline-block bg-[#0b141a] bg-opacity-95 p-8 pixel-border shadow-2xl ${bazaResult.cau ? 'animate-cau' : 'animate-bounce'}`}><h2 className={`text-4xl font-bold mb-4 ${bazaResult.winner === 'player' || bazaResult.winner === 'canto' ? 'text-yellow-400' : 'text-red-500'}`}><FormatText text={bazaResult.message} /></h2>{bazaResult.winner === 'player' && <><div className="text-3xl text-white flex gap-4 justify-center"><span className="text-blue-300 bg-blue-900 px-3 py-1 rounded">{bazaResult.fichas} Fitxes</span><span className="text-red-400 bg-red-900 px-3 py-1 rounded">x{bazaResult.mult}</span></div><div className="text-6xl text-green-400 mt-6 font-bold">+ {bazaResult.total}</div></>}</div></div>}
                                                 </div>
                                                 <div className="w-[400px] flex items-center justify-center">
@@ -943,7 +1065,7 @@
                                                 </div>
                                                 <div className="w-full flex justify-center items-end max-w-[1200px] gap-6">
                                                     <div className="flex justify-center items-center gap-4 bg-black bg-opacity-60 px-8 pt-6 pb-2 rounded-t-2xl pixel-border border-b-0 h-[210px] shrink-0">
-                                                        {playerHand.map((c, i) => <div key={c.id} draggable={gameState === 'PLAYING'} onDragStart={e => handleDragStart(e, i)} onDragOver={e => e.preventDefault()} onDrop={e => handleDropInHand(e, i)} onDragEnd={() => setDraggedIndex(null)} className={`cursor-move flex flex-col justify-end ${draggedIndex === i ? 'opacity-30' : 'opacity-100'}`}><Card card={c} onClick={() => toggleCardSelection(c)} isSelected={selectedCards.find(sc => sc.id === c.id)} disabled={gameState !== 'PLAYING'} displayFichas={getCardFichas(c, events) + (c.bonusR7 || 0)} /></div>)}
+                                                        {playerHand.map((c, i) => <div key={c.id} draggable={gameState === 'PLAYING'} onDragStart={e => handleDragStart(e, i)} onDragOver={e => e.preventDefault()} onDrop={e => handleDropInHand(e, i)} onDragEnd={() => setDraggedIndex(null)} className={`cursor-move flex flex-col justify-end ${draggedIndex === i ? 'opacity-30' : 'opacity-100'}`}><Card card={c} onClick={() => toggleCardSelection(c)} isSelected={selectedCards.find(sc => sc.id === c.id)} disabled={gameState !== 'PLAYING'} displayFichas={getCardFichas(c, events) + (c.bonusR7 || 0)} highContrast={highContrastCards} /></div>)}
                                                     </div>
                                                     <div className="flex flex-col gap-4 bg-black bg-opacity-60 p-4 pb-2 pixel-border-sm rounded-t-2xl border-b-0 mb-4 shrink-0">
                                                         <span className="text-xl text-gray-400 text-center font-bold">ORDENAR</span>
@@ -993,9 +1115,9 @@
                                 <div className="bg-[#1a2b22] p-12 pixel-border max-w-4xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
                                     <h2 className="text-5xl text-yellow-400 mb-12 font-bold">DETALL DE LA BASSA</h2>
                                     <div className="flex gap-20 items-center mb-12 w-full justify-center">
-                                        <div className="flex flex-col items-center"><Card card={modalTrick.aiCard} disabled isAi displayFichas={getCardFichas(modalTrick.aiCard, events)+(modalTrick.aiCard.bonusR7||0)} /><span className="text-2xl text-red-400 mt-8 font-bold bg-black px-4 py-1 rounded">RIVAL</span></div>
+                                        <div className="flex flex-col items-center"><Card card={modalTrick.aiCard} disabled isAi displayFichas={getCardFichas(modalTrick.aiCard, events)+(modalTrick.aiCard.bonusR7||0)} highContrast={highContrastCards} /><span className="text-2xl text-red-400 mt-8 font-bold bg-black px-4 py-1 rounded">RIVAL</span></div>
                                         <div className="text-6xl text-gray-500 font-bold opacity-50">VS</div>
-                                        <div className="flex flex-col items-center"><Card card={modalTrick.pCard} disabled isAi displayFichas={getCardFichas(modalTrick.pCard, events)+(modalTrick.pCard.bonusR7||0)} /><span className="text-2xl text-blue-400 mt-8 font-bold bg-black px-4 py-1 rounded">TU</span></div>
+                                        <div className="flex flex-col items-center"><Card card={modalTrick.pCard} disabled isAi displayFichas={getCardFichas(modalTrick.pCard, events)+(modalTrick.pCard.bonusR7||0)} highContrast={highContrastCards} /><span className="text-2xl text-blue-400 mt-8 font-bold bg-black px-4 py-1 rounded">TU</span></div>
                                     </div>
                                     <div className="text-3xl bg-black bg-opacity-50 p-6 pixel-border w-full text-center">Guanyador: <span className={modalTrick.winner === 'player' ? 'text-green-400 font-bold' : 'text-red-500 font-bold'}>{modalTrick.winner === 'player' ? 'TU (+'+modalTrick.totalPuntos+' punts)' : 'RIVAL'}</span></div>
                                     <button onClick={() => { setShowLastTrick(false); setModalTrick(null); }} className="mt-12 bg-red-600 px-12 py-4 pixel-border font-bold text-2xl">TANCAR</button>
@@ -1014,7 +1136,7 @@
                                                     const upgrade = rankUpgrades[rank] || 0;
                                                     const dummyCard = { suit, rank, fichasBase: getFichasBase(rank) + upgrade };
                                                     const seen = deck.some(c => c.suit === suit && c.rank === rank) || aiHand.some(c => c.suit === suit && c.rank === rank) || (muestra && muestra.suit === suit && muestra.rank === rank);
-                                                    return <div key={rank} className={`transition-opacity transform scale-90 ${seen ? 'opacity-100 hover:scale-105 z-10 hover:z-50 text-white' : 'opacity-30 grayscale text-gray-500'}`}><Card card={dummyCard} disabled isAi displayFichas={getCardFichas(dummyCard, events)} /></div>;
+                                                    return <div key={rank} className={`transition-opacity transform scale-90 ${seen ? 'opacity-100 hover:scale-105 z-10 hover:z-50 text-white' : 'opacity-30 grayscale text-gray-500'}`}><Card card={dummyCard} disabled isAi displayFichas={getCardFichas(dummyCard, events)} highContrast={highContrastCards} /></div>;
                                                 })}
                                             </div>
                                         ))}
@@ -1032,7 +1154,7 @@
                                     <p className="text-4xl text-gray-300 mb-6">Tirades restants: <span className="text-green-400 font-bold">{roundSummary.tiradasLeft}</span></p>
                                     <p className="text-5xl text-yellow-400 mt-6 font-bold bg-black px-8 py-4 pixel-border-sm">Recompensa: +{roundSummary.monedasEarned} 💰</p>
                                 </div>
-                                <button onClick={() => setGameState('SHOP')} className="bg-blue-600 px-16 py-8 pixel-border text-5xl font-bold">ANAR A LA PARAETA ➔</button>
+                                <button onClick={() => nextRound()} className="bg-blue-600 px-16 py-8 pixel-border text-5xl font-bold">CONTINUAR RUTA ➔</button>
                             </div>
                         )}
 
@@ -1048,13 +1170,16 @@
                                             <li><strong>Bonus:</strong> Cada 100 punts aconsegueixes +1 Tirada i +1 Descart extra.</li>
                                         </ul>
                                     </div>
-                                    <button onClick={startGame} className="bg-green-600 px-16 py-8 pixel-border text-5xl font-bold animate-pulse">REPARTIR CARTES</button>
+                                    <div className="flex gap-8 justify-center">
+                                        <button onClick={() => startGame('cristia')} className="bg-blue-600 hover:bg-blue-500 px-12 py-6 pixel-border text-4xl font-bold animate-pulse shadow-[8px_8px_0_0_#000]">JUGAR COM A CRISTIÀ</button>
+                                        <button onClick={() => startGame('moro')} className="bg-green-700 hover:bg-green-600 px-12 py-6 pixel-border text-4xl font-bold animate-pulse shadow-[8px_8px_0_0_#000]">JUGAR COM A MORO</button>
+                                    </div>
                                 </div>
                             </div>
                         )}
 
-                        {gameState === 'GAMEOVER' && <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20"><h1 className="text-[150px] text-red-600 mb-8 font-bold">AL POU</h1><p className="text-4xl text-gray-300 mb-16">T'has quedat sense tirades al Coto {round}.</p><button onClick={startGame} className="bg-yellow-600 text-black px-16 py-8 pixel-border text-4xl font-bold">TORNAR A INTENTAR</button></div>}
-                        {gameState === 'VICTORY' && <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20"><h1 className="text-[120px] text-yellow-400 mb-8 font-bold animate-cau text-center">¡ETS EL REI<br/>DEL CAU!</h1><p className="text-4xl text-gray-300 mb-16">Has arruïnat al poble guanyant tots els cotos.</p><button onClick={startGame} className="bg-green-600 px-16 py-8 pixel-border text-4xl font-bold">JUGAR UNA ALTRA PARTIDA</button></div>}
+                        {gameState === 'GAMEOVER' && <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20"><h1 className="text-[150px] text-red-600 mb-8 font-bold">AL POU</h1><p className="text-4xl text-gray-300 mb-16">T'has quedat sense tirades al Coto {round}.</p><button onClick={() => startGame(faction)} className="bg-yellow-600 text-black px-16 py-8 pixel-border text-4xl font-bold">TORNAR A INTENTAR COM A {faction.toUpperCase()}</button></div>}
+                        {gameState === 'VICTORY' && <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20"><h1 className="text-[120px] text-yellow-400 mb-8 font-bold animate-cau text-center">¡ETS EL REI<br/>DEL CAU!</h1><p className="text-4xl text-gray-300 mb-16">Has arruïnat al poble guanyant tots els cotos.</p><button onClick={() => { setGameState('MENU'); setFaction(null); }} className="bg-green-600 px-16 py-8 pixel-border text-4xl font-bold">TORNAR AL MENÚ PRINCIPAL</button></div>}
                     </div>
                 </div>
             );
