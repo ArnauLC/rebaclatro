@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rebaclatro - Festes Edition</title>
+    <title>Rebaclatro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -15,7 +15,6 @@
     <script type="text/babel">
         const { useState, useEffect, useCallback } = React;
 
-        // Custom Hook per a gestionar el LocalStorage
         function useLocalStorage(key, initialValue) {
             const [value, setValue] = useState(() => {
                 try {
@@ -80,8 +79,6 @@
         
         const SUITS = ['Ors', 'Copes', 'Espases', 'Bastos'];
         const RANKS = [1, 3, 12, 10, 11, 7, 6, 5, 4, 2]; 
-        
-        // Punts objectiu reduïts a la meitat
         const TARGETS = [150, 300, 500, 750, 1000]; 
 
         const suitEmojis = { Ors: '🪙', Copes: '🍷', Espases: '⚔️', Bastos: '🪵' };
@@ -162,19 +159,17 @@
             { id: 'o28', faction: 'moro', name: 'Benimerins', img: 'https://www.asjordi.org/upload/images/filaes/14-Benimerines.jpg', desc: '+1 Tirada i +2 Mult.', cost: 6, efecte: { tiradas: 1, mult: 2 } }
         ];
 
-        const getDrinkSvg = (emoji) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="70">${emoji}</text></svg>`;
-
         const BEGUDES_DB = [
-            { id: 'b1', rank: 1, name: 'Cassalla', img: getDrinkSvg('🥂'), desc: 'Millora permanentment tots els Asos (+30 Fitxes).', cost: 8, upgradeAmount: 30 },
-            { id: 'b2', rank: 2, name: 'Aigua', img: getDrinkSvg('💧'), desc: 'Millora permanentment tots els 2 (+10 Fitxes).', cost: 3, upgradeAmount: 10 },
-            { id: 'b3', rank: 3, name: 'Biri Biri', img: getDrinkSvg('🍊'), desc: 'Millora permanentment tots els 3 (+25 Fitxes).', cost: 7, upgradeAmount: 25 },
-            { id: 'b4', rank: 4, name: 'Coca-Cola', img: getDrinkSvg('🥤'), desc: 'Millora permanentment tots els 4 (+10 Fitxes).', cost: 4, upgradeAmount: 10 },
-            { id: 'b5', rank: 5, name: 'Aigua-llimó', img: getDrinkSvg('🍋'), desc: 'Millora permanentment tots els 5 (+10 Fitxes).', cost: 4, upgradeAmount: 10 },
-            { id: 'b6', rank: 6, name: 'Cervesa', img: getDrinkSvg('🍺'), desc: 'Millora permanentment tots els 6 (+15 Fitxes).', cost: 5, upgradeAmount: 15 },
-            { id: 'b7', rank: 7, name: 'Vi', img: getDrinkSvg('🍷'), desc: 'Millora permanentment tots els 7 (+15 Fitxes).', cost: 5, upgradeAmount: 15 },
-            { id: 'b10', rank: 10, name: 'Mentira', img: getDrinkSvg('☕'), desc: 'Millora permanentment totes les Sotes (+20 Fitxes).', cost: 6, upgradeAmount: 20 },
-            { id: 'b11', rank: 11, name: 'Plis-Play', img: getDrinkSvg('🧊'), desc: 'Millora permanentment tots els Cavalls (+20 Fitxes).', cost: 6, upgradeAmount: 20 },
-            { id: 'b12', rank: 12, name: 'Somriure Alcoià', img: getDrinkSvg('😁'), desc: 'Millora permanentment tots els Reis (+20 Fitxes).', cost: 6, upgradeAmount: 20 }
+            { id: 'b1', rank: 1, name: 'Cassalla', img: 'b1.png', desc: 'Millora permanentment tots els Asos (+30 Fitxes).', cost: 8, upgradeAmount: 30 },
+            { id: 'b2', rank: 2, name: 'Aigua', img: 'b2.png', desc: 'Millora permanentment tots els 2 (+10 Fitxes).', cost: 3, upgradeAmount: 10 },
+            { id: 'b3', rank: 3, name: 'Biri Biri', img: 'b3.png', desc: 'Millora permanentment tots els 3 (+25 Fitxes).', cost: 7, upgradeAmount: 25 },
+            { id: 'b4', rank: 4, name: 'Coca-Cola', img: 'b4.png', desc: 'Millora permanentment tots els 4 (+10 Fitxes).', cost: 4, upgradeAmount: 10 },
+            { id: 'b5', rank: 5, name: 'Aigua-llimó', img: 'b5.png', desc: 'Millora permanentment tots els 5 (+10 Fitxes).', cost: 4, upgradeAmount: 10 },
+            { id: 'b6', rank: 6, name: 'Cervesa', img: 'b6.png', desc: 'Millora permanentment tots els 6 (+15 Fitxes).', cost: 5, upgradeAmount: 15 },
+            { id: 'b7', rank: 7, name: 'Vi', img: 'b7.png', desc: 'Millora permanentment tots els 7 (+15 Fitxes).', cost: 5, upgradeAmount: 15 },
+            { id: 'b10', rank: 10, name: 'Mentira', img: 'b10.png', desc: 'Millora permanentment totes les Sotes (+20 Fitxes).', cost: 6, upgradeAmount: 20 },
+            { id: 'b11', rank: 11, name: 'Plis-Play', img: 'b11.png', desc: 'Millora permanentment tots els Cavalls (+20 Fitxes).', cost: 6, upgradeAmount: 20 },
+            { id: 'b12', rank: 12, name: 'Somriure Alcoià', img: 'b12.png', desc: 'Millora permanentment tots els Reis (+20 Fitxes).', cost: 6, upgradeAmount: 20 }
         ];
 
         const globalStyles = `
@@ -223,11 +218,19 @@
         };
         
         const getEnemyImage = (en) => {
-            const emojis = {
-                'Guerrer Moro': '🥷', 'Sargent Moro': '👳', 'Alferes Moro': '🗡️', 'Capità Moro': '🏴‍☠️', 'Al-Azraq': '👑',
-                'Guerrer Cristià': '🤺', 'Sargent Cristià': '💂', 'Alferes Cristià': '⚔️', 'Capità Cristià': '🛡️', 'Jaume I': '🤴'
+            const urls = {
+                'Guerrer Moro': 'https://www.asjordi.org/upload/images/filaes/01-Llana.jpg',
+                'Sargent Moro': 'https://www.asjordi.org/upload/images/filaes/02-Judios.jpg',
+                'Alferes Moro': 'https://www.asjordi.org/upload/images/filaes/03-Domingo-Miques.jpg',
+                'Capità Moro': 'https://www.asjordi.org/upload/images/filaes/05-Verdes.jpg',
+                'Al-Azraq': 'https://www.asjordi.org/upload/images/filaes/10-Abencerrajes.jpg',
+                'Guerrer Cristià': 'https://www.asjordi.org/upload/images/filaes/02-Asturianos.jpg',
+                'Sargent Cristià': 'https://www.asjordi.org/upload/images/filaes/03-Cides.jpg',
+                'Alferes Cristià': 'https://www.asjordi.org/upload/images/filaes/04-Labradores.jpg',
+                'Capità Cristià': 'https://www.asjordi.org/upload/images/filaes/06-Vascos.jpg',
+                'Jaume I': 'https://www.asjordi.org/upload/images/guzmanes.jpg'
             };
-            return emojis[en] || '👤';
+            return urls[en] || 'https://www.asjordi.org/upload/images/noticias/Escut-1.jpg';
         };
 
         const Card = ({ card, onClick, isSelected, disabled, isAi, hidden, isMuestra, displayFichas, highContrast }) => {
@@ -274,11 +277,9 @@
                 return () => window.removeEventListener('resize', handleResize);
             }, []);
 
-            // PERSISTÈNCIA DE CONFIGURACIÓ I COL·LECCIÓ
             const [highContrastCards, setHighContrastCards] = useLocalStorage('rebaclatro_highContrast', false);
             const [unlockedItems, setUnlockedItems] = useLocalStorage('rebaclatro_unlocked', []);
 
-            // ESTAT DE LA PARTIDA
             const [gameState, setGameState] = useState('MENU'); 
             const [faction, setFaction] = useState(null);
             
@@ -335,8 +336,9 @@
             const [hasWonTrick, setHasWonTrick] = useState(false);
 
             const [bazaResult, setBazaResult] = useState(null); 
+            
+            const [sortMethod, setSortMethod] = useState('none'); 
 
-            // -- SISTEMA D'AUTOGUARDAT --
             const hasSavedGame = !!localStorage.getItem('rebaclatro_savegame');
 
             useEffect(() => {
@@ -347,13 +349,14 @@
                         aiHand, muestra, trumpSuit, currentAiCard, playedPlayerCard,
                         turnLeader, events, objectes, begudes, shopEvents, shopMixed,
                         rankUpgrades, baseMult, tempMult, tempFichas, fichasAcumuladas,
-                        cantesRealizados, aiCantesRealizados, aiPenaltyMult, hasWonTrick
+                        cantesRealizados, aiCantesRealizados, aiPenaltyMult, hasWonTrick,
+                        sortMethod
                     };
                     localStorage.setItem('rebaclatro_savegame', JSON.stringify(save));
                 } else if (['GAMEOVER', 'VICTÒRIA', 'DERROTA'].includes(gameState)) {
                     localStorage.removeItem('rebaclatro_savegame');
                 }
-            }, [gameState, faction, round, score, targetScore, monedas, tiradasLeft, descartesLeft, deck, discardPile, playerHand, aiHand, muestra, trumpSuit, currentAiCard, playedPlayerCard, turnLeader, events, objectes, begudes, shopEvents, shopMixed, rankUpgrades, baseMult, tempMult, tempFichas, fichasAcumuladas, cantesRealizados, aiCantesRealizados, aiPenaltyMult, hasWonTrick]);
+            }, [gameState, faction, round, score, targetScore, monedas, tiradasLeft, descartesLeft, deck, discardPile, playerHand, aiHand, muestra, trumpSuit, currentAiCard, playedPlayerCard, turnLeader, events, objectes, begudes, shopEvents, shopMixed, rankUpgrades, baseMult, tempMult, tempFichas, fichasAcumuladas, cantesRealizados, aiCantesRealizados, aiPenaltyMult, hasWonTrick, sortMethod]);
 
             const loadSavedGame = () => {
                 try {
@@ -374,7 +377,7 @@
                         setTempMult(saved.tempMult); setTempFichas(saved.tempFichas);
                         setFichasAcumuladas(saved.fichasAcumuladas); setCantesRealizados(saved.cantesRealizados);
                         setAiCantesRealizados(saved.aiCantesRealizados); setAiPenaltyMult(saved.aiPenaltyMult);
-                        setHasWonTrick(saved.hasWonTrick);
+                        setHasWonTrick(saved.hasWonTrick); setSortMethod(saved.sortMethod || 'none');
                         setGameState(saved.gameState);
                     }
                 } catch (e) {
@@ -440,6 +443,30 @@
                 return 'lead'; 
             };
 
+            const getSortedHand = (hand, method) => {
+                if (method === 'suit') {
+                    const order = ['Ors', 'Copes', 'Espases', 'Bastos'];
+                    return [...hand].sort((a, b) => {
+                        if (isTriunfo(a.suit, events) && !isTriunfo(b.suit, events)) return -1;
+                        if (!isTriunfo(a.suit, events) && isTriunfo(b.suit, events)) return 1;
+                        if (a.suit !== b.suit) return order.indexOf(a.suit) - order.indexOf(b.suit);
+                        return getPoder(b.rank) - getPoder(a.rank);
+                    });
+                }
+                if (method === 'power') {
+                    return [...hand].sort((a, b) => {
+                        if (isTriunfo(a.suit, events) && !isTriunfo(b.suit, events)) return -1;
+                        if (!isTriunfo(a.suit, events) && isTriunfo(b.suit, events)) return 1;
+                        if (getPoder(a.rank) !== getPoder(b.rank)) return getPoder(b.rank) - getPoder(a.rank);
+                        return SUITS.indexOf(a.suit) - SUITS.indexOf(b.suit);
+                    });
+                }
+                return hand;
+            };
+
+            const sortHandBySuit = () => { setSortMethod('suit'); setPlayerHand(getSortedHand(playerHand, 'suit')); };
+            const sortHandByPower = () => { setSortMethod('power'); setPlayerHand(getSortedHand(playerHand, 'power')); };
+
             const createDeck = () => {
                 let newDeck = [];
                 SUITS.forEach(suit => {
@@ -473,7 +500,8 @@
                 let pHand = newDeck.splice(0, 6);
                 let aHand = newDeck.splice(0, 6);
                 
-                setDeck(newDeck); setDiscardPile([]); setPlayerHand(pHand);
+                setDeck(newDeck); setDiscardPile([]); 
+                setPlayerHand(getSortedHand(pHand, sortMethod));
                 setMuestra(m); setTurnLeader('ai');
                 
                 setScore(0); setTiradasLeft(10); setDescartesLeft(3);
@@ -510,6 +538,7 @@
                     setCurrentAiCard(nextAiPlay);
                     setAiHand(currentAHand);
                 }
+                setPlayerHand(getSortedHand(playerHand, sortMethod));
                 setGameState('PLAYING');
             };
 
@@ -598,7 +627,6 @@
                 return cantes;
             };
 
-            // Canvi per mantenir el multiplicador de manera perenne a la ronda
             const cantar = (cante) => {
                 setCantesRealizados([...cantesRealizados, cante.suit]);
                 let multBonus = cante.tipo === '40' ? 4 : 2;
@@ -637,7 +665,7 @@
                 let discarded = currentHand.filter(c => selectedCards.find(sc => sc.id === c.id));
                 let { drawn, newDeck, newMuestra } = drawCards(deck, 6 - newHand.length, muestra);
                 setDeck(newDeck); setDiscardPile([...discardPile, ...discarded]);
-                setMuestra(newMuestra); setPlayerHand([...newHand, ...drawn]);
+                setMuestra(newMuestra); setPlayerHand(getSortedHand([...newHand, ...drawn], sortMethod));
                 setSelectedCards([]); setDescartesLeft(d => d - 1);
             };
 
@@ -763,7 +791,7 @@
                 
                 setTimeout(() => {
                     const newScore = score + totalPuntos;
-                    const extraRes = Math.max(0, Math.floor(newScore / 100) - Math.floor(score / 100));
+                    const extraRes = Math.max(0, Math.floor(newScore / 50) - Math.floor(score / 50));
                     if (extraRes > 0) { setTiradasLeft(t => t + extraRes); setDescartesLeft(d => d + extraRes); setExtraPlayMsg(true); setTimeout(() => setExtraPlayMsg(false), 2000); }
                     setScore(newScore); setTurnLeader(winner);
                     
@@ -786,7 +814,7 @@
                         setDeck(freshDeck); setDiscardPile([]); if (m) { setMuestra(m); }
                     } else { setDeck(secondDraw.newDeck); setMuestra(secondDraw.newMuestra); }
                     
-                    setPlayerHand(nextPHand);
+                    setPlayerHand(getSortedHand(nextPHand, sortMethod));
                     
                     if (newScore >= targetScore) {
                         const finalCoins = 4 + Math.floor((newTiradas + extraRes) / 2);
@@ -806,9 +834,17 @@
 
             const handlePlayCardBtn = () => { if (tiradasLeft > 0 && selectedCards.length === 1) playCard(selectedCards[0]); };
             const handleDragStart = (e, i) => { setDraggedIndex(i); if (e.dataTransfer) { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', i.toString()); } };
-            const handleDropInHand = (e, i) => { e.preventDefault(); if (draggedIndex !== null && draggedIndex !== i) { const newHand = [...playerHand]; const [dragged] = newHand.splice(draggedIndex, 1); newHand.splice(i, 0, dragged); setPlayerHand(newHand); } setDraggedIndex(null); };
-            const sortHandBySuit = () => { const order = ['Ors', 'Copes', 'Espases', 'Bastos']; setPlayerHand([...playerHand].sort((a, b) => { if (isTriunfo(a.suit, events) && !isTriunfo(b.suit, events)) return -1; if (!isTriunfo(a.suit, events) && isTriunfo(b.suit, events)) return 1; if (a.suit !== b.suit) return order.indexOf(a.suit) - order.indexOf(b.suit); return getPoder(b.rank) - getPoder(a.rank); })); };
-            const sortHandByPower = () => { setPlayerHand([...playerHand].sort((a, b) => { if (isTriunfo(a.suit, events) && !isTriunfo(b.suit, events)) return -1; if (!isTriunfo(a.suit, events) && isTriunfo(b.suit, events)) return 1; if (getPoder(a.rank) !== getPoder(b.rank)) return getPoder(b.rank) - getPoder(a.rank); return SUITS.indexOf(a.suit) - SUITS.indexOf(b.suit); })); };
+            const handleDropInHand = (e, i) => { 
+                e.preventDefault(); 
+                if (draggedIndex !== null && draggedIndex !== i) { 
+                    const newHand = [...playerHand]; 
+                    const [dragged] = newHand.splice(draggedIndex, 1); 
+                    newHand.splice(i, 0, dragged); 
+                    setPlayerHand(newHand); 
+                    setSortMethod('none');
+                } 
+                setDraggedIndex(null); 
+            };
 
             const generateShop = (currentFaction) => {
                 let sE = new Array(5).fill(null);
@@ -902,13 +938,13 @@
                 const bgClass = isDrink ? 'bg-orange-900 border-orange-400' : isObj ? 'bg-blue-900 border-blue-400' : 'bg-purple-900 border-purple-400';
                 
                 return (
-                    <div key={item.id} className={`w-[80px] h-[80px] border-2 flex items-center justify-center p-1 relative group cursor-help ${bgClass}`}>
+                    <div key={item.id} className={`w-[90px] h-[160px] border-2 flex items-center justify-center p-1 relative group cursor-help ${bgClass}`}>
                         {isUnlocked ? (
-                            <img src={isObj || isDrink ? item.img : `${RELICS_BASE_URL}${item.img}`} className={`w-full h-full ${isObj && item.faction ? 'object-cover' : 'object-contain'}`} />
+                            <img src={isObj ? item.img : `${RELICS_BASE_URL}${item.img}`} className={`w-full h-full ${isObj && item.faction ? 'object-cover' : 'object-contain'}`} />
                         ) : (
                             <div className="text-4xl text-gray-400 font-bold opacity-50">?</div>
                         )}
-                        <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-64 bg-black p-2 pixel-border opacity-0 group-hover:opacity-100 z-[210] pointer-events-none text-center">
+                        <div className="absolute top-[105%] left-1/2 -translate-x-1/2 w-64 bg-black p-2 pixel-border opacity-0 group-hover:opacity-100 z-[210] pointer-events-none text-center">
                             {isUnlocked ? (
                                 <>
                                     <p className="text-yellow-300 font-bold">{item.name}</p>
@@ -940,7 +976,7 @@
                         <p className="text-gray-400 text-xl mb-2 text-center">Esdeveniments Aconseguits</p>
                         <div className="flex justify-center gap-2 flex-wrap">
                             {events.length > 0 ? events.map(e => (
-                                <div key={e.id} className="w-16 h-16 bg-purple-900 border-2 border-purple-400 flex items-center justify-center group relative cursor-help">
+                                <div key={e.id} className="w-[45px] h-[80px] bg-purple-900 border-2 border-purple-400 flex items-center justify-center group relative cursor-help">
                                     <img src={`${RELICS_BASE_URL}${e.img}`} alt={e.name} className="w-full h-full object-contain p-1" />
                                     <div className="absolute bottom-[110%] w-48 bg-black p-2 pixel-border text-center text-sm opacity-0 group-hover:opacity-100 pointer-events-none z-50">
                                         <span className="text-yellow-300 font-bold">{e.name}</span>
@@ -973,14 +1009,12 @@
                     <style>{globalStyles}</style>
                     <div style={{ width: '1920px', height: '1080px', minWidth: '1920px', minHeight: '1080px', transform: `scale(${scale})`, transformOrigin: 'center' }} className="bg-felt text-white flex flex-col relative select-none shadow-[0_0_50px_rgba(0,0,0,1)] border-4 border-black overflow-hidden shrink-0" onClick={handleGlobalClick}>
                         
-                        {/* BOTÓ OPCIONS - S'oculta si el menú està actiu, es mou a la part inferior dreta */}
                         {!showOptionsModal && gameState !== 'MENU' && (
                             <button onClick={() => { setShowOptionsModal(true); setOptionsSubView('main'); }} className="absolute bottom-4 right-4 z-[999] bg-gray-800 text-white px-6 py-3 pixel-border font-bold text-xl hover:bg-gray-700 shadow-xl">
                                 ⚙️ OPCIONS
                             </button>
                         )}
 
-                        {/* MODAL D'OPCIONS */}
                         {showOptionsModal && (
                             <div className="absolute inset-0 bg-black bg-opacity-95 z-[999] flex flex-col items-center justify-center p-8">
                                 <div className="bg-[#1a2b22] p-12 pixel-border max-w-5xl w-full flex flex-col items-center relative overflow-hidden" style={{ maxHeight: '900px' }}>
@@ -1062,7 +1096,7 @@
                                         <ul className="list-disc pl-8 space-y-4">
                                             <li><strong>Arrossegament:</strong> En últimes, s'ha d'assistir al pal o tirar triomf.</li>
                                             <li><strong>Bac:</strong> Guanyar amb el mateix número que la Mostra triplica els punts.</li>
-                                            <li><strong>Bonus:</strong> Cada 100 punts aconsegueixes +1 Tirada i +1 Descart extra.</li>
+                                            <li><strong>Bonus:</strong> Cada 50 punts aconsegueixes +1 Tirada i +1 Descart extra.</li>
                                         </ul>
                                     </div>
                                     <div className="flex gap-8 justify-center">
@@ -1095,23 +1129,23 @@
 
                         {gameState === 'ROUTE_MAP' && (
                             <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20">
-                                <h2 className="text-6xl text-yellow-400 font-bold mb-16 text-shadow">RUTA DE CAMPANYA ({faction.toUpperCase()})</h2>
-                                <div className="flex items-center gap-0 mb-16 px-12 w-full justify-center">
+                                <h2 className="text-6xl text-yellow-400 font-bold mb-16 text-shadow">CAMP DE BATALLA (BÀNDOL {faction.toUpperCase()})</h2>
+                                <div className="flex items-center gap-0 mb-16 px-12 w-full justify-center pt-24">
                                     {enemiesList.map((en, idx) => (
                                         <React.Fragment key={idx}>
-                                            <div className="flex flex-col items-center justify-start h-[180px] relative">
-                                                <div className={`w-[120px] h-[120px] rounded-full border-8 flex items-center justify-center text-6xl transition-all duration-500 z-10
-                                                    ${round - 1 === idx ? 'bg-yellow-500 border-white scale-[1.3] text-black shadow-[0_0_30px_rgba(250,204,21,1)]' : 
-                                                    round - 1 > idx ? 'bg-green-700 border-green-400 opacity-60' : 'bg-gray-800 border-gray-600 text-gray-400'}`}>
-                                                    {getEnemyImage(en)}
-                                                </div>
-                                                <div className={`absolute top-[125%] text-center font-bold w-[160px] text-xl transition-all duration-500
+                                            <div className="relative flex flex-col items-center">
+                                                <div className={`absolute bottom-[110%] text-center font-bold w-[200px] text-xl transition-all duration-500 mb-4
                                                     ${round - 1 === idx ? 'text-yellow-400 scale-[1.2]' : 'text-gray-400'}`}>
                                                     {en}
                                                 </div>
+                                                <div className={`w-[120px] h-[120px] rounded-full border-8 flex items-center justify-center text-6xl transition-all duration-500 z-10 overflow-hidden bg-black
+                                                    ${round - 1 === idx ? 'border-yellow-500 scale-[1.3] shadow-[0_0_30px_rgba(250,204,21,1)]' : 
+                                                    round - 1 > idx ? 'border-green-500 opacity-60' : 'border-gray-600 opacity-50'}`}>
+                                                    <img src={getEnemyImage(en)} alt={en} className="w-full h-full object-cover" />
+                                                </div>
                                             </div>
                                             {idx < enemiesList.length - 1 && (
-                                                <div className={`w-[100px] h-4 mb-[60px] transition-all duration-500 ${round - 1 > idx ? 'bg-green-400 shadow-[0_0_15px_rgba(74,222,128,1)]' : 'bg-gray-700'}`} />
+                                                <div className={`w-[100px] h-4 transition-all duration-500 ${round - 1 > idx ? 'bg-green-400 shadow-[0_0_15px_rgba(74,222,128,1)]' : 'bg-gray-700'}`} />
                                             )}
                                         </React.Fragment>
                                     ))}
@@ -1163,41 +1197,39 @@
                                 <div className="w-[180px] flex flex-col items-center py-6 gap-4 bg-black bg-opacity-40 border-r-4 border-black z-[60] shrink-0 overflow-visible">
                                     <span className="text-xl text-purple-300 font-bold">ESDEVENIMENTS</span>
                                     {events.map((e, i) => (
-                                        <div key={i} onClick={ev => { ev.stopPropagation(); setActiveActionId(activeActionId === `e-${i}` ? null : `e-${i}`); }} className="w-[100px] h-[100px] bg-purple-900 border-4 border-purple-400 flex items-center justify-center cursor-pointer group relative shrink-0">
+                                        <div key={i} onClick={ev => { ev.stopPropagation(); setActiveActionId(activeActionId === `e-${i}` ? null : `e-${i}`); }} className="w-[90px] h-[160px] bg-purple-900 border-4 border-purple-400 flex items-center justify-center cursor-pointer group relative shrink-0">
                                             <img src={`${RELICS_BASE_URL}${e.img}`} alt={e.name} className="w-full h-full object-contain p-2" onError={ev => {ev.target.style.display='none'}} />
                                             {activeActionId !== `e-${i}` && <div className="absolute top-1/2 left-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={e.name} /></p><p className="text-xl"><FormatText text={e.desc} /></p></div>}
                                             {activeActionId === `e-${i}` && gameState === 'SHOP' && <button onClick={() => sellItem(e, i, 'event')} className="absolute top-1/2 left-[120%] -translate-y-1/2 bg-red-600 px-6 py-3 pixel-border text-2xl whitespace-nowrap z-[100]">VENDRE (+{Math.max(1, Math.floor(getActualCost(e, 'event') / 2))}💰)</button>}
                                         </div>
                                     ))}
-                                    {Array.from({ length: 6 - events.length }).map((_, i) => <div key={`empty-ev-${i}`} className="w-[100px] h-[100px] border-4 border-dashed border-purple-800 bg-black bg-opacity-30 shrink-0" />)}
+                                    {Array.from({ length: 6 - events.length }).map((_, i) => <div key={`empty-ev-${i}`} className="w-[90px] h-[160px] border-4 border-dashed border-purple-800 bg-black bg-opacity-30 shrink-0" />)}
                                 </div>
 
                                 {/* CENTRE: CAMP DE BATALLA / PARAETA */}
                                 <div className="flex-1 flex flex-col items-center relative px-8 justify-between overflow-hidden">
                                     {gameState === 'SHOP' && (
                                         <div className="w-full h-full flex flex-col items-center justify-start py-8 relative">
-                                            {/* Valor de la bossa a l'esquerra */}
                                             <div className="absolute top-4 left-4 bg-[#0d3b22] px-6 py-3 rounded-xl border-2 border-green-500 shadow-[4px_4px_0_0_#000] flex items-center gap-4">
                                                 <span className="text-3xl text-yellow-400 font-bold">💰 {monedas}</span>
                                             </div>
 
                                             <div className="flex flex-col items-center mb-12">
                                                 <h2 className="text-6xl text-yellow-400 mb-4 text-shadow font-bold">MERCADER AMBULANT</h2>
-                                                <button onClick={handleReroll} disabled={monedas < 2} className={`text-2xl px-8 py-3 pixel-border font-bold transition-all shadow-[6px_6px_0_0_#000] ${monedas >= 2 ? 'bg-blue-600 hover:bg-blue-500' : 'bg-gray-800 text-gray-500'}`}>RENOVAR BOTIGA (💰2)</button>
                                             </div>
                                             
                                             <div className="flex flex-col w-full px-16 gap-8">
                                                 {/* FILA D'ESDEVENIMENTS */}
                                                 <div className="flex flex-row items-center w-full bg-black bg-opacity-40 p-4 rounded-xl border-2 border-purple-900">
-                                                    <div className="w-[200px] shrink-0 border-r-4 border-purple-900 pr-6 mr-2 flex items-center justify-end text-right">
-                                                        <h3 className="text-3xl text-purple-400 font-bold leading-tight">🔮<br/>ESDEVE-<br/>NIMENTS</h3>
+                                                    <div className="w-[300px] shrink-0 border-r-4 border-purple-900 pr-6 mr-4 flex items-center justify-end text-right">
+                                                        <h3 className="text-4xl text-purple-400 font-bold leading-tight">📆 ESDEVENIMENTS</h3>
                                                     </div>
                                                     <div className="flex flex-row gap-6 justify-center flex-1">
                                                         {shopEvents.map((item, i) => {
-                                                            if (!item) return <div key={`sE-${i}`} className="w-[140px] h-[180px] bg-[#1a1122] border-dashed border-gray-600 border-2 flex items-center justify-center text-xl text-gray-500 font-bold">VENUT</div>;
+                                                            if (!item) return <div key={`sE-${i}`} className="w-[144px] h-[256px] bg-[#1a1122] border-dashed border-gray-600 border-2 flex items-center justify-center text-xl text-gray-500 font-bold">VENUT</div>;
                                                             const actualCost = getActualCost(item, 'event');
                                                             return (
-                                                                <div key={item.uId} onClick={() => buyItem(item, i, 'event')} className={`w-[140px] h-[180px] bg-[#2a1b38] border-4 border-purple-600 p-2 flex flex-col items-center justify-between group relative cursor-pointer hover:bg-[#3d2652] hover:scale-105 transition-all shadow-lg ${monedas < actualCost || events.length >= 6 ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}>
+                                                                <div key={item.uId} onClick={() => buyItem(item, i, 'event')} className={`w-[144px] h-[256px] bg-[#2a1b38] border-4 border-purple-600 p-2 flex flex-col items-center justify-between group relative cursor-pointer hover:bg-[#3d2652] hover:scale-105 transition-all shadow-lg ${monedas < actualCost || events.length >= 6 ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}>
                                                                     <div className="absolute bottom-[105%] left-1/2 -translate-x-1/2 w-[300px] bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
                                                                         <h3 className="text-2xl text-yellow-300 font-bold mb-2"><FormatText text={item.name} /></h3><p className="text-lg text-white"><FormatText text={item.desc} /></p>
                                                                     </div>
@@ -1215,24 +1247,24 @@
                                                 
                                                 {/* FILA D'OBJECTES I BEGUDES */}
                                                 <div className="flex flex-row items-center w-full bg-black bg-opacity-40 p-4 rounded-xl border-2 border-blue-900 mt-4">
-                                                    <div className="w-[200px] shrink-0 border-r-4 border-blue-900 pr-6 mr-2 flex items-center justify-end text-right">
-                                                        <h3 className="text-3xl text-blue-400 font-bold leading-tight">📦<br/>OBJECTES<br/><span className="text-orange-400">I 🍹<br/>BEGUDES</span></h3>
+                                                    <div className="w-[300px] shrink-0 border-r-4 border-blue-900 pr-6 mr-4 flex items-center justify-end text-right">
+                                                        <h3 className="text-3xl text-blue-400 font-bold leading-tight">📦 OBJECTES<br/><span className="text-orange-400">I 🍹 BEGUDES</span></h3>
                                                     </div>
                                                     <div className="flex flex-row gap-6 justify-center flex-1">
                                                         {shopMixed.map((item, i) => {
-                                                            if (!item) return <div key={`sM-${i}`} className="w-[140px] h-[180px] bg-[#0f1724] border-dashed border-gray-600 border-2 flex items-center justify-center text-xl text-gray-500 font-bold">VENUT</div>;
+                                                            if (!item) return <div key={`sM-${i}`} className="w-[144px] h-[256px] bg-[#0f1724] border-dashed border-gray-600 border-2 flex items-center justify-center text-xl text-gray-500 font-bold">VENUT</div>;
                                                             const isObj = item.type === 'objecte';
                                                             const isFull = isObj ? objectes.length >= 3 : (begudes.length >= 3 && !begudes.some(b => b.id === item.id));
                                                             const actualCost = getActualCost(item, item.type);
                                                             const isDiscounted = actualCost < item.cost;
                                                             
                                                             return (
-                                                                <div key={item.uId} onClick={() => buyItem(item, i, item.type)} className={`w-[140px] h-[180px] border-4 p-2 flex flex-col items-center justify-between group relative cursor-pointer transition-all shadow-lg ${isObj ? 'bg-[#162740] border-blue-600 hover:bg-[#1d3354]' : 'bg-[#3a2010] border-orange-600 hover:bg-[#4a2b16]'} hover:scale-105 ${monedas < actualCost || isFull ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}>
+                                                                <div key={item.uId} onClick={() => buyItem(item, i, item.type)} className={`w-[144px] h-[256px] border-4 p-2 flex flex-col items-center justify-between group relative cursor-pointer transition-all shadow-lg ${isObj ? 'bg-[#162740] border-blue-600 hover:bg-[#1d3354]' : 'bg-[#3a2010] border-orange-600 hover:bg-[#4a2b16]'} hover:scale-105 ${monedas < actualCost || isFull ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}>
                                                                     <div className="absolute bottom-[105%] left-1/2 -translate-x-1/2 w-[300px] bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
                                                                         <h3 className="text-2xl text-yellow-300 font-bold mb-2"><FormatText text={item.name} /></h3><p className="text-lg text-white"><FormatText text={item.desc} /></p>
                                                                     </div>
                                                                     <div className="flex-1 flex items-center justify-center w-full bg-black border border-gray-700 overflow-hidden">
-                                                                        <img src={item.img} alt={item.name} className={`w-full h-full ${isObj ? 'object-cover' : 'object-contain p-2'}`} />
+                                                                        <img src={isObj ? item.img : `${RELICS_BASE_URL}${item.img}`} alt={item.name} className={`w-full h-full ${isObj ? 'object-cover' : 'object-contain p-2'}`} />
                                                                     </div>
                                                                     <div className="w-full text-center mt-2 bg-black py-1 border border-gray-600">
                                                                         <span className="text-2xl font-bold text-yellow-400">
@@ -1246,13 +1278,24 @@
                                                 </div>
                                             </div>
 
-                                            <button onClick={() => setGameState('ROUTE_MAP')} className="bg-blue-600 px-16 py-4 pixel-border shadow-[8px_8px_0_0_#000] text-4xl font-bold animate-pulse mt-12">CONTINUAR ➔</button>
+                                            <div className="flex gap-8 mt-12 justify-center w-full">
+                                                <button onClick={handleReroll} disabled={monedas < 2} className={`px-12 py-4 pixel-border shadow-[8px_8px_0_0_#000] text-3xl font-bold transition-all ${monedas >= 2 ? 'bg-red-600 hover:bg-red-500' : 'bg-gray-800 text-gray-500'}`}>RENOVAR MERCADERIES (💰2)</button>
+                                                <button onClick={() => setGameState('ROUTE_MAP')} className="bg-blue-600 px-16 py-4 pixel-border shadow-[8px_8px_0_0_#000] text-4xl font-bold animate-pulse">CONTINUAR ➔</button>
+                                            </div>
                                         </div>
                                     )}
 
                                     {(gameState === 'PLAYING' || gameState === 'RESOLVING' || gameState === 'SELECT_TRUMP') && (
                                         <>
-                                            <div className="w-full flex justify-center mt-4 shrink-0"><div className="flex -space-x-8 scale-[0.85] opacity-80 pointer-events-none">{aiHand.map((c, i) => <Card key={i} card={c} hidden={!aiCardsRevealed && !c.revealed} isAi displayFichas={getCardFichas(c, events) + (c.bonusR7 || 0)} highContrast={highContrastCards} />)}</div></div>
+                                            <div className="w-full flex justify-center mt-4 shrink-0">
+                                                <div className="flex -space-x-8 scale-[0.85] opacity-80">
+                                                    {aiHand.map((c, i) => (
+                                                        <div key={c.id || i} className="relative transition-all duration-200 hover:-translate-y-6 hover:scale-110 hover:z-50 z-10 cursor-help">
+                                                            <Card card={c} hidden={!aiCardsRevealed && !c.revealed} isAi displayFichas={getCardFichas(c, events) + (c.bonusR7 || 0)} highContrast={highContrastCards} />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
                                             <div className="absolute left-8 top-4 flex flex-col items-center z-20">
                                                 {aiLastTrick ? <div className="w-[80px] h-[120px] relative cursor-pointer hover:scale-110 transition-transform" onClick={() => { setModalTrick(aiLastTrick); setShowLastTrick(true); }}><div className="absolute inset-0 bg-red-900 opacity-40 rounded pixel-border-sm overflow-hidden flex items-center justify-center border-red-600"><img src={REVERSO_URL} className="w-full h-full object-cover opacity-50" /></div><span className="absolute bottom-[-25px] w-[130px] left-1/2 -translate-x-1/2 text-sm text-red-300 font-bold text-center bg-black bg-opacity-70 px-2 rounded">Bassa Rival</span></div> : <div className="w-[80px] h-[120px] border-4 border-dashed border-gray-700 opacity-20" />}
                                             </div>
@@ -1293,8 +1336,8 @@
                                                     </div>
                                                     <div className="flex flex-col gap-4 bg-black bg-opacity-60 p-4 pb-2 pixel-border-sm rounded-t-2xl border-b-0 mb-4 shrink-0 z-40">
                                                         <span className="text-xl text-gray-400 text-center font-bold">ORDENAR</span>
-                                                        <button onClick={sortHandBySuit} className="bg-blue-800 px-6 py-3 pixel-border-sm font-bold shadow-[4px_4px_0_0_#000]" disabled={gameState !== 'PLAYING' && gameState !== 'SELECT_TRUMP'}>PAL</button>
-                                                        <button onClick={sortHandByPower} className="bg-red-800 px-6 py-3 pixel-border-sm font-bold shadow-[4px_4px_0_0_#000]" disabled={gameState !== 'PLAYING' && gameState !== 'SELECT_TRUMP'}>PUNTS</button>
+                                                        <button onClick={sortHandBySuit} className={`px-6 py-3 pixel-border-sm font-bold shadow-[4px_4px_0_0_#000] ${sortMethod === 'suit' ? 'bg-blue-600 text-white' : 'bg-blue-900 text-gray-400'}`} disabled={gameState !== 'PLAYING' && gameState !== 'SELECT_TRUMP'}>PAL</button>
+                                                        <button onClick={sortHandByPower} className={`px-6 py-3 pixel-border-sm font-bold shadow-[4px_4px_0_0_#000] ${sortMethod === 'power' ? 'bg-red-600 text-white' : 'bg-red-900 text-gray-400'}`} disabled={gameState !== 'PLAYING' && gameState !== 'SELECT_TRUMP'}>PUNTS</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1307,13 +1350,13 @@
                                     <span className="text-xl text-blue-300 font-bold mb-2">OBJECTES</span>
                                     <div className="flex flex-col gap-4 w-full items-center">
                                         {objectes.map((o, i) => (
-                                            <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `o-${i}` ? null : `o-${i}`); }} className="w-[85px] h-[85px] bg-blue-900 border-4 border-blue-400 flex items-center justify-center cursor-pointer group relative shrink-0">
+                                            <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `o-${i}` ? null : `o-${i}`); }} className="w-[90px] h-[160px] bg-blue-900 border-4 border-blue-400 flex items-center justify-center cursor-pointer group relative shrink-0 overflow-hidden">
                                                 <img src={o.img} alt={o.name} className="w-full h-full object-cover" onError={e => {e.target.style.display='none'}} />
                                                 {activeActionId !== `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={o.name} /></p><p className="text-xl"><FormatText text={o.desc} /></p></div>}
                                                 {activeActionId === `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeObjecte(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">USAR ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(o, i, 'objecte'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(getActualCost(o, 'objecte') / 2))}💰)</button>}</div>}
                                             </div>
                                         ))}
-                                        {Array.from({ length: 3 - objectes.length }).map((_, i) => <div key={`empty-obj-${i}`} className="w-[85px] h-[85px] border-4 border-dashed border-blue-800 bg-black bg-opacity-30 shrink-0" />)}
+                                        {Array.from({ length: 3 - objectes.length }).map((_, i) => <div key={`empty-obj-${i}`} className="w-[90px] h-[160px] border-4 border-dashed border-blue-800 bg-black bg-opacity-30 shrink-0" />)}
                                     </div>
                                     
                                     <div className="w-[80%] h-1 bg-black opacity-50 my-6 shrink-0"></div>
@@ -1321,14 +1364,14 @@
                                     <span className="text-xl text-orange-300 font-bold mb-2">BEGUDES</span>
                                     <div className="flex flex-col gap-4 w-full items-center">
                                         {begudes.map((b, i) => (
-                                            <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `b-${i}` ? null : `b-${i}`); }} className="w-[85px] h-[85px] bg-orange-900 border-4 border-orange-400 flex items-center justify-center cursor-pointer group relative shrink-0">
-                                                <img src={b.img} alt={b.name} className="w-full h-full object-contain p-1" />
+                                            <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `b-${i}` ? null : `b-${i}`); }} className="w-[90px] h-[160px] bg-orange-900 border-4 border-orange-400 flex items-center justify-center cursor-pointer group relative shrink-0">
+                                                <img src={`${RELICS_BASE_URL}${b.img}`} alt={b.name} className="w-full h-full object-contain p-1" />
                                                 {b.count > 1 && <div className="absolute -top-2 -right-2 bg-red-600 text-white text-lg font-bold px-2 py-0.5 rounded-full pixel-border-sm z-[80]">x{b.count}</div>}
                                                 {activeActionId !== `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={b.name} /></p><p className="text-xl"><FormatText text={b.desc} /></p></div>}
                                                 {activeActionId === `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeBeguda(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">BEURE ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(b, i, 'beguda'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(getActualCost(b, 'beguda') / 2))}💰)</button>}</div>}
                                             </div>
                                         ))}
-                                        {Array.from({ length: 3 - begudes.length }).map((_, i) => <div key={`empty-drink-${i}`} className="w-[85px] h-[85px] border-4 border-dashed border-orange-800 bg-black bg-opacity-30 flex items-center justify-center opacity-20 text-3xl shrink-0">☕</div>)}
+                                        {Array.from({ length: 3 - begudes.length }).map((_, i) => <div key={`empty-drink-${i}`} className="w-[90px] h-[160px] border-4 border-dashed border-orange-800 bg-black bg-opacity-30 flex items-center justify-center opacity-20 text-3xl shrink-0">🍹</div>)}
                                     </div>
                                 </div>
                             </div>
