@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rebaclatro - Festes Edition</title>
+    <title>Rebaclatro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -170,7 +170,6 @@
             { id: 'b10', rank: 10, name: 'Mentira', img: 'b10.png', desc: 'Millora les Sotes (+10 Fitxes, +0.1 Mult permanent).', cost: 6, upgradeAmount: 10, type: 'card' },
             { id: 'b11', rank: 11, name: 'Plis-Play', img: 'b11.png', desc: 'Millora els Cavalls (+10 Fitxes, +0.1 Mult permanent).', cost: 6, upgradeAmount: 10, type: 'card' },
             { id: 'b12', rank: 12, name: 'Somriure Alcoià', img: 'b12.png', desc: 'Millora els Reis (+10 Fitxes, +0.1 Mult permanent).', cost: 6, upgradeAmount: 10, type: 'card' },
-            // Noves Begudes: Millora de mecàniques
             { id: 'b13', rank: 'cant20', name: 'Mistela', img: 'b13.png', desc: 'Millora permanentment cantar les 20 (+1 Mult Base).', cost: 5, type: 'mechanic', upgradeAmount: 1 },
             { id: 'b14', rank: 'cant40', name: 'Herbero', img: 'b14.png', desc: 'Millora permanentment cantar les 40 (+2 Mult Base).', cost: 6, type: 'mechanic', upgradeAmount: 2 },
             { id: 'b15', rank: 'bac', name: 'Cremaet', img: 'b15.png', desc: 'Millora permanentment el Bac (+1x extra al Multiplicador del Bac).', cost: 7, type: 'mechanic', upgradeAmount: 1 }
@@ -638,7 +637,6 @@
 
             const cantar = (cante) => {
                 setCantesRealizados([...cantesRealizados, cante.suit]);
-                // Aplicar les millores globals de cants 20 i 40 (Mistela i Herbero)
                 let multBonus = cante.tipo === '40' ? (4 + globalUpgrades.cant40Mult) : (2 + globalUpgrades.cant20Mult);
                 if (events.some(r => r.id === 'r4')) multBonus *= 2; 
                 setBaseMult(m => m + multBonus); 
@@ -768,7 +766,6 @@
                 
                 let isBac = false;
                 
-                // Apliquem la bonificació del multiplicador personalitzada d'aquesta carta al jugador
                 const playerCardMultBonus = rankUpgrades[pCard.rank]?.mult || 0;
                 let pMult = (baseMult + tempMult + playerCardMultBonus) * aiPenaltyMult; 
                 
@@ -779,7 +776,7 @@
                     setHasWonTrick(true);
                     if (pCard.rank === (muestra ? muestra.rank : -1)) { 
                         isBac = true; 
-                        xMult = 3 + globalUpgrades.bacXMult; // Cremaet Upgrade apply
+                        xMult = 3 + globalUpgrades.bacXMult;
                         message = "¡BAC! i ¡REBAC!"; 
                     }
                     else message = "¡BASSA GUANYADA!";
@@ -829,7 +826,6 @@
                         nextAHand = [...currentAiHand, ...firstDraw.drawn]; nextPHand = [...newPHand, ...secondDraw.drawn];
                     }
 
-                    // Correcció del bloqueig per falta de cartes! (Descart sense sumar punts i forçar reset si queden tirades)
                     if ((nextPHand.length === 0 || nextAHand.length === 0) && newScore < targetScore && (newTiradas + extraRes) > 0) {
                         let freshDiscard = [...newDiscardPile, ...nextPHand, ...nextAHand];
                         let freshDeck = [...freshDiscard].sort(() => Math.random() - 0.5);
@@ -1017,7 +1013,7 @@
                     </div>
 
                     <div className="w-full">
-                        <p className="text-gray-400 text-xl mb-2 text-center">Millores de Cartes (Begudes)</p>
+                        <p className="text-gray-400 text-xl mb-2 text-center">Millores de Cartes (Barra)</p>
                         <div className="flex justify-center gap-2 flex-wrap">
                             {Object.keys(rankUpgrades).length > 0 ? Object.entries(rankUpgrades).map(([rank, upg]) => (
                                 <div key={rank} className="bg-[#3a2010] border-2 border-orange-500 px-4 py-2 flex flex-col items-center">
@@ -1083,7 +1079,7 @@
                                                 {OBJECTES_DB.filter(o=>o.faction==='moro').map(o => renderCollectionItem(o, 'objecte'))}
                                             </div>
 
-                                            <h3 className="text-3xl text-orange-400 font-bold mb-4 w-full border-b-2 border-orange-800 pb-2">BEGUDES</h3>
+                                            <h3 className="text-3xl text-orange-400 font-bold mb-4 w-full border-b-2 border-orange-800 pb-2">BARRA</h3>
                                             <div className="flex flex-wrap gap-4 mb-8 justify-center">
                                                 {BEGUDES_DB.map(b => renderCollectionItem(b, 'beguda'))}
                                             </div>
@@ -1225,13 +1221,17 @@
                                 
                                 {/* ESQUERRA: ESDEVENIMENTS (6 slots solapats) */}
                                 <div className="w-[180px] flex flex-col items-center py-6 bg-black bg-opacity-40 border-r-4 border-black z-[60] shrink-0 overflow-visible">
-                                    <span className="text-xl text-purple-300 font-bold mb-4">ESDEVENIMENTS</span>
+                                    <span className="text-xl text-purple-300 font-bold mb-4 text-center leading-none">ESDEVENIMENTS<br/><span className="text-sm text-purple-400">({events.length}/6)</span></span>
                                     <div className="flex flex-col -space-y-8 w-full items-center mt-2">
                                         {events.map((e, i) => (
                                             <div key={i} onClick={ev => { ev.stopPropagation(); setActiveActionId(activeActionId === `e-${i}` ? null : `e-${i}`); }} className="w-[90px] h-[160px] bg-purple-900 border-4 border-purple-400 flex items-center justify-center cursor-pointer group relative shrink-0 z-10 hover:z-50 hover:-translate-y-4 transition-all">
                                                 <img src={`${RELICS_BASE_URL}${e.img}`} alt={e.name} className="w-full h-full object-contain p-2" onError={ev => {ev.target.style.display='none'}} />
                                                 {activeActionId !== `e-${i}` && <div className="absolute top-1/2 left-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={e.name} /></p><p className="text-xl"><FormatText text={e.desc} /></p></div>}
-                                                {activeActionId === `e-${i}` && gameState === 'SHOP' && <button onClick={() => sellItem(e, i, 'event')} className="absolute top-1/2 left-[120%] -translate-y-1/2 bg-red-600 px-6 py-3 pixel-border text-2xl whitespace-nowrap z-[100]">VENDRE (+{Math.max(1, Math.floor(getActualCost(e, 'event') / 2))}💰)</button>}
+                                                {activeActionId === `e-${i}` && (
+                                                    <div className="absolute top-1/2 left-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={ev => ev.stopPropagation()}>
+                                                        <button onClick={() => { sellItem(e, i, 'event'); setActiveActionId(null); }} className="bg-red-600 hover:bg-red-500 px-6 py-3 pixel-border-sm text-xl whitespace-nowrap text-white font-bold transition-colors">VENDRE (+{Math.max(1, Math.floor(getActualCost(e, 'event') / 2))}💰)</button>
+                                                    </div>
+                                                )}
                                             </div>
                                         ))}
                                     </div>
@@ -1276,10 +1276,10 @@
                                                     </div>
                                                 </div>
                                                 
-                                                {/* FILA D'OBJECTES I BEGUDES */}
+                                                {/* FILA D'OBJECTES I BARRA */}
                                                 <div className="flex flex-row items-center w-full bg-black bg-opacity-40 p-4 rounded-xl border-2 border-blue-900 mt-4">
                                                     <div className="w-[300px] shrink-0 border-r-4 border-blue-900 pr-6 mr-4 flex items-center justify-end text-right">
-                                                        <h3 className="text-3xl text-blue-400 font-bold leading-tight">📦 OBJECTES<br/><span className="text-orange-400">I 🍹 BEGUDES</span></h3>
+                                                        <h3 className="text-3xl text-blue-400 font-bold leading-tight">📦 OBJECTES<br/><span className="text-orange-400">I 🍹 BARRA</span></h3>
                                                     </div>
                                                     <div className="flex flex-row gap-6 justify-center flex-1">
                                                         {shopMixed.map((item, i) => {
@@ -1375,31 +1375,45 @@
                                     )}
                                 </div>
 
-                                {/* DRETA: OBJECTES (3 slots) + BEGUDES (3 slots) solapats */}
-                                <div className="w-[180px] flex flex-col items-center py-4 bg-black bg-opacity-40 border-l-4 border-black z-[60] shrink-0 overflow-visible">
-                                    <span className="text-xl text-blue-300 font-bold mb-4">OBJECTES</span>
-                                    <div className="flex flex-col -space-y-12 w-full items-center mt-2">
-                                        {objectes.map((o, i) => (
-                                            <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `o-${i}` ? null : `o-${i}`); }} className="w-[90px] h-[160px] bg-blue-900 border-4 border-blue-400 flex items-center justify-center cursor-pointer group relative shrink-0 z-10 hover:z-50 hover:-translate-y-4 transition-all">
-                                                <img src={o.img} alt={o.name} className="w-full h-full object-cover" onError={e => {e.target.style.display='none'}} />
-                                                {activeActionId !== `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={o.name} /></p><p className="text-xl"><FormatText text={o.desc} /></p></div>}
-                                                {activeActionId === `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeObjecte(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">USAR ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(o, i, 'objecte'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(getActualCost(o, 'objecte') / 2))}💰)</button>}</div>}
-                                            </div>
-                                        ))}
+                                {/* DRETA: OBJECTES (3 slots) + BARRA (3 slots) amb el repartiment indicat */}
+                                <div className="w-[180px] flex flex-col items-center py-6 bg-black bg-opacity-40 border-l-4 border-black z-[60] shrink-0 overflow-visible justify-between">
+                                    <div className="w-full flex flex-col items-center flex-[0.8] justify-start">
+                                        <span className="text-xl text-blue-300 font-bold mb-4 text-center leading-none">OBJECTES<br/><span className="text-sm text-blue-400">({objectes.length}/3)</span></span>
+                                        <div className="flex flex-col -space-y-12 w-full items-center mt-2">
+                                            {objectes.map((o, i) => (
+                                                <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `o-${i}` ? null : `o-${i}`); }} className="w-[90px] h-[160px] bg-blue-900 border-4 border-blue-400 flex items-center justify-center cursor-pointer group relative shrink-0 z-10 hover:z-50 hover:-translate-y-4 transition-all">
+                                                    <img src={o.img} alt={o.name} className="w-full h-full object-cover" onError={e => {e.target.style.display='none'}} />
+                                                    {activeActionId !== `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={o.name} /></p><p className="text-xl"><FormatText text={o.desc} /></p></div>}
+                                                    {activeActionId === `o-${i}` && (
+                                                        <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>
+                                                            <button onClick={() => { consumeObjecte(i); setActiveActionId(null); }} disabled={gameState !== 'PLAYING'} className={`px-6 py-3 pixel-border-sm text-xl whitespace-nowrap text-white font-bold transition-colors ${gameState === 'PLAYING' ? 'bg-green-600 hover:bg-green-500' : 'bg-gray-600 opacity-50 cursor-not-allowed'}`}>USAR</button>
+                                                            <button onClick={() => { sellItem(o, i, 'objecte'); setActiveActionId(null); }} className="bg-red-600 hover:bg-red-500 px-6 py-3 pixel-border-sm text-xl whitespace-nowrap text-white font-bold transition-colors">VENDRE (+{Math.max(1, Math.floor(getActualCost(o, 'objecte') / 2))}💰)</button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                     
-                                    <div className="w-[80%] h-1 bg-black opacity-50 my-8 shrink-0 relative z-[70]"></div>
+                                    <div className="w-[80%] h-1 bg-black opacity-50 shrink-0 relative z-[70] my-4"></div>
 
-                                    <span className="text-xl text-orange-300 font-bold mb-4 relative z-[70]">BEGUDES</span>
-                                    <div className="flex flex-col -space-y-12 w-full items-center mt-2">
-                                        {begudes.map((b, i) => (
-                                            <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `b-${i}` ? null : `b-${i}`); }} className="w-[90px] h-[160px] bg-orange-900 border-4 border-orange-400 flex items-center justify-center cursor-pointer group relative shrink-0 z-10 hover:z-50 hover:-translate-y-4 transition-all">
-                                                <img src={`${RELICS_BASE_URL}${b.img}`} alt={b.name} className="w-full h-full object-contain p-1" />
-                                                {b.count > 1 && <div className="absolute -top-2 -right-2 bg-red-600 text-white text-lg font-bold px-2 py-0.5 rounded-full pixel-border-sm z-[80]">x{b.count}</div>}
-                                                {activeActionId !== `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={b.name} /></p><p className="text-xl"><FormatText text={b.desc} /></p></div>}
-                                                {activeActionId === `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeBeguda(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">BEURE ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(b, i, 'beguda'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(getActualCost(b, 'beguda') / 2))}💰)</button>}</div>}
-                                            </div>
-                                        ))}
+                                    <div className="w-full flex flex-col items-center flex-[1.2] pb-[80px] justify-start">
+                                        <span className="text-xl text-orange-300 font-bold mb-4 text-center leading-none relative z-[70]">BARRA<br/><span className="text-sm text-orange-400">({begudes.length}/3)</span></span>
+                                        <div className="flex flex-col -space-y-12 w-full items-center mt-2">
+                                            {begudes.map((b, i) => (
+                                                <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `b-${i}` ? null : `b-${i}`); }} className="w-[90px] h-[160px] bg-orange-900 border-4 border-orange-400 flex items-center justify-center cursor-pointer group relative shrink-0 z-10 hover:z-50 hover:-translate-y-4 transition-all">
+                                                    <img src={`${RELICS_BASE_URL}${b.img}`} alt={b.name} className="w-full h-full object-contain p-1" />
+                                                    {b.count > 1 && <div className="absolute -top-2 -right-2 bg-red-600 text-white text-lg font-bold px-2 py-0.5 rounded-full pixel-border-sm z-[80]">x{b.count}</div>}
+                                                    {activeActionId !== `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={b.name} /></p><p className="text-xl"><FormatText text={b.desc} /></p></div>}
+                                                    {activeActionId === `b-${i}` && (
+                                                        <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>
+                                                            <button onClick={() => { consumeBeguda(i); setActiveActionId(null); }} disabled={gameState !== 'PLAYING'} className={`px-6 py-3 pixel-border-sm text-xl whitespace-nowrap text-white font-bold transition-colors ${gameState === 'PLAYING' ? 'bg-green-600 hover:bg-green-500' : 'bg-gray-600 opacity-50 cursor-not-allowed'}`}>BEURE</button>
+                                                            <button onClick={() => { sellItem(b, i, 'beguda'); setActiveActionId(null); }} className="bg-red-600 hover:bg-red-500 px-6 py-3 pixel-border-sm text-xl whitespace-nowrap text-white font-bold transition-colors">VENDRE (+{Math.max(1, Math.floor(getActualCost(b, 'beguda') / 2))}💰)</button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
