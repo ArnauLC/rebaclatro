@@ -1225,7 +1225,7 @@
                             <div className="flex-1 flex flex-row overflow-hidden relative">
                                 
                                 {/* ESQUERRA: ESDEVENIMENTS (6 slots solapats) */}
-                                <div className="w-[180px] flex flex-col items-center py-6 -space-y-12 bg-black bg-opacity-40 border-r-4 border-black z-[60] shrink-0 overflow-visible">
+                                <div className="w-[180px] flex flex-col items-center py-6 -space-y-8 bg-black bg-opacity-40 border-r-4 border-black z-[60] shrink-0 overflow-visible">
                                     <span className="text-xl text-purple-300 font-bold mb-4">ESDEVENIMENTS</span>
                                     {events.map((e, i) => (
                                         <div key={i} onClick={ev => { ev.stopPropagation(); setActiveActionId(activeActionId === `e-${i}` ? null : `e-${i}`); }} className="w-[90px] h-[160px] bg-purple-900 border-4 border-purple-400 flex items-center justify-center cursor-pointer group relative shrink-0 z-10 hover:z-50 hover:-translate-y-4 transition-all">
@@ -1377,7 +1377,7 @@
                                 </div>
 
                                 {/* DRETA: OBJECTES (3 slots) + BEGUDES (3 slots) solapats */}
-                                <div className="w-[180px] flex flex-col items-center py-4 -space-y-8 bg-black bg-opacity-40 border-l-4 border-black z-[60] shrink-0 overflow-visible">
+                                <div className="w-[180px] flex flex-col items-center py-4 -space-y-12 bg-black bg-opacity-40 border-l-4 border-black z-[60] shrink-0 overflow-visible">
                                     <span className="text-xl text-blue-300 font-bold mb-4">OBJECTES</span>
                                     <div className="flex flex-col -space-y-6 w-full items-center">
                                         {objectes.map((o, i) => (
