@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rebaclatro</title>
+    <title>Rebaclatro - Festes Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -142,7 +142,7 @@
             { id: 'o13', faction: 'cristia', name: 'Alcodians', img: 'https://www.asjordi.org/upload/images/filaes/13-Alcodianos.jpg', desc: '+25 Fitxes temporals.', cost: 3, efecte: { fichas: 25 } },
             { id: 'o14', faction: 'cristia', name: 'Aragonesos', img: 'https://www.asjordi.org/upload/images/filaes/14-Aragonesos.jpg', desc: '+3 Mult temporal.', cost: 3, efecte: { mult: 3 } },
             
-            // MOROS (14)
+            // MOROS
             { id: 'o15', faction: 'moro', name: 'Llana', img: 'https://www.asjordi.org/upload/images/asociacion/organizacion/01-Llana.jpg', desc: '+50 Fitxes temporals.', cost: 6, efecte: { fichas: 50 } },
             { id: 'o16', faction: 'moro', name: 'Jueus', img: 'https://www.asjordi.org/upload/images/filaes/02-Judios.jpg', desc: '+8 Mult temporal.', cost: 7, efecte: { mult: 8 } },
             { id: 'o17', faction: 'moro', name: 'Miqueros', img: 'https://www.asjordi.org/upload/images/filaes/03-Domingo-Miques.jpg', desc: 'Guanyes +1 Tirada a l\'instant.', cost: 4, efecte: { tiradas: 1 } },
@@ -160,16 +160,20 @@
         ];
 
         const BEGUDES_DB = [
-            { id: 'b1', rank: 1, name: 'Cassalla', img: 'b1.png', desc: 'Millora permanentment tots els Asos (+30 Fitxes).', cost: 8, upgradeAmount: 30 },
-            { id: 'b2', rank: 2, name: 'Aigua', img: 'b2.png', desc: 'Millora permanentment tots els 2 (+10 Fitxes).', cost: 3, upgradeAmount: 10 },
-            { id: 'b3', rank: 3, name: 'Biri Biri', img: 'b3.png', desc: 'Millora permanentment tots els 3 (+25 Fitxes).', cost: 7, upgradeAmount: 25 },
-            { id: 'b4', rank: 4, name: 'Coca-Cola', img: 'b4.png', desc: 'Millora permanentment tots els 4 (+10 Fitxes).', cost: 4, upgradeAmount: 10 },
-            { id: 'b5', rank: 5, name: 'Aigua-llimó', img: 'b5.png', desc: 'Millora permanentment tots els 5 (+10 Fitxes).', cost: 4, upgradeAmount: 10 },
-            { id: 'b6', rank: 6, name: 'Cervesa', img: 'b6.png', desc: 'Millora permanentment tots els 6 (+15 Fitxes).', cost: 5, upgradeAmount: 15 },
-            { id: 'b7', rank: 7, name: 'Vi', img: 'b7.png', desc: 'Millora permanentment tots els 7 (+15 Fitxes).', cost: 5, upgradeAmount: 15 },
-            { id: 'b10', rank: 10, name: 'Mentira', img: 'b10.png', desc: 'Millora permanentment totes les Sotes (+20 Fitxes).', cost: 6, upgradeAmount: 20 },
-            { id: 'b11', rank: 11, name: 'Plis-Play', img: 'b11.png', desc: 'Millora permanentment tots els Cavalls (+20 Fitxes).', cost: 6, upgradeAmount: 20 },
-            { id: 'b12', rank: 12, name: 'Somriure Alcoià', img: 'b12.png', desc: 'Millora permanentment tots els Reis (+20 Fitxes).', cost: 6, upgradeAmount: 20 }
+            { id: 'b1', rank: 1, name: 'Cassalla', img: 'b1.png', desc: 'Millora els Asos (+15 Fitxes, +0.1 Mult permanent).', cost: 8, upgradeAmount: 15, type: 'card' },
+            { id: 'b2', rank: 2, name: 'Aigua', img: 'b2.png', desc: 'Millora els 2 (+5 Fitxes, +0.1 Mult permanent).', cost: 3, upgradeAmount: 5, type: 'card' },
+            { id: 'b3', rank: 3, name: 'Biri Biri', img: 'b3.png', desc: 'Millora els 3 (+15 Fitxes, +0.1 Mult permanent).', cost: 7, upgradeAmount: 15, type: 'card' },
+            { id: 'b4', rank: 4, name: 'Coca-Cola', img: 'b4.png', desc: 'Millora els 4 (+5 Fitxes, +0.1 Mult permanent).', cost: 4, upgradeAmount: 5, type: 'card' },
+            { id: 'b5', rank: 5, name: 'Aigua-llimó', img: 'b5.png', desc: 'Millora els 5 (+5 Fitxes, +0.1 Mult permanent).', cost: 4, upgradeAmount: 5, type: 'card' },
+            { id: 'b6', rank: 6, name: 'Cervesa', img: 'b6.png', desc: 'Millora els 6 (+5 Fitxes, +0.1 Mult permanent).', cost: 5, upgradeAmount: 5, type: 'card' },
+            { id: 'b7', rank: 7, name: 'Vi', img: 'b7.png', desc: 'Millora els 7 (+5 Fitxes, +0.1 Mult permanent).', cost: 5, upgradeAmount: 5, type: 'card' },
+            { id: 'b10', rank: 10, name: 'Mentira', img: 'b10.png', desc: 'Millora les Sotes (+10 Fitxes, +0.1 Mult permanent).', cost: 6, upgradeAmount: 10, type: 'card' },
+            { id: 'b11', rank: 11, name: 'Plis-Play', img: 'b11.png', desc: 'Millora els Cavalls (+10 Fitxes, +0.1 Mult permanent).', cost: 6, upgradeAmount: 10, type: 'card' },
+            { id: 'b12', rank: 12, name: 'Somriure Alcoià', img: 'b12.png', desc: 'Millora els Reis (+10 Fitxes, +0.1 Mult permanent).', cost: 6, upgradeAmount: 10, type: 'card' },
+            // Noves Begudes: Millora de mecàniques
+            { id: 'b13', rank: 'cant20', name: 'Mistela', img: 'b13.png', desc: 'Millora permanentment cantar les 20 (+1 Mult Base).', cost: 5, type: 'mechanic', upgradeAmount: 1 },
+            { id: 'b14', rank: 'cant40', name: 'Herbero', img: 'b14.png', desc: 'Millora permanentment cantar les 40 (+2 Mult Base).', cost: 6, type: 'mechanic', upgradeAmount: 2 },
+            { id: 'b15', rank: 'bac', name: 'Cremaet', img: 'b15.png', desc: 'Millora permanentment el Bac (+1x extra al Multiplicador del Bac).', cost: 7, type: 'mechanic', upgradeAmount: 1 }
         ];
 
         const globalStyles = `
@@ -323,7 +327,9 @@
             const [shopEvents, setShopEvents] = useState([null, null, null, null, null]);
             const [shopMixed, setShopMixed] = useState([null, null, null, null, null]);
             
+            // rankUpgrades és ara un objecte més complex: { fichas: X, mult: Y }
             const [rankUpgrades, setRankUpgrades] = useState({});
+            const [globalUpgrades, setGlobalUpgrades] = useState({ cant20Mult: 0, cant40Mult: 0, bacXMult: 0 });
 
             const [baseMult, setBaseMult] = useState(1);
             const [tempMult, setTempMult] = useState(0); 
@@ -348,7 +354,7 @@
                         tiradasLeft, descartesLeft, deck, discardPile, playerHand,
                         aiHand, muestra, trumpSuit, currentAiCard, playedPlayerCard,
                         turnLeader, events, objectes, begudes, shopEvents, shopMixed,
-                        rankUpgrades, baseMult, tempMult, tempFichas, fichasAcumuladas,
+                        rankUpgrades, globalUpgrades, baseMult, tempMult, tempFichas, fichasAcumuladas,
                         cantesRealizados, aiCantesRealizados, aiPenaltyMult, hasWonTrick,
                         sortMethod
                     };
@@ -356,7 +362,7 @@
                 } else if (['GAMEOVER', 'VICTÒRIA', 'DERROTA'].includes(gameState)) {
                     localStorage.removeItem('rebaclatro_savegame');
                 }
-            }, [gameState, faction, round, score, targetScore, monedas, tiradasLeft, descartesLeft, deck, discardPile, playerHand, aiHand, muestra, trumpSuit, currentAiCard, playedPlayerCard, turnLeader, events, objectes, begudes, shopEvents, shopMixed, rankUpgrades, baseMult, tempMult, tempFichas, fichasAcumuladas, cantesRealizados, aiCantesRealizados, aiPenaltyMult, hasWonTrick, sortMethod]);
+            }, [gameState, faction, round, score, targetScore, monedas, tiradasLeft, descartesLeft, deck, discardPile, playerHand, aiHand, muestra, trumpSuit, currentAiCard, playedPlayerCard, turnLeader, events, objectes, begudes, shopEvents, shopMixed, rankUpgrades, globalUpgrades, baseMult, tempMult, tempFichas, fichasAcumuladas, cantesRealizados, aiCantesRealizados, aiPenaltyMult, hasWonTrick, sortMethod]);
 
             const loadSavedGame = () => {
                 try {
@@ -373,7 +379,9 @@
                         setObjectes(saved.objectes); setBegudes(saved.begudes);
                         setShopEvents(saved.shopEvents || [null,null,null,null,null]); 
                         setShopMixed(saved.shopMixed || [null,null,null,null,null]);
-                        setRankUpgrades(saved.rankUpgrades); setBaseMult(saved.baseMult);
+                        setRankUpgrades(saved.rankUpgrades || {}); 
+                        setGlobalUpgrades(saved.globalUpgrades || { cant20Mult: 0, cant40Mult: 0, bacXMult: 0 });
+                        setBaseMult(saved.baseMult);
                         setTempMult(saved.tempMult); setTempFichas(saved.tempFichas);
                         setFichasAcumuladas(saved.fichasAcumuladas); setCantesRealizados(saved.cantesRealizados);
                         setAiCantesRealizados(saved.aiCantesRealizados); setAiPenaltyMult(saved.aiPenaltyMult);
@@ -408,7 +416,9 @@
             };
 
             const getCardFichas = (card, activeEvents) => {
-                let f = card.fichasBase;
+                let base = getFichasBase(card.rank);
+                let upg = (rankUpgrades[card.rank]?.fichas || 0);
+                let f = base + upg;
                 if (activeEvents.some(r=>r.id==='r15') && card.rank === 11) return 13;
                 if (activeEvents.some(r=>r.id==='r11') && [10,11,12].includes(card.rank)) f *= 2;
                 return f;
@@ -471,10 +481,9 @@
                 let newDeck = [];
                 SUITS.forEach(suit => {
                     RANKS.forEach(rank => {
-                        const upgrade = rankUpgrades[rank] || 0;
                         newDeck.push({ 
                             id: `${suit}-${rank}-${Math.random()}`, 
-                            suit, rank, fichasBase: getFichasBase(rank) + upgrade, revealed: false 
+                            suit, rank, revealed: false 
                         });
                     });
                 });
@@ -488,6 +497,7 @@
                 setTempFichas(0); setFichasAcumuladas(0); setActiveActionId(null);
                 setPlayerLastTrick(null); setAiLastTrick(null); setAiCantesRealizados([]);
                 setAiPenaltyMult(1); setHasWonTrick(false); setRankUpgrades({});
+                setGlobalUpgrades({ cant20Mult: 0, cant40Mult: 0, bacXMult: 0 });
                 
                 generateShop(chosenFaction); 
                 setGameState('SHOP'); 
@@ -629,7 +639,8 @@
 
             const cantar = (cante) => {
                 setCantesRealizados([...cantesRealizados, cante.suit]);
-                let multBonus = cante.tipo === '40' ? 4 : 2;
+                // Aplicar les millores globals de cants 20 i 40 (Mistela i Herbero)
+                let multBonus = cante.tipo === '40' ? (4 + globalUpgrades.cant40Mult) : (2 + globalUpgrades.cant20Mult);
                 if (events.some(r => r.id === 'r4')) multBonus *= 2; 
                 setBaseMult(m => m + multBonus); 
                 if (events.some(r => r.id === 'r10')) setFichasAcumuladas(f => f + 10);
@@ -685,19 +696,22 @@
             const consumeBeguda = (index) => {
                 if (gameState !== 'PLAYING') return;
                 const beguda = begudes[index];
-                const rank = beguda.rank;
-                const amount = beguda.upgradeAmount;
 
-                setRankUpgrades(prev => ({ ...prev, [rank]: (prev[rank] || 0) + amount }));
+                if (beguda.type === 'mechanic') {
+                    setGlobalUpgrades(prev => ({ ...prev, [beguda.rank]: (prev[beguda.rank] || 0) + beguda.upgradeAmount }));
+                    setBazaResult({ message: `¡${beguda.name} aplicat correctament!`, winner: 'canto', bac: false });
+                } else {
+                    const rank = beguda.rank;
+                    const amount = beguda.upgradeAmount;
 
-                const applyUpgrade = c => c.rank === rank ? { ...c, fichasBase: c.fichasBase + amount } : c;
-                setDeck(deck.map(applyUpgrade));
-                setPlayerHand(playerHand.map(applyUpgrade));
-                setAiHand(aiHand.map(applyUpgrade));
-                setDiscardPile(discardPile.map(applyUpgrade));
-                if (muestra && muestra.rank === rank) setMuestra(applyUpgrade(muestra));
-                
-                setBazaResult({ message: `¡Tots els ${rank} pugen +${amount} Fitxes!`, winner: 'canto', bac: false });
+                    setRankUpgrades(prev => {
+                        const existing = prev[rank] || { fichas: 0, mult: 0 };
+                        return { ...prev, [rank]: { fichas: existing.fichas + amount, mult: +(existing.mult + 0.1).toFixed(1) } };
+                    });
+
+                    setBazaResult({ message: `¡Tots els ${rank} pugen +${amount} Fitxes i +0.1 Mult!`, winner: 'canto', bac: false });
+                }
+
                 setTimeout(() => setBazaResult(null), 1500);
 
                 let newB = [...begudes];
@@ -754,14 +768,23 @@
                 if (events.some(r=>r.id==='r14') && ['Ors', 'Bastos'].includes(pCard.suit)) fichasBase *= 2;
                 
                 let isBac = false;
-                let pMult = (baseMult + tempMult) * aiPenaltyMult; 
+                
+                // Apliquem la bonificació del multiplicador personalitzada d'aquesta carta al jugador
+                const playerCardMultBonus = rankUpgrades[pCard.rank]?.mult || 0;
+                let pMult = (baseMult + tempMult + playerCardMultBonus) * aiPenaltyMult; 
+                
                 let xMult = 1, message = '';
                 let nextAiPenalty = 1;
 
                 if (winner === 'player') {
                     setHasWonTrick(true);
-                    if (pCard.rank === (muestra ? muestra.rank : -1)) { isBac = true; xMult = 3; message = "¡BAC! i ¡REBAC!"; }
+                    if (pCard.rank === (muestra ? muestra.rank : -1)) { 
+                        isBac = true; 
+                        xMult = 3 + globalUpgrades.bacXMult; // Cremaet Upgrade apply
+                        message = "¡BAC! i ¡REBAC!"; 
+                    }
                     else message = "¡BASSA GUANYADA!";
+                    
                     if ([2,4,5,6,7].includes(pCard.rank) && events.some(r => r.id === 'r1')) setBaseMult(m => m + 1);
                     if ([10,11,12].includes(pCard.rank) && events.some(r => r.id === 'r8')) setMonedas(m => m + 2);
                     if (events.some(r=>r.id==='r19')) setDescartesLeft(d => d + 1);
@@ -807,12 +830,20 @@
                         nextAHand = [...currentAiHand, ...firstDraw.drawn]; nextPHand = [...newPHand, ...secondDraw.drawn];
                     }
 
-                    if (nextPHand.length === 0 && nextAHand.length === 0 && newScore < targetScore && (newTiradas + extraRes) > 0) {
-                        let freshDeck = [...newDiscardPile].sort(() => Math.random() - 0.5);
+                    // Correcció del bloqueig per falta de cartes! (Descart sense sumar punts i forçar reset si queden tirades)
+                    if ((nextPHand.length === 0 || nextAHand.length === 0) && newScore < targetScore && (newTiradas + extraRes) > 0) {
+                        let freshDiscard = [...newDiscardPile, ...nextPHand, ...nextAHand];
+                        let freshDeck = [...freshDiscard].sort(() => Math.random() - 0.5);
                         let m = freshDeck.splice(0, 1)[0];
-                        nextPHand = freshDeck.splice(0, 6); nextAHand = freshDeck.splice(0, 6);
-                        setDeck(freshDeck); setDiscardPile([]); if (m) { setMuestra(m); }
-                    } else { setDeck(secondDraw.newDeck); setMuestra(secondDraw.newMuestra); }
+                        nextPHand = freshDeck.splice(0, 6); 
+                        nextAHand = freshDeck.splice(0, 6);
+                        setDeck(freshDeck); 
+                        setDiscardPile([]); 
+                        if (m) { setMuestra(m); }
+                    } else if (nextPHand.length > 0 && nextAHand.length > 0) {
+                        setDeck(secondDraw.newDeck); 
+                        setMuestra(secondDraw.newMuestra);
+                    }
                     
                     setPlayerHand(getSortedHand(nextPHand, sortMethod));
                     
@@ -992,7 +1023,7 @@
                             {Object.keys(rankUpgrades).length > 0 ? Object.entries(rankUpgrades).map(([rank, upg]) => (
                                 <div key={rank} className="bg-[#3a2010] border-2 border-orange-500 px-4 py-2 flex flex-col items-center">
                                     <span className="text-xl font-bold text-orange-300">Nº {rank}</span>
-                                    <span className="text-green-400 font-bold text-lg">+{upg} Pts</span>
+                                    <span className="text-green-400 font-bold text-lg">+{upg.fichas} Pts / +{upg.mult.toFixed(1)} Mult</span>
                                 </div>
                             )) : <span className="text-gray-500 font-bold">Sense millores</span>}
                         </div>
@@ -1065,17 +1096,19 @@
                                     {optionsSubView === 'cards' && (
                                         <div className="w-full flex flex-col items-center">
                                             <h2 className="text-5xl text-yellow-400 font-bold mb-8">VALOR ACTUAL DE LES CARTES</h2>
-                                            <div className="flex flex-row justify-center gap-4 flex-wrap max-w-4xl">
+                                            <div className="flex flex-row justify-center gap-6 flex-wrap max-w-5xl">
                                                 {RANKS.map(rank => {
-                                                    const upgrade = rankUpgrades[rank] || 0;
-                                                    const total = getFichasBase(rank) + upgrade;
+                                                    const upgrade = rankUpgrades[rank] || { fichas: 0, mult: 0 };
+                                                    const totalFichas = getFichasBase(rank) + upgrade.fichas;
+                                                    const totalMult = upgrade.mult.toFixed(1);
                                                     return (
-                                                        <div key={rank} className="flex flex-col items-center bg-black bg-opacity-50 p-4 pixel-border-sm w-[150px]">
-                                                            <div className="w-[60px] h-[90px] mb-4 scale-110 pointer-events-none">
-                                                                <Card card={{suit:'Ors', rank: rank}} disabled highContrast={highContrastCards} displayFichas={total} />
+                                                        <div key={rank} className="flex flex-col items-center bg-black bg-opacity-50 p-4 pixel-border-sm w-[170px] pt-4">
+                                                            <span className="text-3xl font-bold text-blue-300 mb-2">Nº {rank}</span>
+                                                            <span className="text-lg text-green-400 font-bold bg-black px-3 py-1 border border-b-0 border-gray-600 rounded-t-md z-10 -mb-1 shadow-[0_-4px_10px_rgba(0,0,0,0.5)]">+{totalFichas} Fitxes</span>
+                                                            <div className="w-[60px] h-[90px] scale-110 pointer-events-none relative z-0 mb-3">
+                                                                <Card card={{suit:'Ors', rank: rank}} disabled highContrast={highContrastCards} displayFichas={totalFichas} />
                                                             </div>
-                                                            <span className="text-3xl font-bold text-blue-300">Nº {rank}</span>
-                                                            <span className="text-xl text-green-400 mt-2">+{total} Fitxes</span>
+                                                            <span className="text-lg text-purple-400 font-bold bg-black px-3 py-1 border border-t-0 border-gray-600 rounded-b-md z-10 -mt-2 shadow-[0_4px_10px_rgba(0,0,0,0.5)]">+{totalMult}x Mult</span>
                                                         </div>
                                                     );
                                                 })}
@@ -1155,7 +1188,6 @@
                             </div>
                         )}
 
-                        {/* RENDERITZAT DEL TAULELL COMPARTIT */}
                         {(gameState === 'PLAYING' || gameState === 'RESOLVING' || gameState === 'SHOP' || gameState === 'SELECT_TRUMP') && (
                             <div className="w-full h-[80px] bg-[#0a1711] border-b-8 border-black px-6 flex justify-between items-center z-30 shadow-lg shrink-0">
                                 <div className="w-[300px] flex flex-col">
@@ -1172,7 +1204,6 @@
                             </div>
                         )}
 
-                        {/* SELECT TRUMP OVERLAY MODAL */}
                         {gameState === 'SELECT_TRUMP' && (
                             <div className="absolute inset-0 bg-black bg-opacity-70 z-50 flex flex-col items-center justify-center pointer-events-auto">
                                 <div className="bg-[#1a2b22] p-12 pixel-border max-w-4xl w-full flex flex-col items-center text-center shadow-[0_0_50px_rgba(250,204,21,0.5)]">
@@ -1193,17 +1224,17 @@
                         {(gameState === 'PLAYING' || gameState === 'RESOLVING' || gameState === 'SHOP' || gameState === 'SELECT_TRUMP') && (
                             <div className="flex-1 flex flex-row overflow-hidden relative">
                                 
-                                {/* ESQUERRA: ESDEVENIMENTS (6 slots) */}
-                                <div className="w-[180px] flex flex-col items-center py-6 gap-4 bg-black bg-opacity-40 border-r-4 border-black z-[60] shrink-0 overflow-visible">
-                                    <span className="text-xl text-purple-300 font-bold">ESDEVENIMENTS</span>
+                                {/* ESQUERRA: ESDEVENIMENTS (6 slots solapats) */}
+                                <div className="w-[180px] flex flex-col items-center py-6 -space-y-12 bg-black bg-opacity-40 border-r-4 border-black z-[60] shrink-0 overflow-visible">
+                                    <span className="text-xl text-purple-300 font-bold mb-4">ESDEVENIMENTS</span>
                                     {events.map((e, i) => (
-                                        <div key={i} onClick={ev => { ev.stopPropagation(); setActiveActionId(activeActionId === `e-${i}` ? null : `e-${i}`); }} className="w-[90px] h-[160px] bg-purple-900 border-4 border-purple-400 flex items-center justify-center cursor-pointer group relative shrink-0">
+                                        <div key={i} onClick={ev => { ev.stopPropagation(); setActiveActionId(activeActionId === `e-${i}` ? null : `e-${i}`); }} className="w-[90px] h-[160px] bg-purple-900 border-4 border-purple-400 flex items-center justify-center cursor-pointer group relative shrink-0 z-10 hover:z-50 hover:-translate-y-4 transition-all">
                                             <img src={`${RELICS_BASE_URL}${e.img}`} alt={e.name} className="w-full h-full object-contain p-2" onError={ev => {ev.target.style.display='none'}} />
                                             {activeActionId !== `e-${i}` && <div className="absolute top-1/2 left-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={e.name} /></p><p className="text-xl"><FormatText text={e.desc} /></p></div>}
                                             {activeActionId === `e-${i}` && gameState === 'SHOP' && <button onClick={() => sellItem(e, i, 'event')} className="absolute top-1/2 left-[120%] -translate-y-1/2 bg-red-600 px-6 py-3 pixel-border text-2xl whitespace-nowrap z-[100]">VENDRE (+{Math.max(1, Math.floor(getActualCost(e, 'event') / 2))}💰)</button>}
                                         </div>
                                     ))}
-                                    {Array.from({ length: 6 - events.length }).map((_, i) => <div key={`empty-ev-${i}`} className="w-[90px] h-[160px] border-4 border-dashed border-purple-800 bg-black bg-opacity-30 shrink-0" />)}
+                                    {Array.from({ length: 6 - events.length }).map((_, i) => <div key={`empty-ev-${i}`} className="w-[90px] h-[160px] border-4 border-dashed border-purple-800 bg-black bg-opacity-30 shrink-0 z-0" />)}
                                 </div>
 
                                 {/* CENTRE: CAMP DE BATALLA / PARAETA */}
@@ -1345,33 +1376,33 @@
                                     )}
                                 </div>
 
-                                {/* DRETA: OBJECTES (3 slots) + BEGUDES (3 slots) */}
-                                <div className="w-[180px] flex flex-col items-center py-4 bg-black bg-opacity-40 border-l-4 border-black z-[60] shrink-0 overflow-visible">
-                                    <span className="text-xl text-blue-300 font-bold mb-2">OBJECTES</span>
-                                    <div className="flex flex-col gap-4 w-full items-center">
+                                {/* DRETA: OBJECTES (3 slots) + BEGUDES (3 slots) solapats */}
+                                <div className="w-[180px] flex flex-col items-center py-4 -space-y-8 bg-black bg-opacity-40 border-l-4 border-black z-[60] shrink-0 overflow-visible">
+                                    <span className="text-xl text-blue-300 font-bold mb-4">OBJECTES</span>
+                                    <div className="flex flex-col -space-y-6 w-full items-center">
                                         {objectes.map((o, i) => (
-                                            <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `o-${i}` ? null : `o-${i}`); }} className="w-[90px] h-[160px] bg-blue-900 border-4 border-blue-400 flex items-center justify-center cursor-pointer group relative shrink-0 overflow-hidden">
+                                            <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `o-${i}` ? null : `o-${i}`); }} className="w-[90px] h-[160px] bg-blue-900 border-4 border-blue-400 flex items-center justify-center cursor-pointer group relative shrink-0 overflow-hidden z-10 hover:z-50 hover:-translate-y-4 transition-all">
                                                 <img src={o.img} alt={o.name} className="w-full h-full object-cover" onError={e => {e.target.style.display='none'}} />
                                                 {activeActionId !== `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={o.name} /></p><p className="text-xl"><FormatText text={o.desc} /></p></div>}
                                                 {activeActionId === `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeObjecte(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">USAR ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(o, i, 'objecte'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(getActualCost(o, 'objecte') / 2))}💰)</button>}</div>}
                                             </div>
                                         ))}
-                                        {Array.from({ length: 3 - objectes.length }).map((_, i) => <div key={`empty-obj-${i}`} className="w-[90px] h-[160px] border-4 border-dashed border-blue-800 bg-black bg-opacity-30 shrink-0" />)}
+                                        {Array.from({ length: 3 - objectes.length }).map((_, i) => <div key={`empty-obj-${i}`} className="w-[90px] h-[160px] border-4 border-dashed border-blue-800 bg-black bg-opacity-30 shrink-0 z-0" />)}
                                     </div>
                                     
-                                    <div className="w-[80%] h-1 bg-black opacity-50 my-6 shrink-0"></div>
+                                    <div className="w-[80%] h-1 bg-black opacity-50 my-8 shrink-0 relative z-[70]"></div>
 
-                                    <span className="text-xl text-orange-300 font-bold mb-2">BEGUDES</span>
-                                    <div className="flex flex-col gap-4 w-full items-center">
+                                    <span className="text-xl text-orange-300 font-bold mb-4 relative z-[70]">BEGUDES</span>
+                                    <div className="flex flex-col -space-y-6 w-full items-center">
                                         {begudes.map((b, i) => (
-                                            <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `b-${i}` ? null : `b-${i}`); }} className="w-[90px] h-[160px] bg-orange-900 border-4 border-orange-400 flex items-center justify-center cursor-pointer group relative shrink-0">
+                                            <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `b-${i}` ? null : `b-${i}`); }} className="w-[90px] h-[160px] bg-orange-900 border-4 border-orange-400 flex items-center justify-center cursor-pointer group relative shrink-0 z-10 hover:z-50 hover:-translate-y-4 transition-all">
                                                 <img src={`${RELICS_BASE_URL}${b.img}`} alt={b.name} className="w-full h-full object-contain p-1" />
                                                 {b.count > 1 && <div className="absolute -top-2 -right-2 bg-red-600 text-white text-lg font-bold px-2 py-0.5 rounded-full pixel-border-sm z-[80]">x{b.count}</div>}
                                                 {activeActionId !== `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={b.name} /></p><p className="text-xl"><FormatText text={b.desc} /></p></div>}
                                                 {activeActionId === `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeBeguda(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">BEURE ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(b, i, 'beguda'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(getActualCost(b, 'beguda') / 2))}💰)</button>}</div>}
                                             </div>
                                         ))}
-                                        {Array.from({ length: 3 - begudes.length }).map((_, i) => <div key={`empty-drink-${i}`} className="w-[90px] h-[160px] border-4 border-dashed border-orange-800 bg-black bg-opacity-30 flex items-center justify-center opacity-20 text-3xl shrink-0">🍹</div>)}
+                                        {Array.from({ length: 3 - begudes.length }).map((_, i) => <div key={`empty-drink-${i}`} className="w-[90px] h-[160px] border-4 border-dashed border-orange-800 bg-black bg-opacity-30 flex items-center justify-center opacity-20 text-3xl shrink-0 z-0">🍹</div>)}
                                     </div>
                                 </div>
                             </div>
@@ -1400,8 +1431,8 @@
                                         {SUITS.map(suit => (
                                             <div key={suit} className="flex flex-row -space-x-8 justify-center w-full relative">
                                                 {RANKS.map(rank => {
-                                                    const upgrade = rankUpgrades[rank] || 0;
-                                                    const dummyCard = { suit, rank, fichasBase: getFichasBase(rank) + upgrade };
+                                                    const upgrade = rankUpgrades[rank] || { fichas: 0, mult: 0 };
+                                                    const dummyCard = { suit, rank, fichasBase: getFichasBase(rank) + upgrade.fichas };
                                                     const seen = deck.some(c => c.suit === suit && c.rank === rank) || aiHand.some(c => c.suit === suit && c.rank === rank) || (muestra && muestra.suit === suit && muestra.rank === rank);
                                                     return <div key={rank} className={`transition-opacity transform scale-90 ${seen ? 'opacity-100 hover:scale-105 z-10 hover:z-50 text-white' : 'opacity-30 grayscale text-gray-500'}`}><Card card={dummyCard} disabled isAi displayFichas={getCardFichas(dummyCard, events)} highContrast={highContrastCards} /></div>;
                                                 })}
