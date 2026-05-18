@@ -327,7 +327,6 @@
             const [shopEvents, setShopEvents] = useState([null, null, null, null, null]);
             const [shopMixed, setShopMixed] = useState([null, null, null, null, null]);
             
-            // rankUpgrades és ara un objecte més complex: { fichas: X, mult: Y }
             const [rankUpgrades, setRankUpgrades] = useState({});
             const [globalUpgrades, setGlobalUpgrades] = useState({ cant20Mult: 0, cant40Mult: 0, bacXMult: 0 });
 
@@ -1222,19 +1221,20 @@
                         )}
 
                         {(gameState === 'PLAYING' || gameState === 'RESOLVING' || gameState === 'SHOP' || gameState === 'SELECT_TRUMP') && (
-                            <div className="flex-1 flex flex-row overflow-hidden relative">
+                            <div className="flex-1 flex flex-row relative">
                                 
                                 {/* ESQUERRA: ESDEVENIMENTS (6 slots solapats) */}
-                                <div className="w-[180px] flex flex-col items-center py-6 -space-y-8 bg-black bg-opacity-40 border-r-4 border-black z-[60] shrink-0 overflow-visible">
+                                <div className="w-[180px] flex flex-col items-center py-6 bg-black bg-opacity-40 border-r-4 border-black z-[60] shrink-0 overflow-visible">
                                     <span className="text-xl text-purple-300 font-bold mb-4">ESDEVENIMENTS</span>
-                                    {events.map((e, i) => (
-                                        <div key={i} onClick={ev => { ev.stopPropagation(); setActiveActionId(activeActionId === `e-${i}` ? null : `e-${i}`); }} className="w-[90px] h-[160px] bg-purple-900 border-4 border-purple-400 flex items-center justify-center cursor-pointer group relative shrink-0 z-10 hover:z-50 hover:-translate-y-4 transition-all">
-                                            <img src={`${RELICS_BASE_URL}${e.img}`} alt={e.name} className="w-full h-full object-contain p-2" onError={ev => {ev.target.style.display='none'}} />
-                                            {activeActionId !== `e-${i}` && <div className="absolute top-1/2 left-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={e.name} /></p><p className="text-xl"><FormatText text={e.desc} /></p></div>}
-                                            {activeActionId === `e-${i}` && gameState === 'SHOP' && <button onClick={() => sellItem(e, i, 'event')} className="absolute top-1/2 left-[120%] -translate-y-1/2 bg-red-600 px-6 py-3 pixel-border text-2xl whitespace-nowrap z-[100]">VENDRE (+{Math.max(1, Math.floor(getActualCost(e, 'event') / 2))}💰)</button>}
-                                        </div>
-                                    ))}
-                                    {Array.from({ length: 6 - events.length }).map((_, i) => <div key={`empty-ev-${i}`} className="w-[90px] h-[160px] border-4 border-dashed border-purple-800 bg-black bg-opacity-30 shrink-0 z-0" />)}
+                                    <div className="flex flex-col -space-y-8 w-full items-center mt-2">
+                                        {events.map((e, i) => (
+                                            <div key={i} onClick={ev => { ev.stopPropagation(); setActiveActionId(activeActionId === `e-${i}` ? null : `e-${i}`); }} className="w-[90px] h-[160px] bg-purple-900 border-4 border-purple-400 flex items-center justify-center cursor-pointer group relative shrink-0 z-10 hover:z-50 hover:-translate-y-4 transition-all">
+                                                <img src={`${RELICS_BASE_URL}${e.img}`} alt={e.name} className="w-full h-full object-contain p-2" onError={ev => {ev.target.style.display='none'}} />
+                                                {activeActionId !== `e-${i}` && <div className="absolute top-1/2 left-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={e.name} /></p><p className="text-xl"><FormatText text={e.desc} /></p></div>}
+                                                {activeActionId === `e-${i}` && gameState === 'SHOP' && <button onClick={() => sellItem(e, i, 'event')} className="absolute top-1/2 left-[120%] -translate-y-1/2 bg-red-600 px-6 py-3 pixel-border text-2xl whitespace-nowrap z-[100]">VENDRE (+{Math.max(1, Math.floor(getActualCost(e, 'event') / 2))}💰)</button>}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 {/* CENTRE: CAMP DE BATALLA / PARAETA */}
@@ -1339,7 +1339,6 @@
                                                     </div>
                                                     <div className="ml-[80px] flex flex-col items-center bg-black bg-opacity-70 p-4 rounded pixel-border-sm z-40">
                                                         <span className="text-2xl text-yellow-300 font-bold flex items-center gap-2">TRIOMF {trumpSuit && <span className="text-4xl" title={`Pal de Triomf: ${trumpSuit}`}>{suitEmojis[trumpSuit]}</span>}</span>
-                                                        {muestra && <span className="bg-black text-white text-sm px-2 py-1 rounded border border-gray-500 font-bold mt-2" title="Fitxes que atorgarà el Bac">BAC: {getCardFichas(muestra, events)}</span>}
                                                     </div>
                                                 </div>
                                                 <div className="flex-1 flex flex-col items-center justify-center gap-6 relative">
@@ -1377,23 +1376,22 @@
                                 </div>
 
                                 {/* DRETA: OBJECTES (3 slots) + BEGUDES (3 slots) solapats */}
-                                <div className="w-[180px] flex flex-col items-center py-4 -space-y-12 bg-black bg-opacity-40 border-l-4 border-black z-[60] shrink-0 overflow-visible">
+                                <div className="w-[180px] flex flex-col items-center py-4 bg-black bg-opacity-40 border-l-4 border-black z-[60] shrink-0 overflow-visible">
                                     <span className="text-xl text-blue-300 font-bold mb-4">OBJECTES</span>
-                                    <div className="flex flex-col -space-y-6 w-full items-center">
+                                    <div className="flex flex-col -space-y-12 w-full items-center mt-2">
                                         {objectes.map((o, i) => (
-                                            <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `o-${i}` ? null : `o-${i}`); }} className="w-[90px] h-[160px] bg-blue-900 border-4 border-blue-400 flex items-center justify-center cursor-pointer group relative shrink-0 overflow-hidden z-10 hover:z-50 hover:-translate-y-4 transition-all">
+                                            <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `o-${i}` ? null : `o-${i}`); }} className="w-[90px] h-[160px] bg-blue-900 border-4 border-blue-400 flex items-center justify-center cursor-pointer group relative shrink-0 z-10 hover:z-50 hover:-translate-y-4 transition-all">
                                                 <img src={o.img} alt={o.name} className="w-full h-full object-cover" onError={e => {e.target.style.display='none'}} />
                                                 {activeActionId !== `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={o.name} /></p><p className="text-xl"><FormatText text={o.desc} /></p></div>}
                                                 {activeActionId === `o-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeObjecte(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">USAR ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(o, i, 'objecte'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(getActualCost(o, 'objecte') / 2))}💰)</button>}</div>}
                                             </div>
                                         ))}
-                                        {Array.from({ length: 3 - objectes.length }).map((_, i) => <div key={`empty-obj-${i}`} className="w-[90px] h-[160px] border-4 border-dashed border-blue-800 bg-black bg-opacity-30 shrink-0 z-0" />)}
                                     </div>
                                     
                                     <div className="w-[80%] h-1 bg-black opacity-50 my-8 shrink-0 relative z-[70]"></div>
 
                                     <span className="text-xl text-orange-300 font-bold mb-4 relative z-[70]">BEGUDES</span>
-                                    <div className="flex flex-col -space-y-6 w-full items-center">
+                                    <div className="flex flex-col -space-y-12 w-full items-center mt-2">
                                         {begudes.map((b, i) => (
                                             <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `b-${i}` ? null : `b-${i}`); }} className="w-[90px] h-[160px] bg-orange-900 border-4 border-orange-400 flex items-center justify-center cursor-pointer group relative shrink-0 z-10 hover:z-50 hover:-translate-y-4 transition-all">
                                                 <img src={`${RELICS_BASE_URL}${b.img}`} alt={b.name} className="w-full h-full object-contain p-1" />
@@ -1402,7 +1400,6 @@
                                                 {activeActionId === `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 z-[100] flex flex-col gap-2 bg-[#1a0f14] p-3 pixel-border cursor-default" onClick={e=>e.stopPropagation()}>{gameState === 'PLAYING' && <button onClick={() => { consumeBeguda(i); setActiveActionId(null); }} className="bg-green-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">BEURE ARA</button>}{(gameState === 'SHOP' || gameState === 'INITIAL_SHOP') && <button onClick={() => { sellItem(b, i, 'beguda'); setActiveActionId(null); }} className="bg-red-600 px-6 py-3 pixel-border-sm text-2xl whitespace-nowrap">VENDRE (+{Math.max(1, Math.floor(getActualCost(b, 'beguda') / 2))}💰)</button>}</div>}
                                             </div>
                                         ))}
-                                        {Array.from({ length: 3 - begudes.length }).map((_, i) => <div key={`empty-drink-${i}`} className="w-[90px] h-[160px] border-4 border-dashed border-orange-800 bg-black bg-opacity-30 flex items-center justify-center opacity-20 text-3xl shrink-0 z-0">🍹</div>)}
                                     </div>
                                 </div>
                             </div>
@@ -1439,7 +1436,7 @@
                                             </div>
                                         ))}
                                     </div>
-                                    <p className="text-gray-500 text-2xl mt-4 font-bold bg-black px-6 py-2 rounded pixel-border-sm">*Les cartes en gris encara no s'han vist en esta ronda</p>
+                                    <p className="text-white text-2xl mt-4 font-bold bg-black px-6 py-2 rounded pixel-border-sm">Recorda que les cartes que no es mostren en <span className="text-gray-500">gris</span> poden estar al muntó de la baralla o a la mà del rival</p>
                                 </div>
                             </div>
                         )}
