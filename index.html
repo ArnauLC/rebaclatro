@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rebaclatro</title>
+    <title>Rebaclatro - Festes Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -222,7 +222,7 @@
         
         const getEnemyImage = (en) => {
             const urls = {
-                'Guerrer Moro': 'https://www.asjordi.org/upload/images/filaes/01-Llana.jpg',
+                'Guerrer Moro': 'https://www.asjordi.org/upload/images/asociacion/organizacion/01-Llana.jpg',
                 'Sargent Moro': 'https://www.asjordi.org/upload/images/filaes/02-Judios.jpg',
                 'Alferes Moro': 'https://www.asjordi.org/upload/images/filaes/03-Domingo-Miques.jpg',
                 'Capità Moro': 'https://www.asjordi.org/upload/images/filaes/05-Verdes.jpg',
@@ -323,8 +323,8 @@
             const [objectes, setObjectes] = useState([]);
             const [begudes, setBegudes] = useState([]); 
             
-            const [shopEvents, setShopEvents] = useState([null, null, null, null, null]);
-            const [shopMixed, setShopMixed] = useState([null, null, null, null, null]);
+            const [shopEvents, setShopEvents] = useState([null, null, null, null, null, null]);
+            const [shopMixed, setShopMixed] = useState([null, null, null, null, null, null]);
             
             const [rankUpgrades, setRankUpgrades] = useState({});
             const [globalUpgrades, setGlobalUpgrades] = useState({ cant20Mult: 0, cant40Mult: 0, bacXMult: 0 });
@@ -375,8 +375,8 @@
                         setCurrentAiCard(saved.currentAiCard); setPlayedPlayerCard(saved.playedPlayerCard);
                         setTurnLeader(saved.turnLeader); setEvents(saved.events);
                         setObjectes(saved.objectes); setBegudes(saved.begudes);
-                        setShopEvents(saved.shopEvents || [null,null,null,null,null]); 
-                        setShopMixed(saved.shopMixed || [null,null,null,null,null]);
+                        setShopEvents(saved.shopEvents || new Array(6).fill(null)); 
+                        setShopMixed(saved.shopMixed || new Array(6).fill(null));
                         setRankUpgrades(saved.rankUpgrades || {}); 
                         setGlobalUpgrades(saved.globalUpgrades || { cant20Mult: 0, cant40Mult: 0, bacXMult: 0 });
                         setBaseMult(saved.baseMult);
@@ -873,29 +873,22 @@
             };
 
             const generateShop = (currentFaction) => {
-                let sE = new Array(5).fill(null);
-                let sM = new Array(5).fill(null);
+                let sE = new Array(6).fill(null);
+                let sM = new Array(6).fill(null);
                 
                 let avE = EVENTS_DB.filter(e => !events.some(my => my.id === e.id));
                 let avO = OBJECTES_DB.filter(o => o.faction === currentFaction && !objectes.some(my => my.id === o.id)).map(o => ({...o, type: 'objecte'}));
                 let avB = [...BEGUDES_DB].map(b => ({...b, type: 'beguda'}));
                 
-                for(let i=0; i<5; i++) {
+                for(let i=0; i<6; i++) {
                     if(avE.length) sE[i] = { ...avE.splice(Math.floor(Math.random() * avE.length), 1)[0], uId: Math.random() };
                 }
                 
-                let mixedPool = [];
-                if (avO.length) mixedPool.push({ ...avO.splice(Math.floor(Math.random() * avO.length), 1)[0], uId: Math.random() });
-                if (avB.length) mixedPool.push({ ...avB.splice(Math.floor(Math.random() * avB.length), 1)[0], uId: Math.random() });
-                
-                let remainingMixed = [...avO, ...avB].sort(() => Math.random() - 0.5);
-                while (mixedPool.length < 5 && remainingMixed.length > 0) {
-                    mixedPool.push({ ...remainingMixed.shift(), uId: Math.random() });
+                for(let i=0; i<3; i++) {
+                    if(avO.length) sM[i] = { ...avO.splice(Math.floor(Math.random() * avO.length), 1)[0], uId: Math.random() };
                 }
-                
-                mixedPool.sort(() => Math.random() - 0.5);
-                for(let i=0; i<5; i++) {
-                    if(mixedPool[i]) sM[i] = mixedPool[i];
+                for(let i=0; i<3; i++) {
+                    if(avB.length) sM[i+3] = { ...avB.splice(Math.floor(Math.random() * avB.length), 1)[0], uId: Math.random() };
                 }
                 
                 setShopEvents(sE); setShopMixed(sM);
@@ -1051,7 +1044,6 @@
                                             <h2 className="text-6xl text-yellow-400 font-bold mb-12 text-shadow">MENÚ D'OPCIONS</h2>
                                             <div className="flex flex-col gap-6 w-[400px]">
                                                 {gameState !== 'MENU' && <button onClick={() => setShowOptionsModal(false)} className="bg-blue-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-blue-500">TORNAR A LA PARTIDA</button>}
-                                                {faction && <button onClick={() => quitToMenu()} className="bg-yellow-600 text-black px-8 py-4 pixel-border font-bold text-2xl hover:bg-yellow-500">EIXIR DE LA PARTIDA</button>}
                                                 <button onClick={() => setHighContrastCards(!highContrastCards)} className="bg-purple-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-purple-500">ALT CONTRAST: {highContrastCards ? 'ON' : 'OFF'}</button>
                                                 <button onClick={() => setOptionsSubView('collection')} className="bg-green-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-green-500">COL·LECCIÓ</button>
                                                 <button onClick={() => setOptionsSubView('cards')} className="bg-indigo-600 px-8 py-4 pixel-border font-bold text-2xl hover:bg-indigo-500">VALOR CARTES</button>
@@ -1255,7 +1247,7 @@
                                                     <div className="w-[300px] shrink-0 border-r-4 border-purple-900 pr-6 mr-4 flex items-center justify-end text-right">
                                                         <h3 className="text-4xl text-purple-400 font-bold leading-tight">📆 ESDEVENIMENTS</h3>
                                                     </div>
-                                                    <div className="flex flex-row gap-6 justify-center flex-1">
+                                                    <div className="flex flex-row gap-4 justify-center flex-1">
                                                         {shopEvents.map((item, i) => {
                                                             if (!item) return <div key={`sE-${i}`} className="w-[144px] h-[256px] bg-[#1a1122] border-dashed border-gray-600 border-2 flex items-center justify-center text-xl text-gray-500 font-bold">VENUT</div>;
                                                             const actualCost = getActualCost(item, 'event');
@@ -1281,7 +1273,7 @@
                                                     <div className="w-[300px] shrink-0 border-r-4 border-blue-900 pr-6 mr-4 flex items-center justify-end text-right">
                                                         <h3 className="text-3xl text-blue-400 font-bold leading-tight">📦 OBJECTES<br/><span className="text-orange-400">I 🍹 BARRA</span></h3>
                                                     </div>
-                                                    <div className="flex flex-row gap-6 justify-center flex-1">
+                                                    <div className="flex flex-row gap-4 justify-center flex-1">
                                                         {shopMixed.map((item, i) => {
                                                             if (!item) return <div key={`sM-${i}`} className="w-[144px] h-[256px] bg-[#0f1724] border-dashed border-gray-600 border-2 flex items-center justify-center text-xl text-gray-500 font-bold">VENUT</div>;
                                                             const isObj = item.type === 'objecte';
@@ -1395,9 +1387,9 @@
                                         </div>
                                     </div>
                                     
-                                    <div className="w-[80%] h-1 bg-black opacity-50 shrink-0 relative z-[70] my-4"></div>
+                                    <div className="w-[80%] h-1 bg-black opacity-50 shrink-0 relative z-[70] my-8"></div>
 
-                                    <div className="w-full flex flex-col items-center flex-[1.2] pb-[80px] justify-start">
+                                    <div className="w-full flex flex-col items-center flex-[1.4] pb-[80px] pt-4 justify-start">
                                         <span className="text-xl text-orange-300 font-bold mb-4 text-center leading-none relative z-[70]">BARRA<br/><span className="text-sm text-orange-400">({begudes.length}/3)</span></span>
                                         <div className="flex flex-col -space-y-12 w-full items-center mt-2">
                                             {begudes.map((b, i) => (
