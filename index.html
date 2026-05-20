@@ -230,6 +230,9 @@
         const REVERSO_URL = 'https://raw.githubusercontent.com/ArnauLC/rebaclatro/refs/heads/main/cards/reverso.png';
         const SPANISH_DECK_URL = 'https://raw.githubusercontent.com/ArnauLC/rebaclatro/refs/heads/main/spanish_deck/';
         const RELICS_BASE_URL = 'https://raw.githubusercontent.com/ArnauLC/rebaclatro/refs/heads/main/relics/';
+        const OBSIDIO_BG_URL = 'https://raw.githubusercontent.com/ArnauLC/rebaclatro/main/background%20obsidio.png';
+        const OBS_LOGO_URL = 'https://raw.githubusercontent.com/ArnauLC/rebaclatro/main/OBS.png';
+        const DIO_LOGO_URL = 'https://raw.githubusercontent.com/ArnauLC/rebaclatro/main/DIO.png';
 
         const suitToLetter = { 'Bastos': 'B', 'Copes': 'C', 'Espases': 'E', 'Ors': 'O' };
 
@@ -726,7 +729,7 @@
             };
 
             const handleDiscard = () => {
-                if (descartesLeft <= 0 || selectedCards.length === 0 || (deck.length === 0 && !muestra)) return;
+                if (descartesLeft <= 0 || selectedCards.length === 0 || (deck.length === 0 && !muestra) || isUltimasTriggered) return;
                 let currentHand = [...playerHand];
                 if (events.some(r => r.id === 'r7')) {
                     currentHand = currentHand.map(c => !selectedCards.find(sc => sc.id === c.id) ? { ...c, bonusR7: (c.bonusR7 || 0) + 5 } : c);
@@ -791,7 +794,7 @@
             };
 
             const playCard = (pCard) => {
-                if (tiradasLeft <= 0) return;
+                if (tiradasLeft <= 0 || gameState !== 'PLAYING' || playedPlayerCard) return;
                 const isUltimas = (deck.length === 0 && !muestra) && !events.some(r=>r.id==='r20');
                 if (isUltimas && turnLeader === 'ai' && currentAiCard) {
                     const hasSuit = playerHand.some(c => c.suit === currentAiCard.suit);
@@ -949,9 +952,10 @@
                 }, 1800);
             };
 
-            const handlePlayCardBtn = () => { if (tiradasLeft > 0 && selectedCards.length === 1) playCard(selectedCards[0]); };
-            const handleDragStart = (e, i) => { setDraggedIndex(i); if (e.dataTransfer) { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', i.toString()); } };
+            const handlePlayCardBtn = () => { if (tiradasLeft > 0 && selectedCards.length === 1 && gameState === 'PLAYING') playCard(selectedCards[0]); };
+            const handleDragStart = (e, i) => { if (gameState !== 'PLAYING') return; setDraggedIndex(i); if (e.dataTransfer) { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', i.toString()); } };
             const handleDropInHand = (e, i) => { 
+                if (gameState !== 'PLAYING') return;
                 e.preventDefault(); 
                 if (draggedIndex !== null && draggedIndex !== i) { 
                     const newHand = [...playerHand]; 
@@ -1122,7 +1126,7 @@
                     <style>{globalStyles}</style>
                     <div style={{ width: '1920px', height: '1080px', minWidth: '1920px', minHeight: '1080px', transform: `scale(${scale})`, transformOrigin: 'center' }} className="bg-felt text-white flex flex-col relative select-none shadow-[0_0_50px_rgba(0,0,0,1)] border-4 border-black overflow-hidden shrink-0" onClick={handleGlobalClick}>
                         
-                        {!showOptionsModal && gameState !== 'MENU' && (
+                        {!showOptionsModal && gameState !== 'MENU' && gameState !== 'INSTRUCTIONS' && (
                             <div className="absolute bottom-4 right-4 z-[999] flex flex-col gap-4">
                                 {gameState !== 'SELECT_TRUMP' && (
                                     <button onClick={(e) => { e.stopPropagation(); setShowOptionsModal(true); setOptionsSubView('cards'); }} className="bg-blue-600 hover:bg-blue-500 px-6 py-3 pixel-border rounded-xl font-bold text-xl text-white shadow-xl transition-transform hover:scale-105">
@@ -1144,7 +1148,7 @@
                                         <>
                                             <h2 className="text-6xl text-yellow-400 font-bold mb-12 text-shadow">MENÚ D'OPCIONS</h2>
                                             <div className="flex flex-col gap-6 w-[500px]">
-                                                {gameState !== 'MENU' && <button onClick={() => setShowOptionsModal(false)} className="bg-green-600 px-8 py-4 pixel-border rounded-xl font-bold text-2xl hover:bg-green-500">TORNAR A LA PARTIDA</button>}
+                                                {gameState !== 'MENU' && gameState !== 'INSTRUCTIONS' && <button onClick={() => setShowOptionsModal(false)} className="bg-green-600 px-8 py-4 pixel-border rounded-xl font-bold text-2xl hover:bg-green-500">TORNAR A LA PARTIDA</button>}
                                                 <button onClick={() => setHighContrastCards(!highContrastCards)} className="bg-gray-600 px-8 py-4 pixel-border rounded-xl font-bold text-2xl hover:bg-gray-500">ALT CONTRAST: {highContrastCards ? 'ON' : 'OFF'}</button>
                                                 <button onClick={() => setOptionsSubView('collection')} className="bg-gray-600 px-8 py-4 pixel-border rounded-xl font-bold text-2xl hover:bg-gray-500">COL·LECCIÓ</button>
                                                 
@@ -1165,7 +1169,7 @@
                                                     </div>
                                                 </div>
 
-                                                <button onClick={() => { quitToMenu(); }} className="bg-red-800 px-8 py-4 pixel-border rounded-xl font-bold text-2xl hover:bg-red-700 mt-8">TORNAR AL MENÚ</button>
+                                                {gameState !== 'MENU' && <button onClick={() => { quitToMenu(); }} className="bg-red-800 px-8 py-4 pixel-border rounded-xl font-bold text-2xl hover:bg-red-700 mt-8">TORNAR AL MENÚ PRINCIPAL</button>}
                                             </div>
                                         </>
                                     )}
@@ -1244,18 +1248,18 @@
                         )}
 
                         {gameState === 'MENU' && (
-                            <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-80 z-20 p-8">
-                                <div className="bg-[#0f1a14] p-16 pixel-border rounded-xl border-green-600 max-w-5xl w-full text-center shadow-[0_0_50px_rgba(22,163,74,0.4)]">
-                                    <h1 className="text-[140px] text-yellow-400 mb-6 font-bold leading-none">OBSIDIO</h1>
-                                    <p className="text-3xl text-green-400 mb-12 font-bold tracking-widest">EL ROGUELIKE DEL JOC DE COTOS</p>
-                                    <div className="text-2xl text-gray-300 mb-16 text-left bg-black bg-opacity-50 p-10 pixel-border-sm rounded-xl leading-relaxed mx-auto w-4/5">
-                                        <ul className="list-disc pl-8 space-y-4">
-                                            <li><strong>Arrossegament:</strong> En últimes, s'ha d'assistir al pal o tirar triomf.</li>
-                                            <li><strong>Bac:</strong> Guanyar amb el mateix número que la Mostra triplica els punts.</li>
-                                            <li><strong>Bonus:</strong> Cada 50 punts aconsegueixes +1 Tirada i +1 Descart extra.</li>
-                                        </ul>
+                            <div className="flex-1 flex flex-col items-center justify-center bg-black bg-cover bg-center z-20 p-8" style={{ backgroundImage: `url(${OBSIDIO_BG_URL})` }}>
+                                <div className="bg-black bg-opacity-70 p-16 pixel-border rounded-xl border-green-600 max-w-5xl w-full text-center shadow-[0_0_50px_rgba(22,163,74,0.4)] flex flex-col items-center">
+                                    <div className="flex flex-row items-center justify-center gap-10 mb-8 w-full">
+                                        <img src={OBS_LOGO_URL} alt="OBS" className="h-[120px] object-contain" />
+                                        <div className="w-[100px] h-[150px] scale-125 transition-transform duration-300 hover:scale-150 cursor-pointer">
+                                            <Card card={{suit:'Bastos', rank: 1}} disabled highContrast={highContrastCards} />
+                                        </div>
+                                        <img src={DIO_LOGO_URL} alt="DIO" className="h-[120px] object-contain" />
                                     </div>
-                                    <div className="flex gap-8 justify-center">
+                                    <p className="text-3xl text-green-400 mb-12 font-bold tracking-widest text-shadow">EL ROGUELIKE DEL JOC DE COTOS</p>
+                                    
+                                    <div className="flex gap-8 justify-center flex-wrap">
                                         {hasSavedGame ? (
                                             <>
                                                 <button onClick={loadSavedGame} className="bg-orange-600 hover:bg-orange-500 px-12 py-8 pixel-border rounded-xl text-4xl font-bold animate-pulse shadow-[8px_8px_0_0_#000]">CONTINUAR</button>
@@ -1264,8 +1268,29 @@
                                         ) : (
                                             <button onClick={() => setGameState('SELECT_FACTION')} className="bg-blue-600 hover:bg-blue-500 px-12 py-8 pixel-border rounded-xl text-4xl font-bold shadow-[8px_8px_0_0_#000]">JUGAR</button>
                                         )}
+                                        <button onClick={() => setGameState('INSTRUCTIONS')} className="bg-yellow-600 hover:bg-yellow-500 px-12 py-8 pixel-border rounded-xl text-4xl font-bold shadow-[8px_8px_0_0_#000] text-black">INSTRUCCIONS</button>
                                         <button onClick={(e) => { e.stopPropagation(); setShowOptionsModal(true); setOptionsSubView('main'); }} className="bg-gray-700 hover:bg-gray-600 px-12 py-8 pixel-border rounded-xl text-4xl font-bold shadow-[8px_8px_0_0_#000]">OPCIONS</button>
                                     </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {gameState === 'INSTRUCTIONS' && (
+                            <div className="flex-1 flex flex-col items-center justify-center bg-black bg-cover bg-center z-20 p-8" style={{ backgroundImage: `url(${OBSIDIO_BG_URL})` }}>
+                                <div className="bg-black bg-opacity-90 p-12 pixel-border rounded-xl border-green-600 max-w-6xl w-full text-center shadow-[0_0_50px_rgba(22,163,74,0.4)] flex flex-col items-center">
+                                    <h2 className="text-6xl text-yellow-400 mb-10 font-bold text-shadow">OBSIDIO - NORMES DEL JOC (ROGUELIKE)</h2>
+                                    <div className="text-2xl text-gray-200 mb-12 text-left bg-black bg-opacity-50 p-10 pixel-border-sm rounded-xl leading-relaxed mx-auto w-full overflow-y-auto hide-scrollbar" style={{ maxHeight: '600px' }}>
+                                        <ul className="list-disc pl-8 space-y-4">
+                                            <li>Aquest joc **no és una partida clàssica de cotos**. No jugues contra un sol rival fins a 12 punts, sinó que t'enfrontes a una sèrie de rivals cada cop més forts en diversos "Cotos".</li>
+                                            <li>L'objectiu en cada coto és aconseguir una **Puntuació Objectiu** abans de quedar-te sense **Tirades**. No cal guanyar totes les basses per guanyar el coto.</li>
+                                            <li>Tens un nombre limitat de **Tirades** i **Descarts**. Gestiona'ls bé! Perds una tirada per cada basa jugada.</li>
+                                            <li>**Bonus de puntuació:** Cada 50 punts aconsegueixes +1 Tirada i +1 Descart extra. Aprofita-ho per recuperar recursos!</li>
+                                            <li>**Ús del Triomf i l'Arrossegament:** En últimes, s'ha d'assistir al pal o tirar triomf.</li>
+                                            <li>**El Bac:** Guanyar una basa amb una carta del mateix número que la Mostra triplica els punts (un Bac i un Rebac).</li>
+                                            <li>**LA TENDA:** Entre cotos, utilitza les teues monedes a la tenda del mercader ambulant. Compra **Esdeveniments** (millores passives), **Objectes** (poms d'un sol ús) i **Millores de Barra** per augmentar les teues possibilitats de supervivència. Millorar les teues cartes i multiplicadors és clau!</li>
+                                        </ul>
+                                    </div>
+                                    <button onClick={() => setGameState('MENU')} className="bg-gray-700 hover:bg-gray-600 px-12 py-6 pixel-border rounded-xl text-3xl font-bold shadow-[8px_8px_0_0_#000]">TORNAR AL MENÚ</button>
                                 </div>
                             </div>
                         )}
@@ -1285,7 +1310,7 @@
 
                         {gameState === 'ROUTE_MAP' && (
                             <div className="flex-1 flex flex-col items-center justify-center bg-black bg-opacity-95 z-20">
-                                <h2 className="text-6xl text-yellow-400 font-bold mb-16 text-shadow">CAMP DE BATALLA (BÀNDOL {faction.toUpperCase()})</h2>
+                                <h2 className="text-6xl text-yellow-400 font-bold mb-RouteMap text-shadow map mb-16 text-shadow">CAMP DE BATALLA (BÀNDOL {faction.toUpperCase()})</h2>
                                 <div className="flex items-center gap-0 mb-16 px-12 w-full justify-center pt-24">
                                     {enemiesList.map((en, idx) => (
                                         <React.Fragment key={idx}>
@@ -1513,14 +1538,14 @@
                                                         {/* SWITCH ORDENACIÓ */}
                                                         <div className="absolute -top-12 flex flex-col items-center z-50">
                                                             <div className="flex bg-black bg-opacity-80 rounded-xl p-1 pixel-border-sm shadow-xl">
-                                                                <button onClick={(e) => { e.stopPropagation(); sortHandBySuit(); }} className={`px-8 py-2 rounded-lg font-bold transition-colors ${sortMethod === 'suit' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-white'}`} disabled={gameState !== 'PLAYING' && gameState !== 'SELECT_TRUMP'}>PAL</button>
-                                                                <button onClick={(e) => { e.stopPropagation(); sortHandByPower(); }} className={`px-8 py-2 rounded-lg font-bold transition-colors ${sortMethod === 'power' ? 'bg-red-600 text-white' : 'text-gray-500 hover:text-white'}`} disabled={gameState !== 'PLAYING' && gameState !== 'SELECT_TRUMP'}>PUNTS</button>
+                                                                <button onClick={(e) => { e.stopPropagation(); sortHandBySuit(); }} className={`px-8 py-2 rounded-lg font-bold transition-colors ${sortMethod === 'suit' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-white'}`} disabled={gameState !== 'PLAYING'}>PAL</button>
+                                                                <button onClick={(e) => { e.stopPropagation(); sortHandByPower(); }} className={`px-8 py-2 rounded-lg font-bold transition-colors ${sortMethod === 'power' ? 'bg-red-600 text-white' : 'text-gray-500 hover:text-white'}`} disabled={gameState !== 'PLAYING'}>PUNTS</button>
                                                             </div>
                                                         </div>
 
                                                         {/* HAND CARDS */}
                                                         <div className="flex justify-center items-center gap-4 bg-black bg-opacity-60 px-8 pt-8 pb-2 rounded-t-3xl pixel-border border-b-0 h-[210px] shrink-0 z-40 relative">
-                                                            {playerHand.map((c, i) => <div key={c.id} draggable={gameState === 'PLAYING'} onDragStart={e => handleDragStart(e, i)} onDragOver={e => e.preventDefault()} onDrop={e => handleDropInHand(e, i)} onDragEnd={() => setDraggedIndex(null)} className={`cursor-move flex flex-col justify-end ${draggedIndex === i ? 'opacity-30' : 'opacity-100'}`}><Card card={c} onClick={(e) => { e.stopPropagation(); toggleCardSelection(c); }} isSelected={selectedCards.find(sc => sc.id === c.id)} disabled={gameState !== 'PLAYING'} displayFichas={getCardFichas(c, events) + (c.bonusR7 || 0)} highContrast={highContrastCards} /></div>)}
+                                                            {playerHand.map((c, i) => <div key={c.id} draggable={gameState === 'PLAYING'} onDragStart={e => handleDragStart(e, i)} onDragOver={e => e.preventDefault()} onDrop={e => handleDropInHand(e, i)} onDragEnd={() => setDraggedIndex(null)} className={`flex flex-col justify-end ${draggedIndex === i ? 'opacity-30' : 'opacity-100'} ${gameState === 'PLAYING' ? 'cursor-move' : 'cursor-not-allowed'}`}><Card card={c} onClick={(e) => { e.stopPropagation(); toggleCardSelection(c); }} isSelected={selectedCards.find(sc => sc.id === c.id)} disabled={gameState !== 'PLAYING'} displayFichas={getCardFichas(c, events) + (c.bonusR7 || 0)} highContrast={highContrastCards} /></div>)}
                                                         </div>
                                                     </div>
 
@@ -1532,10 +1557,10 @@
                                                             </button>
                                                         ))}
                                                         <div className="relative">
-                                                            <button onClick={(e) => { e.stopPropagation(); handlePlayCardBtn(); }} disabled={selectedCards.length !== 1 || tiradasLeft <= 0 || gameState === 'SELECT_TRUMP'} className={`w-[220px] py-4 pixel-border rounded-xl text-2xl font-bold ${selectedCards.length === 1 && tiradasLeft > 0 && gameState === 'PLAYING' ? 'bg-blue-600 hover:bg-blue-500' : 'bg-gray-800 text-gray-600'}`}>JUGAR</button>
+                                                            <button onClick={(e) => { e.stopPropagation(); handlePlayCardBtn(); }} disabled={selectedCards.length !== 1 || tiradasLeft <= 0 || gameState !== 'PLAYING' || playedPlayerCard} className={`w-[220px] py-4 pixel-border rounded-xl text-2xl font-bold ${selectedCards.length === 1 && tiradasLeft > 0 && gameState === 'PLAYING' && !playedPlayerCard ? 'bg-blue-600 hover:bg-blue-500' : 'bg-gray-800 text-gray-600 cursor-not-allowed'}`}>JUGAR</button>
                                                             {extraPlayMsg && <div className="absolute -top-10 left-1/2 -translate-x-1/2 text-green-400 text-2xl font-bold animate-bounce whitespace-nowrap">+1 JUGADA!</div>}
                                                         </div>
-                                                        <button onClick={(e) => { e.stopPropagation(); handleDiscard(); }} disabled={selectedCards.length === 0 || descartesLeft <= 0 || (deck.length === 0 && !muestra) || gameState === 'SELECT_TRUMP'} className={`w-[220px] py-4 pixel-border rounded-xl text-xl font-bold ${selectedCards.length > 0 && descartesLeft > 0 && gameState === 'PLAYING' ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-gray-800 text-gray-600'}`}>DESCARTAR (Fins a 3)</button>
+                                                        <button onClick={(e) => { e.stopPropagation(); handleDiscard(); }} disabled={selectedCards.length === 0 || descartesLeft <= 0 || (deck.length === 0 && !muestra) || isUltimasTriggered || gameState !== 'PLAYING'} className={`w-[220px] py-4 pixel-border rounded-xl text-xl font-bold ${selectedCards.length > 0 && descartesLeft > 0 && gameState === 'PLAYING' && !isUltimasTriggered ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-gray-800 text-gray-600 cursor-not-allowed'}`}>DESCARTAR (Fins a 3)</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1642,7 +1667,7 @@
 
                                 <div className="flex gap-8">
                                     <button onClick={(e) => { e.stopPropagation(); startGame(faction); }} className="bg-yellow-600 text-black px-12 py-6 pixel-border rounded-xl text-4xl font-bold shadow-[8px_8px_0_0_#000]">REINTENTAR</button>
-                                    <button onClick={(e) => { e.stopPropagation(); quitToMenu(); }} className="bg-gray-700 text-white px-12 py-6 pixel-border rounded-xl text-4xl font-bold shadow-[8px_8px_0_0_#000]">TORNAR AL MENÚ</button>
+                                    <button onClick={(e) => { e.stopPropagation(); quitToMenu(); }} className="bg-gray-700 text-white px-12 py-6 pixel-border rounded-xl text-4xl font-bold shadow-[8px_8px_0_0_#000]">TORNAR AL MENÚ PRINCIPAL</button>
                                 </div>
                             </div>
                         )}
