@@ -234,16 +234,6 @@
         }
         .animate-float { animation: float 3s ease-in-out infinite; }
 
-        @keyframes warp-bg {
-            0% { transform: scale(1.05) translate(0, 0) rotate(0deg); filter: hue-rotate(0deg) saturate(1); }
-            33% { transform: scale(1.1) translate(1%, 1%) rotate(0.5deg); filter: hue-rotate(5deg) saturate(1.1); }
-            66% { transform: scale(1.08) translate(-1%, 0%) rotate(-0.5deg); filter: hue-rotate(-5deg) saturate(1.05); }
-            100% { transform: scale(1.05) translate(0, 0) rotate(0deg); filter: hue-rotate(0deg) saturate(1); }
-        }
-        .animate-bg-warp {
-            animation: warp-bg 20s ease-in-out infinite alternate;
-        }
-
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
@@ -311,8 +301,7 @@
                 </div>
             );
         };
-
-        function App() {
+function App() {
             const [scale, setScale] = useState(1);
             
             // --- ÀUDIO STATE ---
@@ -1176,10 +1165,22 @@
             return (
                 <div className="fixed inset-0 bg-[#071a10] flex items-center justify-center overflow-hidden" onClick={startMusic}>
                     <style>{globalStyles}</style>
+
+                    {/* SVG WARP FILTER DEFINITION */}
+                    <svg className="fixed inset-0 pointer-events-none opacity-0 w-0 h-0 z-[-1]">
+                        <filter id="warp">
+                            <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="1" result="waves" />
+                            <feColorMatrix in="waves" type="hueRotate" result="animatedWaves">
+                                <animate attributeName="values" values="0;360" dur="2s" repeatCount="indefinite" />
+                            </feColorMatrix>
+                            <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="20" in="SourceGraphic" in2="animatedWaves" />
+                        </filter>
+                    </svg>
+
                     <div style={{ width: '1920px', height: '1080px', transform: `scale(${scale})`, transformOrigin: 'center' }} className="text-white flex flex-col relative select-none shadow-[0_0_50px_rgba(0,0,0,1)] border-4 border-black overflow-hidden shrink-0" onClick={handleGlobalClick}>
                         
-                        {/* FONS ANIMAT */}
-                        <div className="absolute inset-0 z-0 animate-bg-warp bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${OBSIDIO_BG_URL})` }}></div>
+                        {/* FONS ANIMAT AMB FILTRE SVG I SCALE EXTRA */}
+                        <div className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat scale-[1.1]" style={{ backgroundImage: `url(${OBSIDIO_BG_URL})`, filter: 'url(#warp)' }}></div>
 
                         {/* GLOBAL BLUR OVERLAY */}
                         {gameState !== 'MENU' && gameState !== 'INSTRUCTIONS' && (
@@ -1805,4 +1806,4 @@
         root.render(<ErrorBoundary><App /></ErrorBoundary>);
     </script>
 </body>
-</html>
+</html>        
