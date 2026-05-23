@@ -89,7 +89,6 @@
         
         // --- ASSETS DE SO ---
         const MUSIC_URL = 'https://raw.githubusercontent.com/ArnauLC/rebaclatro/main/music-test.mp3';
-        
         const SFX_URLS = {
             'win_trick': 'https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg',
             'lose_trick': 'https://actions.google.com/sounds/v1/cartoon/cartoon_cowbell.ogg',
@@ -170,8 +169,6 @@
             { id: 'o12', faction: 'cristia', name: 'Creuats', img: 'o12.png', desc: '+6 Mult temporal.', cost: 5, efecte: { mult: 6 } },
             { id: 'o13', faction: 'cristia', name: 'Alcodians', img: 'o13.png', desc: '+25 Fitxes temporals.', cost: 3, efecte: { fichas: 25 } },
             { id: 'o14', faction: 'cristia', name: 'Aragonesos', img: 'o14.png', desc: '+3 Mult temporal.', cost: 3, efecte: { mult: 3 } },
-            
-            // MOROS
             { id: 'o15', faction: 'moro', name: 'Llana', img: 'o15.png', desc: '+50 Fitxes temporals.', cost: 6, efecte: { fichas: 50 } },
             { id: 'o16', faction: 'moro', name: 'Jueus', img: 'o16.png', desc: '+8 Mult temporal.', cost: 7, efecte: { mult: 8 } },
             { id: 'o17', faction: 'moro', name: 'Miqueros', img: 'o17.png', desc: 'Guanyes +1 Tirada a l\'instant.', cost: 4, efecte: { tiradas: 1 } },
@@ -236,6 +233,16 @@
             50% { transform: translateY(-15px); }
         }
         .animate-float { animation: float 3s ease-in-out infinite; }
+
+        @keyframes warp-bg {
+            0% { transform: scale(1.05) translate(0, 0) rotate(0deg); filter: hue-rotate(0deg) saturate(1); }
+            33% { transform: scale(1.1) translate(1%, 1%) rotate(0.5deg); filter: hue-rotate(5deg) saturate(1.1); }
+            66% { transform: scale(1.08) translate(-1%, 0%) rotate(-0.5deg); filter: hue-rotate(-5deg) saturate(1.05); }
+            100% { transform: scale(1.05) translate(0, 0) rotate(0deg); filter: hue-rotate(0deg) saturate(1); }
+        }
+        .animate-bg-warp {
+            animation: warp-bg 20s ease-in-out infinite alternate;
+        }
 
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -304,7 +311,8 @@
                 </div>
             );
         };
-function App() {
+
+        function App() {
             const [scale, setScale] = useState(1);
             
             // --- ÀUDIO STATE ---
@@ -347,7 +355,7 @@ function App() {
                 if (url) {
                     const audio = new Audio(url);
                     audio.volume = sfxVolume / 100;
-                    audio.play().catch(() => {}); // catch errors without crashing
+                    audio.play().catch(() => {});
                 }
             }, [isSfxMuted, sfxVolume]);
 
@@ -398,12 +406,7 @@ function App() {
             const [shopMixed, setShopMixed] = useState([null, null, null, null, null, null]);
             
             const [rankUpgrades, setRankUpgrades] = useState({});
-            
-            const defaultGlobalUpgrades = {
-                cant20: { fichas: 0, mult: 0 },
-                cant40: { fichas: 0, mult: 0 },
-                bac: { fichas: 0, mult: 0 }
-            };
+            const defaultGlobalUpgrades = { cant20: { fichas: 0, mult: 0 }, cant40: { fichas: 0, mult: 0 }, bac: { fichas: 0, mult: 0 } };
             const [globalUpgrades, setGlobalUpgrades] = useState(defaultGlobalUpgrades);
 
             const [baseMult, setBaseMult] = useState(1);
@@ -418,7 +421,6 @@ function App() {
             const [isUltimasTriggered, setIsUltimasTriggered] = useState(false);
 
             const [bazaResult, setBazaResult] = useState(null); 
-            
             const [sortMethod, setSortMethod] = useState('suit'); 
 
             const hasSavedGame = !!localStorage.getItem('rebaclatro_savegame');
@@ -431,8 +433,7 @@ function App() {
                         aiHand, muestra, trumpSuit, currentAiCard, playedPlayerCard,
                         turnLeader, events, objectes, begudes, shopEvents, shopMixed,
                         rankUpgrades, globalUpgrades, baseMult, tempMult, tempFichas, fichasAcumuladas,
-                        cantesRealizados, aiCantesRealizados, aiPenaltyMult, hasWonTrick, isUltimasTriggered,
-                        sortMethod
+                        cantesRealizados, aiCantesRealizados, aiPenaltyMult, hasWonTrick, isUltimasTriggered, sortMethod
                     };
                     localStorage.setItem('rebaclatro_savegame', JSON.stringify(save));
                 } else if (['GAMEOVER', 'VICTÒRIA', 'DERROTA'].includes(gameState)) {
@@ -457,7 +458,6 @@ function App() {
                         setShopMixed(saved.shopMixed || new Array(6).fill(null));
                         setRankUpgrades(saved.rankUpgrades || {}); 
                         
-                        // Migració d'antics objectes de globalUpgrades a la nova estructura
                         let loadedGlobal = saved.globalUpgrades || defaultGlobalUpgrades;
                         if (loadedGlobal.cant20Mult !== undefined) {
                             loadedGlobal = {
@@ -478,7 +478,7 @@ function App() {
                         startMusic();
                     }
                 } catch (e) {
-                    console.error("Error carregant la partida guardada", e);
+                    console.error("Error carregant", e);
                 }
             };
 
@@ -570,10 +570,7 @@ function App() {
                 let newDeck = [];
                 SUITS.forEach(suit => {
                     RANKS.forEach(rank => {
-                        newDeck.push({ 
-                            id: `${suit}-${rank}-${Math.random()}`, 
-                            suit, rank, revealed: false 
-                        });
+                        newDeck.push({ id: `${suit}-${rank}-${Math.random()}`, suit, rank, revealed: false });
                     });
                 });
                 return newDeck.sort(() => Math.random() - 0.5);
@@ -587,12 +584,9 @@ function App() {
                 setTempFichas(0); setFichasAcumuladas(0); setActiveActionId(null);
                 setPlayerLastTrick(null); setAiLastTrick(null); setAiCantesRealizados([]);
                 setAiPenaltyMult(1); setHasWonTrick(false); setRankUpgrades({});
-                setGlobalUpgrades(defaultGlobalUpgrades);
-                setIsUltimasTriggered(false);
-                
+                setGlobalUpgrades(defaultGlobalUpgrades); setIsUltimasTriggered(false);
                 generateShop(chosenFaction); 
-                setGameState('SHOP'); 
-                setShowOptionsModal(false);
+                setGameState('SHOP'); setShowOptionsModal(false);
             };
 
             const initRound = (r) => {
@@ -608,8 +602,7 @@ function App() {
                 setScore(0); setTiradasLeft(10); setDescartesLeft(3);
                 setSelectedCards([]); setPlayedPlayerCard(null); setBazaResult(null);
                 setFichasAcumuladas(0); setCantesRealizados([]); setAiCantesRealizados([]);
-                setAiPenaltyMult(1); setHasWonTrick(false); 
-                setIsUltimasTriggered(false);
+                setAiPenaltyMult(1); setHasWonTrick(false); setIsUltimasTriggered(false);
                 
                 let initialMult = events.some(e => e.id === 'r23') ? 5 : 1;
                 setBaseMult(initialMult); 
@@ -617,10 +610,7 @@ function App() {
                 setPlayerLastTrick(null); setAiLastTrick(null);
 
                 if (events.some(e => e.id === 'r24')) {
-                    setTrumpSuit(null);
-                    setCurrentAiCard(null);
-                    setAiHand(aHand);
-                    setGameState('SELECT_TRUMP');
+                    setTrumpSuit(null); setCurrentAiCard(null); setAiHand(aHand); setGameState('SELECT_TRUMP');
                 } else {
                     setTrumpSuit(m.suit);
                     let nextAiPlay = aiLeadLogic(aHand, m.suit, events);
@@ -637,8 +627,7 @@ function App() {
                 let nextAiPlay = aiLeadLogic(currentAHand, suit, events);
                 if (nextAiPlay) {
                     currentAHand = currentAHand.filter(c => c.id !== nextAiPlay.id);
-                    setCurrentAiCard(nextAiPlay);
-                    setAiHand(currentAHand);
+                    setCurrentAiCard(nextAiPlay); setAiHand(currentAHand);
                 }
                 setPlayerHand(getSortedHand(playerHand, sortMethod));
                 setGameState('PLAYING');
@@ -792,21 +781,14 @@ function App() {
                     let nextPHand = freshDeck.splice(0, 6);
                     let nextAHand = freshDeck.splice(0, 6);
                     
-                    setDeck(freshDeck);
-                    setDiscardPile([]);
-                    setMuestra(m);
-                    setAiHand(nextAHand);
-                    setPlayerHand(getSortedHand(nextPHand, sortMethod));
-                    setIsUltimasTriggered(false);
+                    setDeck(freshDeck); setDiscardPile([]); setMuestra(m); setAiHand(nextAHand);
+                    setPlayerHand(getSortedHand(nextPHand, sortMethod)); setIsUltimasTriggered(false);
                 } else {
-                    setDeck(newDeck);
-                    setDiscardPile([...discardPile, ...discarded]);
-                    setMuestra(newMuestra);
+                    setDeck(newDeck); setDiscardPile([...discardPile, ...discarded]); setMuestra(newMuestra);
                     setPlayerHand(getSortedHand([...newHand, ...drawn], sortMethod));
                 }
                 
-                setSelectedCards([]);
-                setDescartesLeft(d => d - 1);
+                setSelectedCards([]); setDescartesLeft(d => d - 1);
             };
 
             const consumeObjecte = (index) => {
@@ -849,11 +831,8 @@ function App() {
                 setTimeout(() => setBazaResult(null), 1500);
 
                 let newB = [...begudes];
-                if (newB[index].count > 1) {
-                    newB[index].count -= 1;
-                } else {
-                    newB.splice(index, 1);
-                }
+                if (newB[index].count > 1) { newB[index].count -= 1; } 
+                else { newB.splice(index, 1); }
                 setBegudes(newB);
             };
 
@@ -918,10 +897,8 @@ function App() {
                 if (events.some(r=>r.id==='r14') && ['Ors', 'Bastos'].includes(pCard.suit)) fichasBase *= 2;
                 
                 let isBac = false;
-                
                 const playerCardMultBonus = rankUpgrades[pCard.rank]?.mult || 0;
                 let pMult = (baseMult + tempMult + playerCardMultBonus) * aiPenaltyMult; 
-                
                 let xMult = 1, message = '';
                 let nextAiPenalty = 1;
 
@@ -931,7 +908,7 @@ function App() {
                     if (pCard.rank === (muestra ? muestra.rank : -1)) { 
                         isBac = true; 
                         xMult = 3 + bacUpg.mult;
-                        fichasBase += bacUpg.fichas; // Se suman las fichas del Cremaet al bac
+                        fichasBase += bacUpg.fichas; 
                         message = "¡BAC! i ¡REBAC!"; 
                     }
                     else message = "¡BASSA GUANYADA!";
@@ -998,14 +975,12 @@ function App() {
                         let m = freshDeck.splice(0, 1)[0];
                         nextPHand = freshDeck.splice(0, 6); 
                         nextAHand = freshDeck.splice(0, 6);
-                        setDeck(freshDeck); 
-                        setDiscardPile([]); 
+                        setDeck(freshDeck); setDiscardPile([]); 
                         if (m) { setMuestra(m); }
                         nextDeckCount = freshDeck.length;
                         nextMuestraValid = m;
                     } else if (nextPHand.length > 0 && nextAHand.length > 0) {
-                        setDeck(secondDraw.newDeck); 
-                        setMuestra(secondDraw.newMuestra);
+                        setDeck(secondDraw.newDeck); setMuestra(secondDraw.newMuestra);
                     }
                     
                     if (nextDeckCount === 0 && !nextMuestraValid && !isUltimasTriggered) {
@@ -1060,14 +1035,12 @@ function App() {
                 for(let i=0; i<6; i++) {
                     if(avE.length) sE[i] = { ...avE.splice(Math.floor(Math.random() * avE.length), 1)[0], uId: Math.random() };
                 }
-                
                 for(let i=0; i<3; i++) {
                     if(avO.length) sM[i] = { ...avO.splice(Math.floor(Math.random() * avO.length), 1)[0], uId: Math.random() };
                 }
                 for(let i=0; i<3; i++) {
                     if(avB.length) sM[i+3] = { ...avB.splice(Math.floor(Math.random() * avB.length), 1)[0], uId: Math.random() };
                 }
-                
                 setShopEvents(sE); setShopMixed(sM);
             };
 
@@ -1091,13 +1064,12 @@ function App() {
                             newBegudes[existingIndex].count = (newBegudes[existingIndex].count || 1) + 1;
                             setBegudes(newBegudes);
                             let n = [...shopMixed]; n[index] = null; setShopMixed(n);
-                        } else if (begudes.length < 3) {
+                        } else if (begudes.length < 2) { 
                             setMonedas(m => m - actualCost); 
                             setBegudes([...begudes, { ...item, count: 1 }]); 
                             let n = [...shopMixed]; n[index] = null; setShopMixed(n); 
                         }
                     }
-
                     if (!unlockedItems.includes(item.id)) setUnlockedItems([...unlockedItems, item.id]);
                 } 
             };
@@ -1118,13 +1090,10 @@ function App() {
 
             const nextRoundAndShop = () => { 
                 if (round >= TARGETS.length) {
-                    playSFX('win_game');
-                    setGameState('VICTÒRIA'); 
+                    playSFX('win_game'); setGameState('VICTÒRIA'); 
                 } else { 
-                    setRound(r => r + 1); 
-                    setTargetScore(TARGETS[round]); 
-                    generateShop(faction); 
-                    setGameState('SHOP'); 
+                    setRound(r => r + 1); setTargetScore(TARGETS[round]); 
+                    generateShop(faction); setGameState('SHOP'); 
                 } 
             };
 
@@ -1139,7 +1108,7 @@ function App() {
                 return (
                     <div key={item.id} className={`w-[90px] h-[160px] border-2 flex items-center justify-center p-0 relative group cursor-help rounded-lg ${bgClass}`}>
                         {isUnlocked ? (
-                            <img src={`${RELICS_BASE_URL}${item.img}`} className={`w-full h-full rounded object-contain`} />
+                            <img src={`${RELICS_BASE_URL}${item.img}`} className={`w-full h-full rounded object-contain ${item.id === 'b15' ? 'scale-[1.3]' : ''}`} />
                         ) : (
                             <div className="text-4xl text-gray-400 font-bold opacity-50">?</div>
                         )}
@@ -1207,11 +1176,14 @@ function App() {
             return (
                 <div className="fixed inset-0 bg-[#071a10] flex items-center justify-center overflow-hidden" onClick={startMusic}>
                     <style>{globalStyles}</style>
-                    <div style={{ width: '1920px', height: '1080px', minWidth: '1920px', minHeight: '1080px', transform: `scale(${scale})`, transformOrigin: 'center', backgroundImage: `url(${OBSIDIO_BG_URL})` }} className="bg-cover bg-center text-white flex flex-col relative select-none shadow-[0_0_50px_rgba(0,0,0,1)] border-4 border-black overflow-hidden shrink-0" onClick={handleGlobalClick}>
+                    <div style={{ width: '1920px', height: '1080px', transform: `scale(${scale})`, transformOrigin: 'center' }} className="text-white flex flex-col relative select-none shadow-[0_0_50px_rgba(0,0,0,1)] border-4 border-black overflow-hidden shrink-0" onClick={handleGlobalClick}>
                         
-                        {/* GLOBAL BLUR OVERLAY (excepte per al menú i instruccions) */}
+                        {/* FONS ANIMAT */}
+                        <div className="absolute inset-0 z-0 animate-bg-warp bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${OBSIDIO_BG_URL})` }}></div>
+
+                        {/* GLOBAL BLUR OVERLAY */}
                         {gameState !== 'MENU' && gameState !== 'INSTRUCTIONS' && (
-                            <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0 pointer-events-none"></div>
+                            <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-[1] pointer-events-none"></div>
                         )}
 
                         {!showOptionsModal && gameState !== 'MENU' && gameState !== 'INSTRUCTIONS' && (
@@ -1228,7 +1200,7 @@ function App() {
                         )}
 
                         {showOptionsModal && (
-                            <div className="absolute inset-0 bg-black bg-opacity-95 z-[999] flex flex-col items-center justify-center p-8">
+                            <div className="absolute inset-0 bg-black/70 backdrop-blur-md z-[999] flex flex-col items-center justify-center p-8">
                                 <div className="bg-[#1a2b22] p-12 pixel-border max-w-6xl w-full flex flex-col items-center relative overflow-hidden rounded-xl" style={{ maxHeight: '900px' }}>
                                     <button onClick={() => setShowOptionsModal(false)} className="absolute top-4 right-4 bg-red-600 px-4 py-2 pixel-border rounded-lg font-bold text-xl hover:bg-red-500">X</button>
                                     
@@ -1363,7 +1335,7 @@ function App() {
 
                         {gameState === 'INSTRUCTIONS' && (
                             <div className="flex-1 flex flex-col items-center justify-center z-20 p-8 w-full h-full">
-                                <div className="bg-black/90 p-12 pixel-border rounded-xl border-green-600 max-w-6xl w-full text-center shadow-[0_0_50px_rgba(22,163,74,0.4)] flex flex-col items-center">
+                                <div className="bg-black/80 backdrop-blur-md p-12 pixel-border rounded-xl border-green-600 max-w-6xl w-full text-center shadow-[0_0_50px_rgba(22,163,74,0.4)] flex flex-col items-center">
                                     <h2 className="text-6xl text-yellow-400 mb-10 font-bold text-shadow">OBSIDIO - NORMES DEL JOC (ROGUELIKE)</h2>
                                     <div className="text-2xl text-gray-200 mb-12 text-left bg-black/50 p-10 pixel-border-sm rounded-xl leading-relaxed mx-auto w-full overflow-y-auto hide-scrollbar" style={{ maxHeight: '600px' }}>
                                         <ul className="list-disc pl-8 space-y-4">
@@ -1383,7 +1355,7 @@ function App() {
 
                         {gameState === 'SELECT_FACTION' && (
                             <div className="flex-1 flex flex-col items-center justify-center z-20 p-8 w-full h-full relative">
-                                <div className="bg-[#0f1a14] p-16 pixel-border rounded-xl border-green-600 max-w-5xl w-full text-center shadow-[0_0_50px_rgba(22,163,74,0.4)] relative z-10">
+                                <div className="bg-[#0f1a14]/90 backdrop-blur-md p-16 pixel-border rounded-xl border-green-600 max-w-5xl w-full text-center shadow-[0_0_50px_rgba(22,163,74,0.4)] relative z-10">
                                     <h2 className="text-6xl text-yellow-400 mb-12 font-bold">SELECCIONA EL TEU BÀNDOL</h2>
                                     <div className="flex gap-8 justify-center mt-12">
                                         <button onClick={() => startGame('cristia')} className="bg-blue-600 hover:bg-blue-500 px-12 py-6 pixel-border rounded-xl text-4xl font-bold shadow-[8px_8px_0_0_#000] hover:scale-105 transition-transform">BÀNDOL CRISTIÀ</button>
@@ -1395,7 +1367,7 @@ function App() {
                         )}
 
                         {gameState === 'ROUTE_MAP' && (
-                            <div className="flex-1 flex flex-col items-center justify-center z-20 w-full h-full bg-black/20">
+                            <div className="flex-1 flex flex-col items-center justify-center z-20 w-full h-full bg-black/40 backdrop-blur-sm">
                                 <h2 className="text-6xl text-yellow-400 font-bold mb-16 text-shadow">CAMP DE BATALLA (BÀNDOL {faction.toUpperCase()})</h2>
                                 <div className="flex items-center gap-0 mb-16 px-12 w-full justify-center pt-24">
                                     {enemiesList.map((en, idx) => (
@@ -1438,7 +1410,7 @@ function App() {
                         )}
 
                         {gameState === 'SELECT_TRUMP' && (
-                            <div className="absolute inset-0 bg-black/30 z-50 flex flex-col items-center justify-center pointer-events-auto">
+                            <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-50 flex flex-col items-center justify-center pointer-events-auto">
                                 <div className="bg-[#1a2b22] p-12 pixel-border rounded-xl max-w-4xl w-full flex flex-col items-center text-center shadow-[0_0_50px_rgba(250,204,21,0.5)]">
                                     <h2 className="text-6xl text-yellow-400 mb-8 font-bold"><FormatText text="Presentació de Càrrecs" /></h2>
                                     <p className="text-3xl text-white mb-12">Veus les teues cartes baix. Tria el teu Pal de Triomf per a aquest Coto:</p>
@@ -1500,14 +1472,14 @@ function App() {
                                                             if (!item) return <div key={`sE-${i}`} className="w-[136px] h-[240px] bg-[#1a1122]/80 rounded-lg border-dashed border-gray-600 border-2 flex items-center justify-center text-xl text-gray-500 font-bold">VENUT</div>;
                                                             const actualCost = getActualCost(item, 'event');
                                                             return (
-                                                                <div key={item.uId} onClick={() => buyItem(item, i, 'event')} className={`w-[136px] h-[240px] bg-[#2a1b38] rounded-lg border-4 border-purple-600 p-2 flex flex-col items-center justify-between group relative cursor-pointer hover:bg-[#3d2652] hover:scale-105 transition-all shadow-lg ${monedas < actualCost || events.length >= 6 ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}>
+                                                                <div key={item.uId} onClick={() => buyItem(item, i, 'event')} className={`w-[136px] h-[240px] bg-[#2a1b38] rounded-lg border-4 border-purple-600 p-0 flex flex-col items-center justify-between group relative cursor-pointer hover:bg-[#3d2652] hover:scale-105 transition-all shadow-lg ${monedas < actualCost || events.length >= 6 ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}>
                                                                     <div className="absolute bottom-[105%] left-1/2 -translate-x-1/2 w-[300px] bg-[#1a0f14] p-4 pixel-border rounded-lg opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
                                                                         <h3 className="text-2xl text-yellow-300 font-bold mb-2"><FormatText text={item.name} /></h3><p className="text-lg text-white"><FormatText text={item.desc} /></p>
                                                                     </div>
-                                                                    <div className="flex-1 flex items-center justify-center w-full bg-black border border-purple-800 rounded overflow-hidden">
-                                                                        <img src={`${RELICS_BASE_URL}${item.img}`} alt={item.name} className="w-full h-full object-contain" />
+                                                                    <div className="flex-1 flex items-center justify-center w-full border-b border-purple-800 overflow-hidden">
+                                                                        <img src={`${RELICS_BASE_URL}${item.img}`} alt={item.name} className={`w-full h-full object-contain ${item.id === 'b15' ? 'scale-[1.3]' : ''}`} />
                                                                     </div>
-                                                                    <div className="w-full text-center mt-2 bg-black py-1 border border-gray-600 rounded">
+                                                                    <div className="w-full text-center mt-0 bg-black py-1 rounded-b">
                                                                         <span className="text-2xl font-bold text-yellow-400">💰 {actualCost}</span>
                                                                     </div>
                                                                 </div>
@@ -1526,19 +1498,19 @@ function App() {
                                                         {shopMixed.map((item, i) => {
                                                             if (!item) return <div key={`sM-${i}`} className="w-[136px] h-[240px] bg-[#0f1724]/80 rounded-lg border-dashed border-gray-600 border-2 flex items-center justify-center text-xl text-gray-500 font-bold">VENUT</div>;
                                                             const isObj = item.type === 'objecte';
-                                                            const isFull = isObj ? objectes.length >= 3 : (begudes.length >= 3 && !begudes.some(b => b.id === item.id));
+                                                            const isFull = isObj ? objectes.length >= 3 : (begudes.length >= 2 && !begudes.some(b => b.id === item.id));
                                                             const actualCost = getActualCost(item, item.type);
                                                             const isDiscounted = actualCost < item.cost;
                                                             
                                                             return (
-                                                                <div key={item.uId} onClick={() => buyItem(item, i, item.type)} className={`w-[136px] h-[240px] border-4 rounded-lg p-2 flex flex-col items-center justify-between group relative cursor-pointer transition-all shadow-lg ${isObj ? 'bg-[#162740] border-blue-600 hover:bg-[#1d3354]' : 'bg-[#3a2010] border-orange-600 hover:bg-[#4a2b16]'} hover:scale-105 ${monedas < actualCost || isFull ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}>
+                                                                <div key={item.uId} onClick={() => buyItem(item, i, item.type)} className={`w-[136px] h-[240px] border-4 rounded-lg p-0 flex flex-col items-center justify-between group relative cursor-pointer transition-all shadow-lg ${isObj ? 'bg-[#162740] border-blue-600 hover:bg-[#1d3354]' : 'bg-[#3a2010] border-orange-600 hover:bg-[#4a2b16]'} hover:scale-105 ${monedas < actualCost || isFull ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}>
                                                                     <div className="absolute bottom-[105%] left-1/2 -translate-x-1/2 w-[300px] bg-[#1a0f14] p-4 pixel-border rounded-lg opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center shadow-[0_0_20px_rgba(0,0,0,1)]">
                                                                         <h3 className="text-2xl text-yellow-300 font-bold mb-2"><FormatText text={item.name} /></h3><p className="text-lg text-white"><FormatText text={item.desc} /></p>
                                                                     </div>
-                                                                    <div className="flex-1 flex items-center justify-center w-full bg-black border border-gray-700 overflow-hidden rounded">
-                                                                        <img src={`${RELICS_BASE_URL}${item.img}`} alt={item.name} className="w-full h-full object-contain" />
+                                                                    <div className="flex-1 flex items-center justify-center w-full border-b border-gray-700 overflow-hidden">
+                                                                        <img src={`${RELICS_BASE_URL}${item.img}`} alt={item.name} className={`w-full h-full object-contain ${item.id === 'b15' ? 'scale-[1.3]' : ''}`} />
                                                                     </div>
-                                                                    <div className="w-full text-center mt-2 bg-black py-1 border border-gray-600 rounded">
+                                                                    <div className="w-full text-center mt-0 bg-black py-1 rounded-b">
                                                                         <span className="text-2xl font-bold text-yellow-400">
                                                                             {isDiscounted ? <span>💰<del className="text-red-400 text-sm ml-1">{item.cost}</del> {actualCost}</span> : `💰 ${actualCost}`}
                                                                         </span>
@@ -1570,11 +1542,11 @@ function App() {
                                                 </div>
                                             </div>
                                             
-                                            {/* CENTRAL FLEX-1 AREA WITH ABSOLUTE POSITIONING */}
+                                            {/* CENTRAL AREA WITH ABSOLUTE POSITIONING */}
                                             <div className="flex-1 flex items-center justify-center w-full relative z-0 py-4">
                                                 
-                                                {/* TOP-LEFT: RIVAL TRICK */}
-                                                <div className="absolute top-0 left-8 z-20 pointer-events-auto">
+                                                {/* TOP-LEFT: RIVAL TRICK PILE */}
+                                                <div className="absolute top-4 left-8 z-20 pointer-events-auto">
                                                     {aiLastTrick ? (
                                                         <div className="w-[80px] h-[120px] relative cursor-pointer hover:scale-110 transition-transform pointer-events-auto" onClick={() => { setModalTrick(aiLastTrick); setShowLastTrick(true); }}>
                                                             <div className="absolute inset-0 bg-transparent rounded-lg pixel-border-sm overflow-hidden flex items-center justify-center">
@@ -1587,8 +1559,8 @@ function App() {
                                                     )}
                                                 </div>
 
-                                                {/* BOTTOM-LEFT: PLAYER TRICK */}
-                                                <div className="absolute bottom-0 left-8 z-20 pointer-events-auto">
+                                                {/* BOTTOM-LEFT: PLAYER TRICK PILE */}
+                                                <div className="absolute bottom-4 left-8 z-20 pointer-events-auto">
                                                     {playerLastTrick ? (
                                                         <div className="w-[80px] h-[120px] relative cursor-pointer hover:scale-110 transition-transform pointer-events-auto" onClick={() => { setModalTrick(playerLastTrick); setShowLastTrick(true); }}>
                                                             <div className="absolute inset-0 bg-transparent rounded-lg pixel-border-sm overflow-hidden flex items-center justify-center">
@@ -1601,63 +1573,65 @@ function App() {
                                                     )}
                                                 </div>
                                                 
-                                                {/* MIDDLE-LEFT: DECK & TRIOMF */}
-                                                <div className="absolute left-8 top-1/2 -translate-y-1/2 flex items-center z-20">
-                                                    <div className="relative w-[130px] h-[180px] flex items-center justify-start">
-                                                        {muestra ? (
-                                                            <div className="absolute left-12 top-1/2 -translate-y-1/2 rotate-90 w-[100px] h-[150px] z-10">
-                                                                <Card card={muestra} isMuestra highContrast={highContrastCards} />
-                                                            </div>
-                                                        ) : (
-                                                            <div className="absolute left-12 top-1/2 -translate-y-1/2 text-8xl opacity-80 z-10">{suitEmojis[trumpSuit]}</div>
-                                                        )}
-                                                        {deck.length > 0 && (
-                                                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[100px] h-[150px] cursor-pointer z-30 hover:scale-105 transition-transform" onClick={() => setShowDeckModal(true)}>
-                                                                {Array.from({ length: Math.min(4, Math.ceil(deck.length/8)) }).map((_, i) => (
-                                                                    <img key={i} src={REVERSO_URL} className="absolute w-full h-full object-contain drop-shadow-xl" style={{ top: `${i*-3}px`, left: `${i*-3}px` }} />
-                                                                ))}
-                                                                <div className="absolute top-0 right-0 bg-red-600 text-white font-bold px-2 py-1 text-lg rounded pixel-border-sm translate-x-1/2 -translate-y-1/2">{deck.length}</div>
-                                                            </div>
-                                                        )}
-                                                        {deck.length === 0 && muestra && (
-                                                            <div className="absolute top-[105%] left-0 w-[100px] text-center text-red-500 font-bold bg-black bg-opacity-80 px-2 rounded pixel-border-sm animate-pulse">ÚLTIMA</div>
-                                                        )}
-                                                        {canSwapSeven && (
-                                                            <button onClick={(e) => { e.stopPropagation(); swapSevenForMuestra(); }} className="absolute -top-12 left-0 bg-yellow-500 hover:bg-yellow-400 text-black px-4 py-1 rounded font-bold pixel-border-sm shadow-lg whitespace-nowrap animate-bounce z-50">
-                                                                CANVIAR EL 7
-                                                            </button>
-                                                        )}
+                                                {/* MIDDLE-LEFT: DECK, TRIOMF, JUGADES & DESCARTS */}
+                                                <div className="absolute left-8 top-1/2 -translate-y-1/2 flex flex-col gap-10 z-20">
+                                                    <div className="flex items-center">
+                                                        <div className="relative w-[130px] h-[180px] flex items-center justify-start">
+                                                            {muestra ? (
+                                                                <div className="absolute left-12 top-1/2 -translate-y-1/2 rotate-90 w-[100px] h-[150px] z-10">
+                                                                    <Card card={muestra} isMuestra highContrast={highContrastCards} />
+                                                                </div>
+                                                            ) : (
+                                                                <div className="absolute left-12 top-1/2 -translate-y-1/2 text-8xl opacity-80 z-10">{suitEmojis[trumpSuit]}</div>
+                                                            )}
+                                                            {deck.length > 0 && (
+                                                                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[100px] h-[150px] cursor-pointer z-30 hover:scale-105 transition-transform" onClick={() => setShowDeckModal(true)}>
+                                                                    {Array.from({ length: Math.min(4, Math.ceil(deck.length/8)) }).map((_, i) => (
+                                                                        <img key={i} src={REVERSO_URL} className="absolute w-full h-full object-contain drop-shadow-xl" style={{ top: `${i*-3}px`, left: `${i*-3}px` }} />
+                                                                    ))}
+                                                                    <div className="absolute top-0 right-0 bg-red-600 text-white font-bold px-2 py-1 text-lg rounded pixel-border-sm translate-x-1/2 -translate-y-1/2">{deck.length}</div>
+                                                                </div>
+                                                            )}
+                                                            {deck.length === 0 && muestra && (
+                                                                <div className="absolute top-[105%] left-0 w-[100px] text-center text-red-500 font-bold bg-black bg-opacity-80 px-2 rounded pixel-border-sm animate-pulse">ÚLTIMA</div>
+                                                            )}
+                                                            {canSwapSeven && (
+                                                                <button onClick={(e) => { e.stopPropagation(); swapSevenForMuestra(); }} className="absolute -top-12 left-0 bg-yellow-500 hover:bg-yellow-400 text-black px-4 py-1 rounded font-bold pixel-border-sm shadow-lg whitespace-nowrap animate-bounce z-50">
+                                                                    CANVIAR EL 7
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                        <div className="ml-4 flex flex-col items-center bg-black/70 p-4 rounded-xl pixel-border-sm shadow-xl">
+                                                            <span className="text-2xl text-yellow-300 font-bold flex items-center gap-2">TRIOMF {trumpSuit && <span className="text-4xl" title={`Pal de Triomf: ${trumpSuit}`}>{suitEmojis[trumpSuit]}</span>}</span>
+                                                        </div>
                                                     </div>
-                                                    <div className="ml-[140px] flex flex-col items-center bg-black/70 p-4 rounded-xl pixel-border-sm shadow-xl">
-                                                        <span className="text-2xl text-yellow-300 font-bold flex items-center gap-2">TRIOMF {trumpSuit && <span className="text-4xl" title={`Pal de Triomf: ${trumpSuit}`}>{suitEmojis[trumpSuit]}</span>}</span>
+
+                                                    <div className="flex flex-col gap-3 w-full max-w-[250px]">
+                                                        <div className="relative bg-gray-800/80 text-gray-300 px-4 py-2 pixel-border-sm rounded-xl font-bold text-xl text-center cursor-default backdrop-blur-sm w-full">
+                                                            JUGADES: <span className="text-blue-400">{tiradasLeft}</span>
+                                                            {extraPlayMsg && <span className="absolute top-1/2 -translate-y-1/2 -right-16 text-green-400 font-bold text-4xl animate-bounce">+1</span>}
+                                                        </div>
+                                                        <div className="relative bg-gray-800/80 text-gray-300 px-4 py-2 pixel-border-sm rounded-xl font-bold text-xl text-center cursor-default backdrop-blur-sm w-full">
+                                                            DESCARTS: <span className="text-red-400">{descartesLeft}</span>
+                                                            {extraPlayMsg && <span className="absolute top-1/2 -translate-y-1/2 -right-16 text-green-400 font-bold text-4xl animate-bounce">+1</span>}
+                                                        </div>
                                                     </div>
                                                 </div>
 
                                                 {/* TOP-RIGHT: RIVAL INFO */}
                                                 {(gameState === 'PLAYING' || gameState === 'RESOLVING') && (
-                                                    <div className="absolute top-0 right-8 w-[220px] flex flex-col items-center gap-2 bg-black/60 p-4 rounded-xl pixel-border-sm pointer-events-auto z-20">
-                                                        <div className="text-2xl text-yellow-400 text-shadow font-bold w-full text-center border-b border-gray-600 pb-2 mb-2">COTO {round} <span className="text-gray-400 text-lg">/ {TARGETS.length}</span></div>
-                                                        <img src={getEnemyImage(enemiesList[round - 1])} className="w-24 h-24 rounded-full border-4 border-red-500 object-cover shadow-[0_0_15px_rgba(239,68,68,0.8)]" />
-                                                        <div className="text-center">
+                                                    <div className="absolute top-4 right-8 w-[220px] flex flex-col items-center gap-2 bg-black/60 p-4 rounded-xl pixel-border-sm pointer-events-auto z-20">
+                                                        <div className="text-center border-b border-gray-600 pb-2 mb-1 w-full">
                                                             <p className="text-sm text-gray-400 leading-none mb-1">Batalla actual</p>
                                                             <p className="text-xl text-red-400 font-bold leading-none">{enemiesList[round - 1]}</p>
                                                         </div>
+                                                        <div className="text-xl text-yellow-400 text-shadow font-bold w-full text-center">COTO {round} <span className="text-gray-400 text-lg">/ {TARGETS.length}</span></div>
+                                                        <img src={getEnemyImage(enemiesList[round - 1])} className="w-24 h-24 rounded-full border-4 border-red-500 object-cover shadow-[0_0_15px_rgba(239,68,68,0.8)] mt-2" />
                                                     </div>
                                                 )}
 
-                                                {/* BOTTOM-RIGHT: ACTIONS & SUMMARIES */}
-                                                <div className="absolute bottom-0 right-8 w-[220px] flex flex-col gap-3 items-end pointer-events-auto z-20">
-                                                    <div className="flex flex-col gap-2 w-full">
-                                                        <div className="relative bg-gray-800/80 text-gray-300 px-4 py-2 pixel-border-sm rounded-xl font-bold text-xl text-center cursor-default backdrop-blur-sm w-full">
-                                                            JUGADES: <span className="text-blue-400">{tiradasLeft}</span>
-                                                            {extraPlayMsg && <span className="absolute top-1/2 -translate-y-1/2 -left-16 text-green-400 font-bold text-4xl animate-bounce">+1</span>}
-                                                        </div>
-                                                        <div className="relative bg-gray-800/80 text-gray-300 px-4 py-2 pixel-border-sm rounded-xl font-bold text-xl text-center cursor-default backdrop-blur-sm w-full">
-                                                            DESCARTS: <span className="text-red-400">{descartesLeft}</span>
-                                                            {extraPlayMsg && <span className="absolute top-1/2 -translate-y-1/2 -left-16 text-green-400 font-bold text-4xl animate-bounce">+1</span>}
-                                                        </div>
-                                                    </div>
-
+                                                {/* BOTTOM-RIGHT: ACTIONS & CANTES */}
+                                                <div className="absolute bottom-4 right-8 w-[220px] flex flex-col gap-3 items-end pointer-events-auto z-20">
                                                     {gameState === 'PLAYING' && getPosiblesCantes().map((c, i) => (
                                                         <button key={`cant-${i}`} onClick={(e) => { e.stopPropagation(); cantar(c); }} className="bg-yellow-600 hover:bg-yellow-500 w-full py-2 pixel-border-sm rounded-xl text-lg font-bold text-black animate-pulse shadow-lg">
                                                             ¡CANTAR <FormatText text={c.nombre} />!
@@ -1681,7 +1655,7 @@ function App() {
                                                     <div className="z-10">{ (turnLeader === 'ai' || gameState === 'RESOLVING') && gameState !== 'SELECT_TRUMP' ? <Card card={currentAiCard} isAi displayFichas={currentAiCard ? getCardFichas(currentAiCard, events)+(currentAiCard.bonusR7||0) : 0} highContrast={highContrastCards}/> : <div className="w-[100px] h-[150px] border-4 border-dashed border-gray-600 bg-black/40 rounded-xl opacity-20" /> }</div>
                                                     <div className="text-5xl text-gray-400 opacity-60 font-bold drop-shadow-lg">VS</div>
                                                     <div className={`w-[110px] h-[160px] border-8 border-dashed rounded-xl flex items-center justify-center transition-colors z-10 ${draggedIndex !== null ? 'border-green-400 bg-green-600 bg-opacity-40 animate-pulse' : 'border-blue-600 bg-blue-900 bg-opacity-30 backdrop-blur-sm'}`}>{playedPlayerCard && <Card card={playedPlayerCard} isAi displayFichas={getCardFichas(playedPlayerCard, events)+(playedPlayerCard.bonusR7||0)} highContrast={highContrastCards}/>}</div>
-                                                    {bazaResult && <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none w-[800px] flex justify-center"><div className={`text-center inline-block bg-[#0b141a] bg-opacity-95 p-8 pixel-border rounded-xl shadow-2xl ${bazaResult.bac ? 'animate-bac' : 'animate-bounce'}`}><h2 className={`text-4xl font-bold mb-4 ${bazaResult.winner === 'player' || bazaResult.winner === 'canto' ? 'text-yellow-400' : 'text-red-500'}`}><FormatText text={bazaResult.message} /></h2>{bazaResult.winner === 'player' && <><div className="text-3xl text-white flex gap-4 justify-center"><span className="text-blue-300 bg-blue-900 px-3 py-1 rounded"><FormatText text={`${bazaResult.fichas} Fitxes`} /></span><span className="text-red-400 bg-red-900 px-3 py-1 rounded">x{bazaResult.mult}</span></div><div className="text-6xl text-green-400 mt-6 font-bold">+ {bazaResult.total}</div></>}</div></div>}
+                                                    {bazaResult && <div className="absolute top-1/2 right-[5%] -translate-y-1/2 z-50 pointer-events-none w-[500px] flex justify-center"><div className={`text-center inline-block bg-[#0b141a] bg-opacity-95 p-8 pixel-border rounded-xl shadow-2xl ${bazaResult.bac ? 'animate-bac' : 'animate-bounce'}`}><h2 className={`text-4xl font-bold mb-4 ${bazaResult.winner === 'player' || bazaResult.winner === 'canto' ? 'text-yellow-400' : 'text-red-500'}`}><FormatText text={bazaResult.message} /></h2>{bazaResult.winner === 'player' && <><div className="text-3xl text-white flex gap-4 justify-center"><span className="text-blue-300 bg-blue-900 px-3 py-1 rounded"><FormatText text={`${bazaResult.fichas} Fitxes`} /></span><span className="text-red-400 bg-red-900 px-3 py-1 rounded">x{bazaResult.mult}</span></div><div className="text-6xl text-green-400 mt-6 font-bold">+ {bazaResult.total}</div></>}</div></div>}
                                                 </div>
                                             </div>
                                             
@@ -1708,7 +1682,7 @@ function App() {
                                     )}
                                 </div>
 
-                                {/* DRETA: TROPES (3 slots) + BARRA (3 slots) */}
+                                {/* DRETA: TROPES (3 slots) + BARRA (2 slots) */}
                                 <div className="w-[180px] flex flex-col items-center py-6 bg-black/60 border-l-4 border-black z-[60] shrink-0 h-full">
                                     <div className="w-full flex flex-col items-center justify-start flex-1 relative z-[70] pt-2">
                                         <span className="text-xl text-blue-300 font-bold mb-4 text-center leading-none">TROPES<br/><span className="text-sm text-blue-400">({objectes.length}/3)</span></span>
@@ -1729,11 +1703,11 @@ function App() {
                                     </div>
 
                                     <div className="w-full flex flex-col items-center justify-start flex-1 relative z-[70] pt-2 pb-12">
-                                        <span className="text-xl text-orange-300 font-bold mb-4 text-center leading-none">BARRA<br/><span className="text-sm text-orange-400">({begudes.length}/3)</span></span>
+                                        <span className="text-xl text-orange-300 font-bold mb-4 text-center leading-none">BARRA<br/><span className="text-sm text-orange-400">({begudes.length}/2)</span></span>
                                         <div className="flex flex-col -space-y-6 w-full items-center mt-2">
                                             {begudes.map((b, i) => (
                                                 <div key={i} onClick={e => { e.stopPropagation(); setActiveActionId(activeActionId === `b-${i}` ? null : `b-${i}`); }} className="w-[90px] h-[160px] flex items-center justify-center cursor-pointer group relative shrink-0 z-10 hover:z-50 hover:-translate-y-4 transition-all">
-                                                    <img src={`${RELICS_BASE_URL}${b.img}`} alt={b.name} className="w-full h-full object-contain drop-shadow-xl" />
+                                                    <img src={`${RELICS_BASE_URL}${b.img}`} alt={b.name} className={`w-full h-full object-contain drop-shadow-xl ${b.id === 'b15' ? 'scale-[1.3]' : ''}`} />
                                                     {b.count > 1 && <div className="absolute -top-2 -right-2 bg-red-600 text-white text-lg font-bold px-2 py-0.5 rounded-full pixel-border-sm z-[80]">x{b.count}</div>}
                                                     {activeActionId !== `b-${i}` && <div className="absolute top-1/2 right-[120%] -translate-y-1/2 w-80 bg-[#1a0f14] p-4 pixel-border rounded-lg opacity-0 group-hover:opacity-100 z-[100] pointer-events-none transition-opacity text-center"><p className="text-yellow-300 text-2xl mb-2"><FormatText text={b.name} /></p><p className="text-xl"><FormatText text={b.desc} /></p></div>}
                                                     {activeActionId === `b-${i}` && (
@@ -1751,7 +1725,7 @@ function App() {
                         )}
 
                         {showLastTrick && modalTrick && (
-                            <div className="absolute inset-0 bg-black/90 backdrop-blur-sm z-[120] flex items-center justify-center p-8" onClick={(e) => { e.stopPropagation(); setShowLastTrick(false); setModalTrick(null); }}>
+                            <div className="absolute inset-0 bg-black/70 backdrop-blur-md z-[120] flex items-center justify-center p-8" onClick={(e) => { e.stopPropagation(); setShowLastTrick(false); setModalTrick(null); }}>
                                 <div className="bg-[#1a2b22] p-12 pixel-border rounded-xl max-w-4xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
                                     <h2 className="text-5xl text-yellow-400 mb-12 font-bold">DETALL DE LA BASSA</h2>
                                     <div className="flex gap-20 items-center mb-12 w-full justify-center">
@@ -1766,7 +1740,7 @@ function App() {
                         )}
 
                         {showDeckModal && (
-                            <div className="absolute inset-0 bg-black/95 backdrop-blur-md z-[100] flex flex-col items-center justify-center">
+                            <div className="absolute inset-0 bg-black/70 backdrop-blur-md z-[100] flex flex-col items-center justify-center">
                                 <div className="max-w-[1500px] w-full flex flex-col items-center">
                                     <div className="flex justify-between items-center w-full mb-8 px-12"><h2 className="text-6xl text-yellow-400 font-bold">REGISTRE DE LA BARALLA</h2><button onClick={() => setShowDeckModal(false)} className="bg-red-600 px-8 py-4 pixel-border rounded-xl font-bold text-2xl">TANCAR</button></div>
                                     <div className="flex flex-col gap-4 w-full items-center bg-[#1a2b22] p-8 pixel-border rounded-xl shadow-2xl">
@@ -1787,7 +1761,7 @@ function App() {
                         )}
 
                         {gameState === 'ROUND_SUMMARY' && roundSummary && (
-                            <div className="flex-1 flex flex-col items-center justify-center z-20 w-full h-full bg-black/40">
+                            <div className="flex-1 flex flex-col items-center justify-center z-20 w-full h-full bg-black/70 backdrop-blur-md">
                                 <h1 className="text-[120px] text-yellow-400 mb-8 font-bold animate-pulse text-shadow">¡COTO SUPERAT!</h1>
                                 <div className="bg-[#1a2b22] p-12 pixel-border rounded-xl max-w-3xl w-full flex flex-col items-center mb-12 shadow-[0_0_50px_rgba(250,204,21,0.5)]">
                                     <p className="text-4xl text-gray-300 mb-6">Puntuació: <span className="text-blue-400 font-bold">{roundSummary.score}</span> / <span className="text-red-500">{roundSummary.target}</span></p>
@@ -1799,7 +1773,7 @@ function App() {
                         )}
 
                         {gameState === 'DERROTA' && (
-                            <div className="flex-1 flex flex-col items-center justify-center z-20 w-full h-full bg-black/60">
+                            <div className="flex-1 flex flex-col items-center justify-center z-20 w-full h-full bg-black/70 backdrop-blur-md">
                                 <h1 className="text-[150px] text-red-600 mb-8 font-bold text-shadow">AL POU</h1>
                                 <p className="text-4xl text-gray-300 mb-12 bg-black/50 px-8 py-4 rounded-xl">T'has quedat sense tirades al Coto {round}.</p>
                                 
@@ -1813,7 +1787,7 @@ function App() {
                         )}
                         
                         {gameState === 'VICTÒRIA' && (
-                            <div className="flex-1 flex flex-col items-center justify-center z-20 w-full h-full bg-black/60">
+                            <div className="flex-1 flex flex-col items-center justify-center z-20 w-full h-full bg-black/70 backdrop-blur-md">
                                 <h1 className="text-[120px] text-yellow-400 mb-8 font-bold animate-bac text-center text-shadow">¡ETS EL REI<br/>DEL BAC!</h1>
                                 <p className="text-4xl text-gray-300 mb-12 bg-black/50 px-8 py-4 rounded-xl">Has arruïnat al poble guanyant tots els cotos.</p>
                                 
